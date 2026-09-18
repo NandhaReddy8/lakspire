@@ -372,7 +372,7 @@ export function ContactForm() {
 
         <FieldWrap
           label="Attachment"
-          hint="Optional · PDF/Word/Excel/CSV/text/image · under 5MB"
+          hint="Optional · Max 5 MB"
           error={touched.file ? errors.file : undefined}
           className="sm:col-span-2"
         >
@@ -382,11 +382,20 @@ export function ContactForm() {
             onBlur={onBlur('file')}
             hasError={!!(touched.file && errors.file)}
           />
+          <p
+            className="mt-1.5 text-[11px]"
+            style={{ color: 'var(--text-faint)', fontFamily: 'var(--font-body)' }}
+          >
+            Accepted: PDF, Word, Excel, CSV, TXT, images.
+          </p>
         </FieldWrap>
       </div>
 
-      <div className="mt-8 flex items-center justify-between gap-4">
-        <p className="text-[12px]" style={{ color: 'var(--text-faint)' }}>
+      {/* Submit row — stacks on mobile so the CTA gets full width and
+          the "Submit enquiry" label never wraps to two lines. On sm+
+          the privacy blurb and the button share a row. */}
+      <div className="mt-8 flex flex-col-reverse items-stretch gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <p className="text-[12px] sm:max-w-xs" style={{ color: 'var(--text-faint)' }}>
           By submitting, you agree to the{' '}
           <a href="/privacy-policy" className="underline underline-offset-2 hover:text-[#FF8F5C]">
             privacy policy
@@ -396,7 +405,7 @@ export function ContactForm() {
         <button
           type="submit"
           disabled={submitting}
-          className="group inline-flex items-center gap-2 rounded-lg px-6 py-3 text-[14px] font-medium text-white transition-all duration-200 active:scale-[0.98] disabled:opacity-70"
+          className="group inline-flex w-full items-center justify-center gap-2 whitespace-nowrap rounded-lg px-6 py-3.5 text-[14px] font-medium text-white transition-all duration-200 active:scale-[0.98] disabled:opacity-70 sm:w-auto sm:py-3"
           style={{
             fontFamily: 'var(--font-body)',
             background: 'linear-gradient(135deg, #FF6B35 0%, #FF8F5C 100%)',

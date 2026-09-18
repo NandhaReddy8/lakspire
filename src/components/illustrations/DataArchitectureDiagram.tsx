@@ -52,10 +52,25 @@ export function DataArchitectureDiagram() {
           <div className="min-w-0 flex-1">
             <p className="text-[11px] font-medium text-white/70" style={{ fontFamily: 'var(--font-display)' }}>{layer.label}</p>
             <p className="text-[9.5px] text-white/30" style={{ fontFamily: 'var(--font-body)' }}>{layer.sub}</p>
+            {/* Mobile: dashes sit under the sub-text, right-aligned so
+                they don't crowd the label row. Hidden at sm+ where the
+                row is wide enough to place them on the right. */}
+            <div className="mt-1.5 flex justify-end gap-1 sm:hidden" aria-hidden="true">
+              {[0, 1, 2].map((j) => (
+                <div
+                  key={j}
+                  className="h-1 w-3 rounded-full arch-tick"
+                  style={{
+                    background: layer.color,
+                    animationDelay: `${i * 0.3 + j * 0.18}s`,
+                  }}
+                />
+              ))}
+            </div>
           </div>
 
-          {/* Cascading activity dots */}
-          <div className="flex gap-1" aria-hidden="true">
+          {/* Cascading activity dots — desktop/tablet only */}
+          <div className="hidden gap-1 sm:flex" aria-hidden="true">
             {[0, 1, 2].map((j) => (
               <div
                 key={j}

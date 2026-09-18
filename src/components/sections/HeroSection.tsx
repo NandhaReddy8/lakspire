@@ -35,7 +35,7 @@ export function HeroSection() {
 
   return (
     <section
-      className="relative isolate min-h-[92svh] overflow-hidden pt-24"
+      className="relative isolate overflow-hidden pt-24 lg:min-h-[92svh]"
       data-scroll-anchor="hero"
     >
       {/* Warm ambient backdrop */}
@@ -56,7 +56,7 @@ export function HeroSection() {
       <HeroAnnotationField />
 
       <div className="relative z-10 mx-auto max-w-container container-pad">
-        <div className="grid min-h-[calc(92svh-6rem)] grid-cols-1 items-center gap-10 py-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.34fr)] lg:gap-10">
+        <div className="grid grid-cols-1 items-start gap-10 py-10 lg:min-h-[calc(92svh-6rem)] lg:grid-cols-[minmax(0,1fr)_minmax(0,1.34fr)] lg:items-center lg:gap-10">
           {/* Left: copy.
               Vertical rhythm tightened (mb-5→4, mb-6→4, mb-8→6, mt-10→7)
               and subtitle widened (max-w-lg → max-w-xl) so the whole
@@ -132,7 +132,6 @@ export function HeroSection() {
             </motion.div>
 
             <motion.div {...fadeUp(0.36)} className="mt-7 flex flex-wrap items-center gap-5">
-              <div className="h-8 w-px bg-white/[0.08]" />
               {[
                 { value: '99.2%', label: 'Accuracy Rate' },
                 { value: '2.4M+', label: 'Records Daily' },
@@ -156,7 +155,7 @@ export function HeroSection() {
                       {stat.label}
                     </p>
                   </div>
-                  {i < 2 && <div className="h-8 w-px bg-white/[0.07]" />}
+                  {i < 2 && <div className="h-3 w-px bg-white/[0.06]" />}
                 </div>
               ))}
             </motion.div>

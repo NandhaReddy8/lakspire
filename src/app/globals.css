@@ -483,8 +483,19 @@ body {
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  overflow-x: hidden;
+  /* clip (not hidden) — overflow-x: hidden establishes a new formatting
+     context that breaks sticky-position pins inside body (WhatWeDoStory
+     scrollytelling). overflow: clip prevents sideways scroll without
+     creating a scroll container. */
+  overflow-x: clip;
   transition: background-color 400ms var(--ease-out), color 400ms var(--ease-out);
+}
+
+/* Also clip at the root so absolutely-positioned decorative backdrops
+   (radial ambients, hero blob bleeds) cannot pop the viewport
+   horizontally on mobile. */
+html {
+  overflow-x: clip;
 }
 
 /* ─── Navigation pill surfaces (theme-aware) ───────────────── */

@@ -212,12 +212,15 @@ export function WhyLakspire() {
             }}
           />
 
-          {/* Prev / Next controls — theme-aware ember buttons */}
+          {/* Prev / Next controls — theme-aware ember buttons.
+              Hidden on mobile (they'd overlay the card copy); mobile
+              users get inline prev/next chevrons rendered beside the
+              progress dots row below. */}
           <button
             type="button"
             onClick={() => setCurrent((c) => (c - 1 + N) % N)}
             aria-label="Previous principle"
-            className="carousel-nav absolute left-2 top-1/2 z-30 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full sm:left-4 md:left-6"
+            className="carousel-nav absolute left-2 top-1/2 z-30 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full sm:left-4 sm:flex md:left-6"
           >
             <ChevronLeft size={20} strokeWidth={1.75} />
           </button>
@@ -225,7 +228,7 @@ export function WhyLakspire() {
             type="button"
             onClick={() => setCurrent((c) => (c + 1) % N)}
             aria-label="Next principle"
-            className="carousel-nav absolute right-2 top-1/2 z-30 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full sm:right-4 md:right-6"
+            className="carousel-nav absolute right-2 top-1/2 z-30 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full sm:right-4 sm:flex md:right-6"
           >
             <ChevronRight size={20} strokeWidth={1.75} />
           </button>
@@ -382,28 +385,51 @@ export function WhyLakspire() {
           })}
         </div>
 
-        {/* Progress dots — click to jump; also reveals current position */}
-        <div className="mt-10 flex items-center justify-center gap-2">
-          {reasons.map((r, i) => (
-            <button
-              key={r.title}
-              type="button"
-              onClick={() => setCurrent(i)}
-              aria-label={`Jump to ${r.title}`}
-              className="group flex h-4 items-center justify-center"
-            >
-              <span
-                className="block h-[2px] transition-all duration-500"
-                style={{
-                  width: i === current ? '28px' : '10px',
-                  background:
-                    i === current
-                      ? 'linear-gradient(90deg, #FF6B35, #F4A261)'
-                      : 'var(--border-glass-strong)',
-                }}
-              />
-            </button>
-          ))}
+        {/* Progress row — prev chevron, dots, next chevron. On mobile
+            the chevrons appear inline so they don't overlay the cards.
+            On sm+ the chevrons stay hidden here (rendered above beside
+            the stage) and only the dots show. */}
+        <div className="mt-10 flex items-center justify-center gap-3">
+          <button
+            type="button"
+            onClick={() => setCurrent((c) => (c - 1 + N) % N)}
+            aria-label="Previous principle"
+            className="carousel-nav flex h-9 w-9 items-center justify-center rounded-full sm:hidden"
+          >
+            <ChevronLeft size={16} strokeWidth={1.75} />
+          </button>
+
+          <div className="flex items-center justify-center gap-2">
+            {reasons.map((r, i) => (
+              <button
+                key={r.title}
+                type="button"
+                onClick={() => setCurrent(i)}
+                aria-label={`Jump to ${r.title}`}
+                className="group flex h-4 items-center justify-center"
+              >
+                <span
+                  className="block h-[2px] transition-all duration-500"
+                  style={{
+                    width: i === current ? '28px' : '10px',
+                    background:
+                      i === current
+                        ? 'linear-gradient(90deg, #FF6B35, #F4A261)'
+                        : 'var(--border-glass-strong)',
+                  }}
+                />
+              </button>
+            ))}
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setCurrent((c) => (c + 1) % N)}
+            aria-label="Next principle"
+            className="carousel-nav flex h-9 w-9 items-center justify-center rounded-full sm:hidden"
+          >
+            <ChevronRight size={16} strokeWidth={1.75} />
+          </button>
         </div>
       </div>
     </section>

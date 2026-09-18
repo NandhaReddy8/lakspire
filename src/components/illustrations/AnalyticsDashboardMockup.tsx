@@ -63,7 +63,14 @@ export function AnalyticsDashboardMockup() {
           ))}
         </div>
 
-        {/* Bar chart */}
+        {/* Bar chart with trend line overlay
+            ───────────────────────────────────
+            The line lives INSIDE the bars container so it reads as a
+            trend line on top of the graph, not a separate lonely curve
+            below it. Path traces the peaks of the seven bars
+            [55,70,48,85,62,90,78] in a viewBox 100×100 space, so
+            preserveAspectRatio="none" stretches it to whatever the
+            container width/height ends up being. */}
         <div className="mb-2">
           <p className="mb-1.5 text-[8px] text-white/25" style={{ fontFamily: 'var(--font-body)' }}>Weekly Throughput</p>
           <div className="relative flex items-end gap-1" style={{ height: '48px' }}>
@@ -83,6 +90,78 @@ export function AnalyticsDashboardMockup() {
                 transition={{ duration: 0.7, delay: i * 0.06, ease: [0.16, 1, 0.3, 1] }}
               />
             ))}
+
+            {/* Peak trend overlay */}
+            <svg
+              viewBox="0 0 100 100"
+              preserveAspectRatio="none"
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-0 h-full w-full"
+            >
+              {shouldReduce ? (
+                <path
+                  d="M 7 45 Q 14 30 21 30 T 36 52 T 50 15 T 64 38 T 79 10 T 93 22"
+                  fill="none"
+                  stroke="#E9C46A"
+                  strokeWidth={1.4}
+                  strokeOpacity={0.6}
+                  vectorEffect="non-scaling-stroke"
+                />
+              ) : (
+                <>
+                  {/* Faint base — helps the line read even before the
+                      draw-in animation fires. */}
+                  <path
+                    d="M 7 45 Q 14 30 21 30 T 36 52 T 50 15 T 64 38 T 79 10 T 93 22"
+                    fill="none"
+                    stroke="#E9C46A"
+                    strokeWidth={1}
+                    strokeOpacity={0.3}
+                    vectorEffect="non-scaling-stroke"
+                  />
+                  {/* Draw-in animation */}
+                  <DrawPath
+                    d="M 7 45 Q 14 30 21 30 T 36 52 T 50 15 T 64 38 T 79 10 T 93 22"
+                    color="#F4A261"
+                    width={1.6}
+                    duration={1.8}
+                    delay={0.5}
+                    opacity={0.9}
+                  />
+                  {/* Continuous flow dashes */}
+                  <FlowingLine
+                    d="M 7 45 Q 14 30 21 30 T 36 52 T 50 15 T 64 38 T 79 10 T 93 22"
+                    color="#FF8F5C"
+                    width={1.2}
+                    dash="2 4"
+                    speed={5}
+                    delay={2}
+                    opacity={0.7}
+                  />
+                  {/* Peak markers — small ember dots at each data point.
+                      Two rings each: outer ping expands + fades, inner
+                      dot stays steady so the eye can lock on. */}
+                  {[
+                    { cx: 7, cy: 45 },
+                    { cx: 21, cy: 30 },
+                    { cx: 36, cy: 52 },
+                    { cx: 50, cy: 15 },
+                    { cx: 64, cy: 38 },
+                    { cx: 79, cy: 10 },
+                    { cx: 93, cy: 22 },
+                  ].map((p, i) => (
+                    <PulseDot
+                      key={i}
+                      cx={p.cx}
+                      cy={p.cy}
+                      color={i === 5 ? '#FF6B35' : '#F4A261'}
+                      size={1.4}
+                      delay={2.2 + i * 0.12}
+                    />
+                  ))}
+                </>
+              )}
+            </svg>
           </div>
           <div className="mt-1 flex justify-between">
             {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((d, i) => (
@@ -90,45 +169,6 @@ export function AnalyticsDashboardMockup() {
             ))}
           </div>
         </div>
-
-        {/* Trend line — with animated flow overlay + leading dot */}
-        <svg viewBox="0 0 200 30" className="w-full" preserveAspectRatio="none" aria-hidden="true" style={{ height: 30 }}>
-          {shouldReduce ? (
-            <path d="M0 25 C30 22 50 18 80 15 C110 12 140 8 170 5 C185 3 195 4 200 3" fill="none" stroke="#E9C46A" strokeWidth="1.2" strokeOpacity="0.5" />
-          ) : (
-            <>
-              {/* Static base curve — subtle */}
-              <path
-                d="M0 25 C30 22 50 18 80 15 C110 12 140 8 170 5 C185 3 195 4 200 3"
-                fill="none"
-                stroke="#E9C46A"
-                strokeWidth={1}
-                strokeOpacity={0.25}
-              />
-              {/* Draw-in overlay on view */}
-              <DrawPath
-                d="M0 25 C30 22 50 18 80 15 C110 12 140 8 170 5 C185 3 195 4 200 3"
-                color="#F4A261"
-                width={1.4}
-                duration={1.8}
-                delay={0.4}
-                opacity={0.85}
-              />
-              {/* Continuous flow dash on top */}
-              <FlowingLine
-                d="M0 25 C30 22 50 18 80 15 C110 12 140 8 170 5 C185 3 195 4 200 3"
-                color="#FF8F5C"
-                width={1}
-                dash="2 4"
-                speed={5}
-                delay={2}
-                opacity={0.6}
-              />
-              {/* Leading pulse dot at the trend endpoint */}
-              <PulseDot cx={200} cy={3} color="#FF6B35" size={1.8} delay={2.2} />
-            </>
-          )}
-        </svg>
       </div>
     </motion.div>
   )
