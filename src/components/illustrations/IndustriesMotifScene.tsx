@@ -76,37 +76,57 @@ function Motif({ index, active }: { index: number; active: boolean }) {
         </path>
       </g>
     ),
-    // 1 — FINANCE bars with tick
+    // 1 — FINANCE bars anchored to a common baseline, growing upward.
+    // Each bar's y = baseline - height, so bars sit on a shared floor
+    // and get taller left-to-right (a proper ascending chart).
     1: (
       <g>
-        {[-30, -10, 10, 30].map((x, i) => (
-          <rect
-            key={i}
-            x={x - 5}
-            y={-4 - i * 3}
-            width="10"
-            height={20 + i * 12}
-            rx="1.5"
-            fill={color}
-            opacity={0.35 + i * 0.15}
-            style={{ filter: `drop-shadow(0 0 6px ${color}88)` }}
-          >
-            <animate
-              attributeName="height"
-              values={`${20 + i * 12}; ${12 + i * 12}; ${20 + i * 12}`}
-              dur={`${1.6 + i * 0.2}s`}
-              repeatCount="indefinite"
-            />
-          </rect>
-        ))}
+        {(() => {
+          const baseline = 28
+          return [-30, -10, 10, 30].map((x, i) => {
+            const h = 22 + i * 12
+            return (
+              <rect
+                key={i}
+                x={x - 5}
+                y={baseline - h}
+                width="10"
+                height={h}
+                rx="1.5"
+                fill={color}
+                opacity={0.4 + i * 0.15}
+                style={{ filter: `drop-shadow(0 0 6px ${color}88)` }}
+              >
+                <animate
+                  attributeName="height"
+                  values={`${h}; ${h - 8}; ${h}`}
+                  dur={`${1.6 + i * 0.2}s`}
+                  repeatCount="indefinite"
+                />
+                <animate
+                  attributeName="y"
+                  values={`${baseline - h}; ${baseline - (h - 8)}; ${baseline - h}`}
+                  dur={`${1.6 + i * 0.2}s`}
+                  repeatCount="indefinite"
+                />
+              </rect>
+            )
+          })
+        })()}
+        {/* Baseline line */}
+        <line x1="-42" y1="30" x2="42" y2="30" stroke={color} strokeWidth="0.8" opacity="0.4" />
+        {/* Ascending trend line — sits above the bar tops, moves up-right */}
         <path
-          d="M -46 20 L -22 -6 L 4 6 L 32 -18 L 46 -22"
+          d="M -40 6 L -20 -2 L 0 -10 L 20 -20 L 40 -30"
           stroke="rgba(255,240,220,0.9)"
-          strokeWidth="1.4"
+          strokeWidth="1.6"
           fill="none"
           strokeLinecap="round"
+          strokeLinejoin="round"
         />
-        <circle cx="32" cy="-18" r="3" fill={color} />
+        {/* Arrow head at the end pointing up-right */}
+        <path d="M 40 -30 L 34 -28 M 40 -30 L 38 -24" stroke="rgba(255,240,220,0.9)" strokeWidth="1.6" strokeLinecap="round" />
+        <circle cx="40" cy="-30" r="3" fill={color} style={{ filter: `drop-shadow(0 0 6px ${color})` }} />
       </g>
     ),
     // 2 — TECHNOLOGY node network
@@ -178,26 +198,50 @@ function Motif({ index, active }: { index: number; active: boolean }) {
         </circle>
       </g>
     ),
-    // 5 — PROFESSIONAL documents
+    // 5 — PROFESSIONAL documents fanned out like a card stack. Bigger
+    // offsets + rotation so each page reads as a distinct sheet rather
+    // than overlapping mush. Front doc gets the stamp.
     5: (
       <g>
         {[
-          { x: -12, y: -18, r: 4 },
-          { x: -4, y: -14, r: 2 },
-          { x: 4, y: -10, r: 0 },
+          { x: -22, y: 6, r: -14, o: 0.55 },
+          { x: -4, y: 0, r: -4, o: 0.75 },
+          { x: 14, y: -4, r: 8, o: 1 },
         ].map((d, i) => (
-          <g key={i} transform={`translate(${d.x} ${d.y}) rotate(${d.r})`}>
-            <rect x="-14" y="-18" width="28" height="36" rx="2" fill="rgba(20,15,11,0.85)" stroke={color} strokeWidth="0.9" opacity={0.85 - i * 0.18} />
-            {[-10, -4, 2, 8].map((y, ii) => (
-              <rect key={ii} x="-10" y={y} width={ii === 0 ? 16 : 20} height="1.4" fill={color} opacity="0.55" />
+          <g key={i} transform={`translate(${d.x} ${d.y}) rotate(${d.r})`} opacity={d.o}>
+            <rect
+              x="-14"
+              y="-20"
+              width="28"
+              height="38"
+              rx="2"
+              fill="rgba(20,15,11,0.9)"
+              stroke={color}
+              strokeWidth="1"
+            />
+            {/* doc header line — coloured */}
+            <rect x="-10" y="-15" width="14" height="2" rx="1" fill={color} opacity="0.9" />
+            {/* body lines */}
+            {[-9, -4, 1, 6, 11].map((y, ii) => (
+              <rect
+                key={ii}
+                x="-10"
+                y={y}
+                width={ii === 4 ? 14 : ii === 3 ? 20 : 18}
+                height="1.4"
+                fill={color}
+                opacity="0.55"
+              />
             ))}
           </g>
         ))}
-        {/* stamp */}
-        <circle cx="14" cy="-2" r="8" fill="none" stroke={color} strokeWidth="1.4" opacity="0.9">
-          <animate attributeName="opacity" values="0.4; 1; 0.4" dur="1.4s" repeatCount="indefinite" />
-        </circle>
-        <path d="M 10 -2 L 13 1 L 18 -5" stroke={color} strokeWidth="1.4" fill="none" strokeLinecap="round" />
+        {/* Stamp on the front doc — rotates gently */}
+        <g transform="translate(20 -18)">
+          <circle r="9" fill="none" stroke={color} strokeWidth="1.6" opacity="0.95">
+            <animate attributeName="opacity" values="0.55; 1; 0.55" dur="1.6s" repeatCount="indefinite" />
+          </circle>
+          <path d="M -4 0 L -1 3 L 5 -4" stroke={color} strokeWidth="1.6" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+        </g>
       </g>
     ),
     // 6 — PUBLIC SECTOR classical building

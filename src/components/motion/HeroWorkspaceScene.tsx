@@ -508,15 +508,17 @@ export function HeroWorkspaceScene() {
                 className="flowing-line"
                 style={{ animationDuration: '5s', animationDelay: `${h.delay}s` }}
               />
-              <circle r={3} fill={h.color} opacity={0}>
+              {/* cx/cy pinned to the path's source so the packet never
+                  renders at SVG (0,0) if the SMIL animation hasn't
+                  attached yet — that top-left corner flash was the
+                  "circles running wild" glitch. */}
+              <circle cx={h.a.x} cy={h.a.y} r={3} fill={h.color} opacity={0}>
                 <animateMotion
                   dur="4.2s"
                   repeatCount="indefinite"
                   begin={`-${h.delay}s`}
                   path={curvePath(h.a, h.b)}
                 />
-                {/* Fade in near source, fade out near target — hides the
-                    loop reset so the packet never "snaps back" visibly. */}
                 <animate
                   attributeName="opacity"
                   values="0; 0.95; 0.95; 0"

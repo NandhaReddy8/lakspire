@@ -165,15 +165,15 @@ export function SecurityShieldScene() {
         </g>
       </g>
 
-      {/* Bottom badge */}
-      <g transform={`translate(${VIEW.w / 2 - 60} ${VIEW.h - 44})`}>
-        <rect width="120" height="22" rx="11" fill="rgba(20,15,11,0.75)" stroke="rgba(233,196,106,0.5)" strokeWidth="0.7" />
-        <circle cx="12" cy="11" r="3.2" fill="#E9C46A">
+      {/* Bottom badge — capsule sized to comfortably contain the text */}
+      <g transform={`translate(${VIEW.w / 2 - 92} ${VIEW.h - 44})`}>
+        <rect width="184" height="24" rx="12" fill="rgba(20,15,11,0.78)" stroke="rgba(233,196,106,0.5)" strokeWidth="0.7" />
+        <circle cx="14" cy="12" r="3.2" fill="#E9C46A">
           <animate attributeName="opacity" values="1; 0.35; 1" dur="1.6s" repeatCount="indefinite" />
         </circle>
         <text
-          x="22"
-          y="15"
+          x="26"
+          y="16"
           fontSize="9.5"
           fill="rgba(250,245,238,0.85)"
           fontFamily="var(--font-mono)"

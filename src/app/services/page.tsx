@@ -1,9 +1,16 @@
 import Link from 'next/link'
-import { ArrowRight, Database, LineChart, BrainCog, Briefcase } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 import { PageHero } from '@/components/blocks/PageHero'
 import { SectionLabel } from '@/components/blocks/SectionLabel'
 import { ClayFrame } from '@/components/blocks/ClayFrame'
+import { TiltCard } from '@/components/blocks/TiltCard'
 import { ServicesPipelineScene } from '@/components/illustrations/ServicesPipelineScene'
+import {
+  DataServicesGlyph,
+  AnalyticsGlyph,
+  AIMLGlyph,
+  BusinessSupportGlyph,
+} from '@/components/icons/ServiceGlyphs'
 import { FadeIn } from '@/components/motion/FadeIn'
 import { StaggerGroup, StaggerItem } from '@/components/motion/StaggerGroup'
 
@@ -15,7 +22,7 @@ export const metadata = {
 
 const groups = [
   {
-    Icon: Database,
+    Glyph: DataServicesGlyph,
     slug: 'data-services',
     accent: '#FF6B35',
     label: 'Group 01',
@@ -33,7 +40,7 @@ const groups = [
     ],
   },
   {
-    Icon: LineChart,
+    Glyph: AnalyticsGlyph,
     slug: 'analytics-reporting',
     accent: '#F4A261',
     label: 'Group 02',
@@ -49,7 +56,7 @@ const groups = [
     ],
   },
   {
-    Icon: BrainCog,
+    Glyph: AIMLGlyph,
     slug: 'ai-ml-data',
     accent: '#FF8F5C',
     label: 'Group 03',
@@ -65,7 +72,7 @@ const groups = [
     ],
   },
   {
-    Icon: Briefcase,
+    Glyph: BusinessSupportGlyph,
     slug: 'business-support',
     accent: '#E9C46A',
     label: 'Group 04',
@@ -147,15 +154,15 @@ export default function ServicesPage() {
                 >
                   {/* Copy column */}
                   <FadeIn className={flip ? 'lg:order-2' : ''}>
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-4">
                       <span
-                        className="icon-plate inline-flex h-11 w-11 items-center justify-center rounded-xl"
+                        className="icon-plate inline-flex h-14 w-14 items-center justify-center rounded-xl"
                         style={{
                           color: g.accent,
                           ['--plate-accent' as string]: g.accent,
                         }}
                       >
-                        <g.Icon size={19} strokeWidth={1.5} />
+                        <g.Glyph size={30} />
                       </span>
                       <p
                         className="text-[11px] font-semibold uppercase"
@@ -193,25 +200,47 @@ export default function ServicesPage() {
                     </p>
                   </FadeIn>
 
-                  {/* List column */}
+                  {/* List column — each pill has a distinct dot-grow +
+                      slide hover, so item interaction reads different
+                      from the industry cards' 3D tilt. */}
                   <StaggerGroup
                     className={`grid grid-cols-1 gap-2 sm:grid-cols-2 ${flip ? 'lg:order-1' : ''}`}
                   >
                     {g.items.map((item) => (
                       <StaggerItem key={item}>
                         <div
-                          className="flex items-center gap-3 rounded-lg border px-4 py-3 transition-colors"
+                          className="group relative flex items-center gap-3 overflow-hidden rounded-lg border px-4 py-3 transition-all duration-300 hover:-translate-y-0.5 hover:border-white/[0.14]"
                           style={{
                             borderColor: 'var(--border-glass)',
                             background: 'var(--card-surface)',
                           }}
                         >
+                          {/* Hover sweep — accent gradient wipes across
+                              the pill from left, blend-screen. */}
                           <span
-                            className="h-1.5 w-1.5 shrink-0 rounded-full"
-                            style={{ background: g.accent, opacity: 0.7 }}
+                            aria-hidden="true"
+                            className="pointer-events-none absolute inset-0 origin-left scale-x-0 opacity-0 transition-transform duration-500 group-hover:scale-x-100 group-hover:opacity-100"
+                            style={{
+                              background: `linear-gradient(90deg, ${g.accent}22, transparent 70%)`,
+                              mixBlendMode: 'screen',
+                            }}
                           />
+                          {/* Dot with concentric ping on hover */}
+                          <span className="relative flex h-2 w-2 shrink-0 items-center justify-center">
+                            <span
+                              className="absolute inline-flex h-full w-full rounded-full opacity-70 transition-transform duration-500 group-hover:scale-[3] group-hover:opacity-0"
+                              style={{ background: g.accent }}
+                            />
+                            <span
+                              className="relative h-1.5 w-1.5 rounded-full"
+                              style={{
+                                background: g.accent,
+                                boxShadow: `0 0 8px ${g.accent}`,
+                              }}
+                            />
+                          </span>
                           <p
-                            className="text-[13.5px]"
+                            className="relative z-10 text-[13.5px] transition-transform duration-300 group-hover:translate-x-1"
                             style={{
                               fontFamily: 'var(--font-display)',
                               color: 'var(--text-strong)',

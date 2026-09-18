@@ -1,19 +1,19 @@
 import Link from 'next/link'
-import {
-  ArrowRight,
-  Heart,
-  LandmarkIcon,
-  Cpu,
-  ShoppingBag,
-  GraduationCap,
-  Scale,
-  Building2,
-  AlertCircle,
-} from 'lucide-react'
+import { ArrowRight, AlertCircle } from 'lucide-react'
 import { PageHero } from '@/components/blocks/PageHero'
 import { SectionLabel } from '@/components/blocks/SectionLabel'
 import { ClayFrame } from '@/components/blocks/ClayFrame'
+import { TiltCard } from '@/components/blocks/TiltCard'
 import { IndustriesMotifScene } from '@/components/illustrations/IndustriesMotifScene'
+import {
+  HealthcareGlyph,
+  FinanceGlyph,
+  TechnologyGlyph,
+  RetailGlyph,
+  EducationGlyph,
+  ProfessionalGlyph,
+  PublicSectorGlyph,
+} from '@/components/icons/IndustryGlyphs'
 import { FadeIn } from '@/components/motion/FadeIn'
 import { StaggerGroup, StaggerItem } from '@/components/motion/StaggerGroup'
 
@@ -25,43 +25,43 @@ export const metadata = {
 
 const industries = [
   {
-    Icon: Heart,
+    Glyph: HealthcareGlyph,
     accent: '#FF6B35',
     title: 'Healthcare & Life Sciences',
     body: 'Data processing, research support, information management and analytics — with a careful eye on sensitivity and consent.',
   },
   {
-    Icon: LandmarkIcon,
+    Glyph: FinanceGlyph,
     accent: '#F4A261',
     title: 'Financial Services',
     body: 'Data validation, processing, classification and reporting — where accuracy under audit matters more than speed.',
   },
   {
-    Icon: Cpu,
+    Glyph: TechnologyGlyph,
     accent: '#FF8F5C',
     title: 'Technology',
     body: 'AI training data, annotation, data processing and research support for teams shipping real ML products.',
   },
   {
-    Icon: ShoppingBag,
+    Glyph: RetailGlyph,
     accent: '#E9C46A',
     title: 'Retail & E-commerce',
     body: 'Product data, cataloguing, classification and data-quality work that keeps merchandising and search honest.',
   },
   {
-    Icon: GraduationCap,
+    Glyph: EducationGlyph,
     accent: '#FABD6C',
     title: 'Education',
     body: 'Research, data processing and information management for institutions and edtech providers.',
   },
   {
-    Icon: Scale,
+    Glyph: ProfessionalGlyph,
     accent: '#FF6B35',
     title: 'Professional Services',
     body: 'Research, reporting, document processing and business support — often confidential, always structured.',
   },
   {
-    Icon: Building2,
+    Glyph: PublicSectorGlyph,
     accent: '#F4A261',
     title: 'Public Sector',
     body: 'Data processing, information management and administrative support with the discipline that public work requires.',
@@ -126,8 +126,8 @@ export default function IndustriesPage() {
           <StaggerGroup className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
             {industries.map((ind, i) => (
               <StaggerItem key={ind.title}>
-                <div
-                  className={`group relative flex h-full flex-col overflow-hidden rounded-2xl border p-7 transition-colors ${
+                <TiltCard
+                  className={`group relative flex h-full flex-col overflow-hidden rounded-2xl border p-7 ${
                     i === industries.length - 1 && industries.length % 3 === 1
                       ? 'lg:col-span-3'
                       : ''
@@ -135,7 +135,10 @@ export default function IndustriesPage() {
                   style={{
                     borderColor: 'var(--border-glass)',
                     background: 'var(--card-surface)',
+                    boxShadow: `0 18px 46px -22px ${ind.accent}55, inset 0 1px 0 0 var(--highlight-top)`,
                   }}
+                  maxTilt={5}
+                  lift={5}
                 >
                   <span
                     aria-hidden="true"
@@ -145,31 +148,33 @@ export default function IndustriesPage() {
                     }}
                   />
                   <span
-                    className="icon-plate mb-5 inline-flex h-11 w-11 items-center justify-center rounded-xl"
+                    className="icon-plate relative z-10 mb-6 inline-flex h-14 w-14 items-center justify-center rounded-xl"
                     style={{
                       color: ind.accent,
                       ['--plate-accent' as string]: ind.accent,
+                      transform: 'translateZ(20px)',
                     }}
                   >
-                    <ind.Icon size={18} strokeWidth={1.5} />
+                    <ind.Glyph size={28} />
                   </span>
                   <p
-                    className="mb-3 text-[15.5px] font-medium"
+                    className="relative z-10 mb-3 text-[15.5px] font-medium"
                     style={{
                       fontFamily: 'var(--font-display)',
                       color: 'var(--text-strong)',
                       letterSpacing: '-0.01em',
+                      transform: 'translateZ(14px)',
                     }}
                   >
                     {ind.title}
                   </p>
                   <p
-                    className="text-[13.5px] leading-relaxed"
+                    className="relative z-10 text-[13.5px] leading-relaxed"
                     style={{ fontFamily: 'var(--font-body)', color: 'var(--text-muted)' }}
                   >
                     {ind.body}
                   </p>
-                </div>
+                </TiltCard>
               </StaggerItem>
             ))}
           </StaggerGroup>

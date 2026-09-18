@@ -189,14 +189,15 @@ export function HeroAnnotationField() {
                   strokeWidth={0.5}
                   opacity={0.15}
                 />
-                <circle r={row.size} fill={row.color} opacity={0}>
+                {/* cx/cy pinned so a pre-animation render never shows
+                    the circle at SVG (0,0). */}
+                <circle cx={-30} cy={y} r={row.size} fill={row.color} opacity={0}>
                   <animateMotion
                     dur={`${row.duration}s`}
                     repeatCount="indefinite"
                     begin={`-${row.offset}s`}
                     path={`M -30 ${y} L ${VIEW.w + 30} ${y}`}
                   />
-                  {/* Fade at the ends so the reset snap-back is invisible */}
                   <animate
                     attributeName="opacity"
                     values="0; 0.65; 0.65; 0"

@@ -1,7 +1,18 @@
 import { PageHero } from '@/components/blocks/PageHero'
 import { SectionLabel } from '@/components/blocks/SectionLabel'
 import { ClayFrame } from '@/components/blocks/ClayFrame'
+import { ValueCard } from '@/components/blocks/ValueCard'
 import { AboutTeamScene } from '@/components/illustrations/AboutTeamScene'
+import {
+  MissionGlyph,
+  VisionGlyph,
+  AccuracyGlyph,
+  IntegrityGlyph,
+  SecurityGlyph,
+  CollaborationGlyph,
+  AdaptabilityGlyph,
+  ImprovementGlyph,
+} from '@/components/icons/ValueGlyphs'
 import { FadeIn } from '@/components/motion/FadeIn'
 import { StaggerGroup, StaggerItem } from '@/components/motion/StaggerGroup'
 import Link from 'next/link'
@@ -14,12 +25,42 @@ export const metadata = {
 }
 
 const values = [
-  { name: 'Accuracy', body: 'Reliable, structured, quality-controlled data — every deliverable.' },
-  { name: 'Integrity', body: 'What we claim, we can prove. What we can\'t, we don\'t claim.' },
-  { name: 'Security', body: 'Client information is handled with appropriate confidentiality practices.' },
-  { name: 'Collaboration', body: 'We work as an extension of your team, not a black-box vendor.' },
-  { name: 'Adaptability', body: 'Workflows shaped to your requirements — not forced into ours.' },
-  { name: 'Continuous Improvement', body: 'Feedback and outcomes feed back into the next engagement.' },
+  {
+    name: 'Accuracy',
+    body: 'Reliable, structured, quality-controlled data — every deliverable.',
+    accent: '#FF6B35',
+    icon: <AccuracyGlyph />,
+  },
+  {
+    name: 'Integrity',
+    body: "What we claim, we can prove. What we can't, we don't claim.",
+    accent: '#F4A261',
+    icon: <IntegrityGlyph />,
+  },
+  {
+    name: 'Security',
+    body: 'Client information is handled with appropriate confidentiality practices.',
+    accent: '#FF8F5C',
+    icon: <SecurityGlyph />,
+  },
+  {
+    name: 'Collaboration',
+    body: 'We work as an extension of your team, not a black-box vendor.',
+    accent: '#E9C46A',
+    icon: <CollaborationGlyph />,
+  },
+  {
+    name: 'Adaptability',
+    body: 'Workflows shaped to your requirements — not forced into ours.',
+    accent: '#FABD6C',
+    icon: <AdaptabilityGlyph />,
+  },
+  {
+    name: 'Continuous Improvement',
+    body: 'Feedback and outcomes feed back into the next engagement.',
+    accent: '#FF6B35',
+    icon: <ImprovementGlyph />,
+  },
 ]
 
 export default function AboutPage() {
@@ -89,7 +130,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Mission + Vision */}
+      {/* Mission + Vision — full-height left accent + icon plate */}
       <section className="py-section border-t border-white/[0.05]" data-scroll-anchor="mission">
         <div className="mx-auto max-w-container container-pad">
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:gap-8">
@@ -99,6 +140,7 @@ export default function AboutPage() {
                 title: 'Help organisations make better use of their data.',
                 body: 'By combining reliable data services, technology and human expertise — matched to the outcome the client actually needs.',
                 accent: '#FF6B35',
+                icon: <MissionGlyph size={22} />,
               },
               {
                 label: 'Vision',
@@ -106,53 +148,72 @@ export default function AboutPage() {
                   'A trusted global partner for data, analytics and AI-enabled business solutions.',
                 body: 'Working with organisations across markets and industries, delivering work that stands up to scrutiny.',
                 accent: '#E9C46A',
+                icon: <VisionGlyph size={22} />,
               },
             ].map((card, i) => (
               <FadeIn key={card.label} delay={i * 0.1}>
                 <div
-                  className="relative flex h-full flex-col rounded-2xl border p-8 md:p-10"
+                  className="relative flex h-full overflow-hidden rounded-2xl border"
                   style={{
                     borderColor: 'var(--border-glass)',
                     background: 'var(--card-surface)',
                     boxShadow: `0 22px 60px -22px ${card.accent}44, inset 0 1px 0 0 var(--highlight-top)`,
                   }}
                 >
+                  {/* Full-height left accent strip — reads clearly and
+                      lands the ember colour on the card without the
+                      awkward top-corner nib the older design had. */}
                   <span
                     aria-hidden="true"
-                    className="absolute left-0 top-0 h-px w-1/3"
+                    className="absolute left-0 top-0 bottom-0 w-[3px]"
                     style={{
-                      background: `linear-gradient(90deg, ${card.accent}, ${card.accent}00)`,
+                      background: `linear-gradient(180deg, ${card.accent} 0%, ${card.accent}CC 60%, ${card.accent}22 100%)`,
                     }}
                   />
-                  <p
-                    className="mb-4 text-[11px] font-semibold uppercase"
-                    style={{
-                      letterSpacing: '0.16em',
-                      fontFamily: 'var(--font-body)',
-                      color: card.accent,
-                    }}
-                  >
-                    {card.label}
-                  </p>
-                  <h3
-                    className="mb-4"
-                    style={{
-                      fontFamily: 'var(--font-display)',
-                      fontSize: 'clamp(1.4rem, 1.1rem + 1vw, 1.85rem)',
-                      fontWeight: 400,
-                      lineHeight: 1.15,
-                      letterSpacing: '-0.02em',
-                      color: 'var(--text-strong)',
-                    }}
-                  >
-                    {card.title}
-                  </h3>
-                  <p
-                    className="text-[14.5px] leading-relaxed"
-                    style={{ fontFamily: 'var(--font-body)', color: 'var(--text-muted)' }}
-                  >
-                    {card.body}
-                  </p>
+
+                  <div className="flex flex-col p-8 md:p-10 pl-10 md:pl-12">
+                    <div className="mb-6 flex items-center gap-4">
+                      <span
+                        className="icon-plate inline-flex h-12 w-12 items-center justify-center rounded-xl"
+                        style={{
+                          color: card.accent,
+                          ['--plate-accent' as string]: card.accent,
+                        }}
+                      >
+                        {card.icon}
+                      </span>
+                      <p
+                        className="text-[11px] font-semibold uppercase"
+                        style={{
+                          letterSpacing: '0.16em',
+                          fontFamily: 'var(--font-body)',
+                          color: card.accent,
+                        }}
+                      >
+                        {card.label}
+                      </p>
+                    </div>
+
+                    <h3
+                      className="mb-4"
+                      style={{
+                        fontFamily: 'var(--font-display)',
+                        fontSize: 'clamp(1.4rem, 1.1rem + 1vw, 1.85rem)',
+                        fontWeight: 400,
+                        lineHeight: 1.15,
+                        letterSpacing: '-0.02em',
+                        color: 'var(--text-strong)',
+                      }}
+                    >
+                      {card.title}
+                    </h3>
+                    <p
+                      className="text-[14.5px] leading-relaxed"
+                      style={{ fontFamily: 'var(--font-body)', color: 'var(--text-muted)' }}
+                    >
+                      {card.body}
+                    </p>
+                  </div>
                 </div>
               </FadeIn>
             ))}
@@ -160,7 +221,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Values */}
+      {/* Values — six ValueCards with reveal-sweep hover animation */}
       <section className="py-section border-t border-white/[0.05]" data-scroll-anchor="values">
         <div className="mx-auto max-w-container container-pad">
           <FadeIn>
@@ -179,39 +240,10 @@ export default function AboutPage() {
               Six things that show up in every engagement.
             </h2>
           </FadeIn>
-          <StaggerGroup className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {values.map((v, i) => (
+          <StaggerGroup className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {values.map((v) => (
               <StaggerItem key={v.name}>
-                <div
-                  className="flex h-full items-start gap-3 rounded-xl border p-5 transition-colors"
-                  style={{
-                    borderColor: 'var(--border-glass)',
-                    background: 'var(--card-surface)',
-                  }}
-                >
-                  <span
-                    className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full"
-                    style={{ background: i % 2 === 0 ? '#FF6B35' : '#E9C46A', opacity: 0.75 }}
-                  />
-                  <div>
-                    <p
-                      className="mb-1 text-[14px] font-medium"
-                      style={{
-                        fontFamily: 'var(--font-display)',
-                        color: 'var(--text-strong)',
-                        letterSpacing: '-0.01em',
-                      }}
-                    >
-                      {v.name}
-                    </p>
-                    <p
-                      className="text-[13px] leading-relaxed"
-                      style={{ fontFamily: 'var(--font-body)', color: 'var(--text-muted)' }}
-                    >
-                      {v.body}
-                    </p>
-                  </div>
-                </div>
+                <ValueCard name={v.name} body={v.body} accent={v.accent} icon={v.icon} />
               </StaggerItem>
             ))}
           </StaggerGroup>
