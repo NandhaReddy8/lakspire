@@ -1,0 +1,286 @@
+import Link from 'next/link'
+import {
+  ArrowRight,
+  Lock,
+  KeyRound,
+  ShieldCheck,
+  FileCheck,
+  Clipboard,
+  Trash2,
+  Scale,
+  Handshake,
+  AlertCircle,
+} from 'lucide-react'
+import { PageHero } from '@/components/blocks/PageHero'
+import { SectionLabel } from '@/components/blocks/SectionLabel'
+import { ClayFrame } from '@/components/blocks/ClayFrame'
+import { SecurityShieldScene } from '@/components/illustrations/SecurityShieldScene'
+import { FadeIn } from '@/components/motion/FadeIn'
+import { StaggerGroup, StaggerItem } from '@/components/motion/StaggerGroup'
+
+export const metadata = {
+  title: 'Security & Data Protection — Lakspire',
+  description:
+    'How Lakspire approaches data confidentiality, access controls, secure transfer, quality assurance, retention and client confidentiality — matched to actual technical controls, not marketing claims.',
+}
+
+const practices = [
+  {
+    Icon: Lock,
+    accent: '#FF6B35',
+    title: 'Data confidentiality',
+    body: 'Client information is treated as confidential by default. NDAs are welcomed, expected and honoured.',
+  },
+  {
+    Icon: KeyRound,
+    accent: '#F4A261',
+    title: 'Role-based access controls',
+    body: 'Access to client datasets is restricted to the team assigned to the engagement, on a need-to-know basis.',
+  },
+  {
+    Icon: ShieldCheck,
+    accent: '#FF8F5C',
+    title: 'Secure data transfer',
+    body: 'Data is transferred over encrypted channels using client-approved mechanisms. No unencrypted transit.',
+  },
+  {
+    Icon: FileCheck,
+    accent: '#E9C46A',
+    title: 'Data handling procedures',
+    body: 'Documented processes for how data is stored, accessed, processed and reviewed during an engagement.',
+  },
+  {
+    Icon: Clipboard,
+    accent: '#FABD6C',
+    title: 'Quality assurance & review',
+    body: 'Layered quality checks — including human review where accuracy or context matters — before delivery.',
+  },
+  {
+    Icon: Trash2,
+    accent: '#FF6B35',
+    title: 'Retention & deletion',
+    body: 'Data is retained only as long as the engagement requires, then securely deleted per the agreed schedule.',
+  },
+  {
+    Icon: Scale,
+    accent: '#F4A261',
+    title: 'Applicable data protection',
+    body: 'We aim to align with the data-protection requirements relevant to your jurisdiction and use case.',
+  },
+  {
+    Icon: Handshake,
+    accent: '#FF8F5C',
+    title: 'Client confidentiality',
+    body: 'What we work on, and for whom, stays private unless the client agrees to have it referenced publicly.',
+  },
+]
+
+export default function SecurityPage() {
+  return (
+    <>
+      <PageHero
+        eyebrow="Security & Data Protection"
+        title={
+          <>
+            <span className="text-gradient-primary">
+              Responsible data handling <span className="editorial">is central to trust</span>.
+            </span>
+          </>
+        }
+        subtitle="Our processes are designed around appropriate confidentiality, access control, secure transfer, quality assurance and data-handling practices — matched to what our controls actually deliver."
+      />
+
+      {/* Shield illustration + intro */}
+      <section className="py-section border-t border-white/[0.05]" data-scroll-anchor="shield">
+        <div className="mx-auto max-w-container container-pad">
+          <FadeIn>
+            <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-16">
+              <ClayFrame variant="drop">
+                <SecurityShieldScene />
+              </ClayFrame>
+              <div>
+                <SectionLabel className="mb-4">Always on</SectionLabel>
+                <h2
+                  className="mb-5"
+                  style={{
+                    fontFamily: 'var(--font-display)',
+                    fontSize: 'clamp(1.75rem, 1.35rem + 1.8vw, 2.5rem)',
+                    fontWeight: 350,
+                    lineHeight: 1.12,
+                    letterSpacing: '-0.03em',
+                    color: 'var(--text-strong)',
+                  }}
+                >
+                  Encryption at rest and in transit — every engagement.
+                </h2>
+                <p
+                  className="max-w-md text-[15px] leading-relaxed"
+                  style={{ fontFamily: 'var(--font-body)', color: 'var(--text-muted)' }}
+                >
+                  We take confidentiality as a starting position, not an add-on. What&apos;s below
+                  is what we do consistently — nothing certified we don&apos;t hold, nothing claimed
+                  we can&apos;t evidence.
+                </p>
+              </div>
+            </div>
+          </FadeIn>
+        </div>
+      </section>
+
+      {/* Practices grid */}
+      <section className="py-section border-t border-white/[0.05]" data-scroll-anchor="practices">
+        <div className="mx-auto max-w-container container-pad">
+          <FadeIn>
+            <SectionLabel className="mb-4">How we handle client data</SectionLabel>
+            <h2
+              className="mb-12 max-w-3xl"
+              style={{
+                fontFamily: 'var(--font-display)',
+                fontSize: 'clamp(1.75rem, 1.35rem + 1.8vw, 2.5rem)',
+                fontWeight: 350,
+                lineHeight: 1.12,
+                letterSpacing: '-0.03em',
+                color: 'var(--text-strong)',
+              }}
+            >
+              Eight practices that shape every engagement.
+            </h2>
+          </FadeIn>
+          <StaggerGroup className="grid grid-cols-1 gap-5 md:grid-cols-2">
+            {practices.map((p) => (
+              <StaggerItem key={p.title}>
+                <div
+                  className="group flex h-full items-start gap-4 rounded-2xl border p-6 transition-colors"
+                  style={{
+                    borderColor: 'var(--border-glass)',
+                    background: 'var(--card-surface)',
+                  }}
+                >
+                  <span
+                    className="icon-plate mt-0.5 inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl"
+                    style={{
+                      color: p.accent,
+                      ['--plate-accent' as string]: p.accent,
+                    }}
+                  >
+                    <p.Icon size={18} strokeWidth={1.5} />
+                  </span>
+                  <div>
+                    <p
+                      className="mb-1.5 text-[15px] font-medium"
+                      style={{
+                        fontFamily: 'var(--font-display)',
+                        color: 'var(--text-strong)',
+                        letterSpacing: '-0.01em',
+                      }}
+                    >
+                      {p.title}
+                    </p>
+                    <p
+                      className="text-[13.5px] leading-relaxed"
+                      style={{ fontFamily: 'var(--font-body)', color: 'var(--text-muted)' }}
+                    >
+                      {p.body}
+                    </p>
+                  </div>
+                </div>
+              </StaggerItem>
+            ))}
+          </StaggerGroup>
+        </div>
+      </section>
+
+      {/* Compliance honesty note */}
+      <section className="py-section border-t border-white/[0.05]" data-scroll-anchor="scope">
+        <div className="mx-auto max-w-container container-pad">
+          <FadeIn>
+            <div
+              className="flex flex-col items-start gap-4 rounded-2xl border p-6 md:flex-row md:items-start md:gap-6 md:p-8"
+              style={{
+                borderColor: 'var(--border-glass)',
+                background: 'var(--card-surface)',
+              }}
+            >
+              <span
+                className="icon-plate inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl"
+                style={{
+                  color: '#E9C46A',
+                  ['--plate-accent' as string]: '#E9C46A',
+                }}
+              >
+                <AlertCircle size={18} strokeWidth={1.5} />
+              </span>
+              <div>
+                <p
+                  className="mb-2 text-[15px] font-medium"
+                  style={{
+                    fontFamily: 'var(--font-display)',
+                    color: 'var(--text-strong)',
+                    letterSpacing: '-0.01em',
+                  }}
+                >
+                  What we don&apos;t claim.
+                </p>
+                <p
+                  className="text-[13.5px] leading-relaxed"
+                  style={{ fontFamily: 'var(--font-body)', color: 'var(--text-muted)' }}
+                >
+                  We deliberately don&apos;t claim certifications we don&apos;t hold. If your
+                  engagement requires ISO, SOC 2 or another specific certification, tell us up front
+                  — we&apos;ll be plain about what we do and don&apos;t currently carry, and how we
+                  can support your compliance requirements alongside the parts we do own.
+                </p>
+              </div>
+            </div>
+          </FadeIn>
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className="py-section border-t border-white/[0.05]" data-scroll-anchor="cta">
+        <div className="mx-auto max-w-container container-pad">
+          <FadeIn>
+            <div
+              className="flex flex-col items-start justify-between gap-6 rounded-3xl border p-8 md:flex-row md:items-center md:p-12"
+              style={{
+                borderColor: 'var(--border-glass)',
+                background:
+                  'linear-gradient(150deg, rgba(255,107,53,0.10) 0%, rgba(233,196,106,0.05) 55%, rgba(20,16,13,0.4) 100%)',
+              }}
+            >
+              <h3
+                className="max-w-xl"
+                style={{
+                  fontFamily: 'var(--font-display)',
+                  fontSize: 'clamp(1.4rem, 1.1rem + 1vw, 1.85rem)',
+                  fontWeight: 400,
+                  lineHeight: 1.18,
+                  letterSpacing: '-0.02em',
+                  color: 'var(--text-strong)',
+                }}
+              >
+                Have specific security or compliance requirements?
+              </h3>
+              <Link
+                href="/contact"
+                className="group inline-flex shrink-0 items-center gap-2 rounded-lg px-6 py-3 text-[14px] font-medium text-white transition-all duration-200 active:scale-[0.98]"
+                style={{
+                  fontFamily: 'var(--font-body)',
+                  background: 'linear-gradient(135deg, #FF6B35 0%, #FF8F5C 100%)',
+                  boxShadow:
+                    '0 0 0 1px rgba(255,107,53,0.35), 0 12px 32px -8px rgba(255,107,53,0.5)',
+                }}
+              >
+                Tell us what you need
+                <ArrowRight
+                  size={14}
+                  className="transition-transform duration-200 group-hover:translate-x-0.5"
+                />
+              </Link>
+            </div>
+          </FadeIn>
+        </div>
+      </section>
+    </>
+  )
+}

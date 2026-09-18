@@ -1,0 +1,1015 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* ─────────────────────────────────────────────────────────
+     Warm dark palette — Ember (orange primary, amber highlights)
+     ───────────────────────────────────────────────────────── */
+
+  /* Neutrals — warm-tinted, never cool blue */
+  --color-ink-950: 10 9 8;         /* #0A0908 base bg */
+  --color-ink-900: 20 16 13;       /* #14100D elevated */
+  --color-ink-800: 28 23 19;       /* #1C1713 card */
+  --color-ink-700: 40 33 28;       /* #28211C border-strong */
+  --color-ink-600: 60 50 42;       /* #3C322A */
+
+  /* Warm off-whites */
+  --color-cream-50: 250 245 238;   /* #FAF5EE primary text */
+  --color-cream-100: 245 240 235;  /* #F5F0EB */
+  --color-cream-200: 232 224 214;  /* #E8E0D6 */
+
+  /* Ember accent (orange primary) */
+  --color-ember-400: 255 143 92;   /* #FF8F5C light */
+  --color-ember-500: 255 107 53;   /* #FF6B35 primary */
+  --color-ember-600: 224 82 32;    /* #E05220 deep */
+
+  /* Amber warm secondary */
+  --color-amber-400: 250 189 108;  /* #FABD6C light */
+  --color-amber-500: 244 162 97;   /* #F4A261 primary */
+
+  /* Gold (used sparingly, replaces old teal for eyebrow/data highlights) */
+  --color-gold-500: 233 196 106;   /* #E9C46A */
+
+  /* Semantic tokens */
+  --color-bg: var(--color-ink-950);
+  --color-surface: var(--color-ink-900);
+  --color-surface-2: var(--color-ink-800);
+  --color-border: 245 240 235;     /* used with alpha */
+  --color-accent: var(--color-ember-500);
+  --color-accent-light: var(--color-ember-400);
+  --color-warm: var(--color-amber-500);
+  --color-gold: var(--color-gold-500);
+  --color-text-primary: var(--color-cream-50);
+  --color-text-secondary: 245 240 235;
+  --color-text-muted: 245 240 235;
+
+  /* Typography */
+  --tracking-tight: -0.03em;
+  --tracking-snug: -0.02em;
+  --tracking-wide: 0.08em;
+  --tracking-wider: 0.12em;
+
+  /* Animation */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-swift: cubic-bezier(0.32, 0.72, 0, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* Cursor spotlight position (updated by CursorSpotlight component) */
+  --cursor-x: 50vw;
+  --cursor-y: 50vh;
+
+  /* Theme-aware surface + text tokens — Dark is the default. Individual
+     components may still use hardcoded colors; these variables are the
+     baseline that the light theme swaps out. */
+  --bg-page: #0A0908;
+  --bg-page-gradient:
+    radial-gradient(ellipse 70% 50% at 15% 0%, rgba(255, 107, 53, 0.10) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 40% at 85% 10%, rgba(244, 162, 97, 0.06) 0%, transparent 50%),
+    #0A0908;
+  --bg-panel: rgba(20, 16, 13, 0.70);
+  --bg-panel-strong: rgba(20, 16, 13, 0.92);
+  --border-glass: rgba(255, 240, 220, 0.08);
+  --border-glass-strong: rgba(255, 240, 220, 0.14);
+  --text-strong: rgba(250, 245, 238, 0.95);
+  --text-body: rgba(250, 245, 238, 0.72);
+  --text-muted: rgba(250, 245, 238, 0.45);
+  --highlight-top: rgba(255, 240, 220, 0.25);
+  --shadow-elev: 0 10px 40px -10px rgba(0, 0, 0, 0.6),
+                 inset 0 1px 0 0 rgba(255, 240, 220, 0.06);
+}
+
+/* ─────────────────────────────────────────────────────────
+   Light theme — warm cream + ember accents. Same ember/amber
+   palette works on both themes so accents remain consistent.
+   ───────────────────────────────────────────────────────── */
+[data-theme='light'] {
+  --bg-page: #FBF6EF;
+  --bg-page-gradient:
+    radial-gradient(ellipse 70% 50% at 15% 0%, rgba(255, 143, 92, 0.14) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 40% at 85% 10%, rgba(233, 196, 106, 0.10) 0%, transparent 50%),
+    radial-gradient(ellipse 60% 40% at 50% 100%, rgba(255, 189, 132, 0.10) 0%, transparent 55%),
+    #FBF6EF;
+  --bg-panel: rgba(255, 251, 244, 0.75);
+  --bg-panel-strong: rgba(255, 253, 248, 0.95);
+  --card-surface: rgba(255, 251, 244, 0.85);
+  --card-surface-2: rgba(252, 247, 239, 0.92);
+  --border-glass: rgba(38, 26, 18, 0.10);
+  --border-glass-strong: rgba(38, 26, 18, 0.18);
+  --text-strong: rgba(26, 19, 14, 0.95);
+  --text-body: rgba(38, 26, 18, 0.72);
+  --text-muted: rgba(38, 26, 18, 0.48);
+  --text-faint: rgba(38, 26, 18, 0.32);
+  --highlight-top: rgba(255, 143, 92, 0.35);
+  --shadow-elev: 0 10px 40px -14px rgba(120, 60, 20, 0.22),
+                 inset 0 1px 0 0 rgba(255, 255, 255, 0.9);
+  --rail-track: rgba(38, 26, 18, 0.12);
+  --overlay-scrim: rgba(255, 253, 248, 0.55);
+}
+
+/* Dark theme (default) — same values as :root, scoped so they don't
+   override the [data-theme='light'] block above. This is required
+   because CSS custom property cascade is order-dependent when
+   specificity is equal. */
+html:not([data-theme='light']) {
+  --card-surface: rgba(28, 23, 19, 0.72);
+  --card-surface-2: rgba(20, 16, 13, 0.88);
+  --text-faint: rgba(250, 245, 238, 0.28);
+  --rail-track: rgba(255, 240, 220, 0.08);
+  --overlay-scrim: rgba(10, 9, 8, 0.55);
+}
+
+/* ─────────────────────────────────────────────────────────
+   Theme-aware SHIM — swaps the most common hardcoded Tailwind
+   utility classes to warm-dark equivalents in light mode. This
+   lets existing dark-themed components read correctly on light
+   backgrounds without touching every file. Inline `style={{}}`
+   colors still need per-component fixes.
+   ───────────────────────────────────────────────────────── */
+[data-theme='light'] .text-white\/95,
+[data-theme='light'] .text-white\/90,
+[data-theme='light'] .text-white\/85 {
+  color: var(--text-strong);
+}
+[data-theme='light'] .text-white\/80,
+[data-theme='light'] .text-white\/75,
+[data-theme='light'] .text-white\/70,
+[data-theme='light'] .text-white\/65,
+[data-theme='light'] .text-white\/60,
+[data-theme='light'] .text-white\/55 {
+  color: var(--text-body);
+}
+[data-theme='light'] .text-white\/50,
+[data-theme='light'] .text-white\/45,
+[data-theme='light'] .text-white\/40,
+[data-theme='light'] .text-white\/35 {
+  color: var(--text-muted);
+}
+[data-theme='light'] .text-white\/48,
+[data-theme='light'] .text-white\/32,
+[data-theme='light'] .text-white\/30,
+[data-theme='light'] .text-white\/28,
+[data-theme='light'] .text-white\/25,
+[data-theme='light'] .text-white\/20,
+[data-theme='light'] .text-white\/15,
+[data-theme='light'] .text-white\/\[0\.12\] {
+  color: var(--text-faint);
+}
+[data-theme='light'] .text-white\/65 { color: var(--text-body); }
+
+/* Border shims — semi-transparent whites become warm ink alphas */
+[data-theme='light'] .border-white\/\[0\.05\],
+[data-theme='light'] .border-white\/\[0\.06\],
+[data-theme='light'] .border-white\/\[0\.08\] {
+  border-color: var(--border-glass);
+}
+[data-theme='light'] .border-white\/\[0\.10\],
+[data-theme='light'] .border-white\/\[0\.12\],
+[data-theme='light'] .border-white\/\[0\.14\] {
+  border-color: var(--border-glass-strong);
+}
+[data-theme='light'] .divide-white\/\[0\.05\] > :not([hidden]) ~ :not([hidden]) {
+  border-color: var(--border-glass);
+}
+
+/* Subtle white washes → warm ink tints */
+[data-theme='light'] .bg-white\/\[0\.02\],
+[data-theme='light'] .bg-white\/\[0\.03\] {
+  background-color: rgba(38, 26, 18, 0.025);
+}
+[data-theme='light'] .bg-white\/\[0\.04\],
+[data-theme='light'] .bg-white\/\[0\.05\],
+[data-theme='light'] .bg-white\/\[0\.06\] {
+  background-color: rgba(38, 26, 18, 0.045);
+}
+
+/* Hover surface swaps */
+[data-theme='light'] .hover\:bg-white\/\[0\.02\]:hover,
+[data-theme='light'] .hover\:bg-white\/\[0\.03\]:hover,
+[data-theme='light'] .hover\:bg-white\/\[0\.05\]:hover {
+  background-color: rgba(38, 26, 18, 0.04);
+}
+
+/* Card backgrounds — the site frequently uses #14100D as elevated
+   dark surface. Retarget to the warm cream card in light mode. */
+[data-theme='light'] .bg-\[\#14100D\],
+[data-theme='light'] .bg-\[\#14100D\]\/60,
+[data-theme='light'] .bg-\[\#14100D\]\/70,
+[data-theme='light'] .bg-\[\#14100D\]\/80 {
+  background-color: var(--card-surface);
+}
+[data-theme='light'] .bg-\[\#14100D\]\/85,
+[data-theme='light'] .bg-\[\#14100D\]\/90,
+[data-theme='light'] .bg-\[\#14100D\]\/92,
+[data-theme='light'] .bg-\[\#14100D\]\/95 {
+  background-color: var(--card-surface-2);
+}
+[data-theme='light'] .bg-\[\#1C1713\],
+[data-theme='light'] .bg-\[\#0A0908\] {
+  background-color: var(--card-surface);
+}
+[data-theme='light'] .bg-\[\#0A0908\]\/95 {
+  background-color: rgba(251, 246, 239, 0.96);
+}
+[data-theme='light'] .bg-\[\#050403\] {
+  background-color: #F3EBDE;
+}
+[data-theme='light'] .bg-white\/\[0\.07\],
+[data-theme='light'] .bg-white\/\[0\.08\] {
+  background-color: rgba(38, 26, 18, 0.05);
+}
+
+/* SVG neutral color shims — catches off-white strokes/fills in the
+   illustrations (all use rgba(250,245,238,X) or rgba(255,240,220,X))
+   and flips them to warm-dark ink in light theme so lines and text
+   remain readable on cream backgrounds. Ember/gold/amber colors are
+   NOT touched — they render well on both themes. */
+[data-theme='light'] svg [stroke^="rgba(255,240,220"],
+[data-theme='light'] svg [stroke^="rgba(255, 240, 220"] {
+  stroke: rgba(38, 26, 18, 0.18);
+}
+[data-theme='light'] svg [stroke^="rgba(250,245,238"],
+[data-theme='light'] svg [stroke^="rgba(250, 245, 238"] {
+  stroke: rgba(38, 26, 18, 0.45);
+}
+[data-theme='light'] svg [fill^="rgba(250,245,238"],
+[data-theme='light'] svg [fill^="rgba(250, 245, 238"] {
+  fill: rgba(38, 26, 18, 0.72);
+}
+[data-theme='light'] svg [fill^="rgba(255,240,220"],
+[data-theme='light'] svg [fill^="rgba(255, 240, 220"] {
+  fill: rgba(38, 26, 18, 0.32);
+}
+
+/* Named theme-swap utilities — components can opt-in with a class
+   when they need a specific dark surface to become a light one that
+   isn't covered by the shims above. */
+.themed-scrim-bottom {
+  background: linear-gradient(to bottom, transparent 0%, rgba(10, 9, 8, 0.6) 60%, #0A0908 100%);
+}
+[data-theme='light'] .themed-scrim-bottom {
+  background: linear-gradient(to bottom, transparent 0%, rgba(251, 246, 239, 0.55) 60%, #FBF6EF 100%);
+}
+.themed-stat-gradient {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.9) 0%, rgba(244, 162, 97, 0.8) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+[data-theme='light'] .themed-stat-gradient {
+  background: linear-gradient(180deg, rgba(26, 19, 14, 0.95) 0%, rgba(224, 82, 32, 0.9) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.themed-card-gradient {
+  background: linear-gradient(160deg, rgba(28, 23, 19, 0.92) 0%, rgba(20, 16, 13, 0.85) 100%);
+  /* Dark-mode ember lift — matches the light theme's warm shadow so
+     the focused card reads with equal presence on both themes. */
+  box-shadow:
+    0 24px 50px -18px rgba(255, 107, 53, 0.45),
+    0 44px 100px -30px rgba(255, 143, 92, 0.28),
+    inset 0 1px 0 0 rgba(255, 240, 220, 0.10) !important;
+  border-color: rgba(255, 143, 92, 0.22) !important;
+}
+[data-theme='light'] .themed-card-gradient {
+  background: linear-gradient(160deg, rgba(255, 253, 248, 0.98) 0%, rgba(247, 240, 230, 0.94) 100%);
+  border-color: rgba(255, 143, 92, 0.28) !important;
+  /* Amped ember drop so highlighted cards on the cream page feel as
+     lifted as on the dark theme. */
+  box-shadow:
+    0 20px 40px -18px rgba(224, 82, 32, 0.50),
+    0 36px 80px -28px rgba(255, 107, 53, 0.40),
+    inset 0 1px 0 0 rgba(255, 255, 255, 1) !important;
+}
+.themed-rail-tip {
+  background: #FFFFFF;
+  box-shadow:
+    0 0 6px 1px rgba(255, 255, 255, 0.95),
+    0 0 16px 4px rgba(255, 220, 180, 0.55),
+    0 0 28px 10px rgba(255, 140, 60, 0.22);
+}
+[data-theme='light'] .themed-rail-tip {
+  background: #FF6B35;
+  box-shadow:
+    0 0 6px 1px rgba(255, 143, 92, 0.95),
+    0 0 16px 4px rgba(255, 107, 53, 0.6),
+    0 0 28px 10px rgba(233, 100, 40, 0.28);
+}
+
+/* Section borders */
+[data-theme='light'] .border-t.border-white\/\[0\.05\],
+[data-theme='light'] .border-b.border-white\/\[0\.05\] {
+  border-color: var(--border-glass);
+}
+
+/* Reusable component utility classes — prefer these in new code */
+.surface-card {
+  background: var(--card-surface);
+  border: 1px solid var(--border-glass);
+  border-radius: 1rem;
+}
+.surface-card-strong {
+  background: var(--card-surface-2);
+  border: 1px solid var(--border-glass-strong);
+  border-radius: 1rem;
+}
+.text-heading   { color: var(--text-strong); }
+.text-body-1    { color: var(--text-body); }
+.text-muted-1   { color: var(--text-muted); }
+.text-faint-1   { color: var(--text-faint); }
+.divider-warm {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border-glass-strong), transparent);
+}
+
+/* ─────────────────────────────────────────────────────────
+   Illustration frame — deliberately keeps a warm-dark surface
+   in BOTH themes. Ember/amber/gold accents pop with contrast
+   only against a dark backing; on the cream light-theme page,
+   ember-on-cream reads as low-contrast. This class carves out
+   a "dark viewport" for the diagram so the illustration keeps
+   its intended vibrancy regardless of page theme.
+
+   Inside .illust-frame, the SVG off-white shim is reversed so
+   neutral lines/text stay light (their dark-theme values).
+   ───────────────────────────────────────────────────────── */
+.illust-frame {
+  background: linear-gradient(160deg, rgba(28, 22, 17, 0.85) 0%, rgba(20, 15, 11, 0.90) 100%);
+  border: 1px solid rgba(255, 143, 92, 0.18);
+  border-radius: 1rem;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  /* Dark-mode ember shadow matched to the light theme: layered warm
+     drop + broader ember bloom + hairline ember ring. Now ember reads
+     with the same presence on the dark bg as it does on cream. */
+  box-shadow:
+    0 22px 48px -18px rgba(255, 107, 53, 0.45),
+    0 44px 100px -28px rgba(255, 143, 92, 0.30),
+    0 0 0 1px rgba(255, 143, 92, 0.14),
+    inset 0 1px 0 0 rgba(255, 240, 220, 0.08);
+}
+[data-theme='light'] .illust-frame {
+  background: linear-gradient(160deg, #1A130E 0%, #241811 100%);
+  border-color: rgba(255, 143, 92, 0.28);
+  /* Beefed-up ember shadow so the frame reads as strongly on cream as
+     it does on dark. Layered: tight ember drop + broader ember glow +
+     ambient warm-dark drop for depth. */
+  box-shadow:
+    0 22px 44px -20px rgba(224, 82, 32, 0.55),
+    0 40px 90px -30px rgba(255, 107, 53, 0.45),
+    0 0 0 1px rgba(255, 143, 92, 0.22),
+    inset 0 1px 0 0 rgba(255, 240, 220, 0.10);
+}
+
+/* Reverse the global SVG neutral-color shim inside illustration
+   frames — off-whites keep their bright dark-theme rendering so
+   diagram text and grid lines remain readable on the dark backing. */
+[data-theme='light'] .illust-frame svg [stroke^="rgba(255,240,220"],
+[data-theme='light'] .illust-frame svg [stroke^="rgba(255, 240, 220"] {
+  stroke: rgba(255, 240, 220, 0.10);
+}
+[data-theme='light'] .illust-frame svg [stroke^="rgba(250,245,238"],
+[data-theme='light'] .illust-frame svg [stroke^="rgba(250, 245, 238"] {
+  stroke: rgba(250, 245, 238, 0.60);
+}
+[data-theme='light'] .illust-frame svg [fill^="rgba(250,245,238"],
+[data-theme='light'] .illust-frame svg [fill^="rgba(250, 245, 238"] {
+  fill: rgba(250, 245, 238, 0.75);
+}
+[data-theme='light'] .illust-frame svg [fill^="rgba(255,240,220"],
+[data-theme='light'] .illust-frame svg [fill^="rgba(255, 240, 220"] {
+  fill: rgba(255, 240, 220, 0.35);
+}
+
+/* Also reverse the Tailwind text/border shims for children inside
+   illustration frames — since the frame is dark, text should read
+   as light again. */
+[data-theme='light'] .illust-frame .text-white\/95,
+[data-theme='light'] .illust-frame .text-white\/90,
+[data-theme='light'] .illust-frame .text-white\/85 { color: rgba(250,245,238,0.95); }
+[data-theme='light'] .illust-frame .text-white\/80,
+[data-theme='light'] .illust-frame .text-white\/75,
+[data-theme='light'] .illust-frame .text-white\/70,
+[data-theme='light'] .illust-frame .text-white\/65,
+[data-theme='light'] .illust-frame .text-white\/60,
+[data-theme='light'] .illust-frame .text-white\/55 { color: rgba(250,245,238,0.72); }
+[data-theme='light'] .illust-frame .text-white\/50,
+[data-theme='light'] .illust-frame .text-white\/45,
+[data-theme='light'] .illust-frame .text-white\/40,
+[data-theme='light'] .illust-frame .text-white\/35 { color: rgba(250,245,238,0.45); }
+[data-theme='light'] .illust-frame .text-white\/32,
+[data-theme='light'] .illust-frame .text-white\/30,
+[data-theme='light'] .illust-frame .text-white\/28,
+[data-theme='light'] .illust-frame .text-white\/25,
+[data-theme='light'] .illust-frame .text-white\/20 { color: rgba(250,245,238,0.28); }
+[data-theme='light'] .illust-frame .border-white\/\[0\.05\],
+[data-theme='light'] .illust-frame .border-white\/\[0\.06\],
+[data-theme='light'] .illust-frame .border-white\/\[0\.08\] {
+  border-color: rgba(255,240,220,0.08);
+}
+[data-theme='light'] .illust-frame .bg-\[\#14100D\],
+[data-theme='light'] .illust-frame .bg-\[\#14100D\]\/60,
+[data-theme='light'] .illust-frame .bg-\[\#14100D\]\/70,
+[data-theme='light'] .illust-frame .bg-\[\#14100D\]\/80 {
+  background-color: rgba(20, 16, 13, 0.72);
+}
+
+/* Icon plate — square accent surface behind a small SVG glyph.
+   Keeps a warm-dark backing in BOTH themes so the ember/gold icon
+   inside always has enough contrast (same reasoning as .illust-frame).
+   Consumes a `--plate-accent` custom property from the JSX for its
+   border tint so each card can carry its own accent (ember/amber/gold). */
+.icon-plate {
+  background: linear-gradient(160deg, rgba(28, 22, 17, 0.85) 0%, rgba(20, 15, 11, 0.90) 100%);
+  border: 1px solid color-mix(in srgb, var(--plate-accent, #FF6B35) 32%, transparent);
+}
+[data-theme='light'] .icon-plate {
+  background: linear-gradient(160deg, #1A130E 0%, #241811 100%);
+  border-color: color-mix(in srgb, var(--plate-accent, #FF6B35) 45%, transparent);
+}
+
+/* Carousel prev/next control — theme-aware ember button */
+.carousel-nav {
+  color: var(--text-body);
+  background: var(--bg-panel);
+  border: 1px solid var(--border-glass);
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  box-shadow: 0 6px 20px -8px rgba(0, 0, 0, 0.4),
+              inset 0 1px 0 0 var(--highlight-top);
+  transition: color 200ms var(--ease-out),
+              background-color 200ms var(--ease-out),
+              border-color 200ms var(--ease-out),
+              box-shadow 200ms var(--ease-out),
+              transform 200ms var(--ease-out);
+  cursor: pointer;
+}
+.carousel-nav:hover {
+  color: #FFFFFF;
+  background: linear-gradient(135deg, #FF6B35 0%, #FF8F5C 100%);
+  border-color: rgba(255, 143, 92, 0.5);
+  box-shadow: 0 10px 28px -8px rgba(255, 107, 53, 0.5),
+              inset 0 1px 0 0 rgba(255, 240, 220, 0.35);
+  transform: translateY(-50%) scale(1.06);
+}
+.carousel-nav:active {
+  transform: translateY(-50%) scale(0.96);
+}
+[data-theme='light'] .carousel-nav {
+  box-shadow: 0 6px 18px -8px rgba(120, 60, 20, 0.22),
+              inset 0 1px 0 0 rgba(255, 255, 255, 0.9);
+}
+[data-theme='light'] .carousel-nav:hover {
+  color: #FFFFFF;
+  box-shadow: 0 10px 28px -8px rgba(224, 82, 32, 0.45),
+              inset 0 1px 0 0 rgba(255, 240, 220, 0.35);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Lenis smooth scroll compatibility */
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+.lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+
+body {
+  background: var(--bg-page-gradient);
+  color: var(--text-strong);
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  transition: background-color 400ms var(--ease-out), color 400ms var(--ease-out);
+}
+
+/* ─── Navigation pill surfaces (theme-aware) ───────────────── */
+.nav-pill {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-glass);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  box-shadow: 0 8px 32px -12px rgba(0, 0, 0, 0.4),
+              inset 0 1px 0 0 var(--highlight-top);
+  transition: background-color 400ms var(--ease-out),
+              border-color 400ms var(--ease-out),
+              box-shadow 400ms var(--ease-out),
+              transform 400ms var(--ease-out);
+}
+.nav-pill-scrolled {
+  background: var(--bg-panel-strong);
+  box-shadow: var(--shadow-elev);
+  transform: scale(0.985);
+}
+[data-theme='light'] .nav-pill {
+  box-shadow: 0 10px 30px -14px rgba(120, 60, 20, 0.18),
+              inset 0 1px 0 0 rgba(255, 255, 255, 0.9);
+}
+[data-theme='light'] .nav-pill-scrolled {
+  box-shadow: 0 14px 40px -16px rgba(120, 60, 20, 0.28),
+              inset 0 1px 0 0 rgba(255, 255, 255, 1);
+}
+.nav-text-strong { color: var(--text-strong); }
+.nav-link {
+  color: var(--text-body);
+}
+.nav-link:hover {
+  color: var(--text-strong);
+  background: color-mix(in srgb, var(--text-strong) 8%, transparent);
+}
+.nav-icon-btn {
+  color: var(--text-body);
+}
+.nav-icon-btn:hover {
+  color: var(--text-strong);
+  background: color-mix(in srgb, var(--text-strong) 8%, transparent);
+}
+.mobile-overlay {
+  background: var(--bg-page);
+  color: var(--text-strong);
+}
+
+/* Paint-skipping utility — lets the browser skip layout + paint for
+   sections that are offscreen. `contain-intrinsic-size` gives it a
+   size hint so scroll position stays stable while offscreen sections
+   are collapsed. Apply to non-critical, below-fold sections. */
+.optimize-paint {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 900px;
+}
+
+/* Footer surface — dark warm in dark theme, subtle deeper-cream in
+   light theme so it reads as a distinct closing panel without going
+   near-black on a light page. Text/border shims apply globally so
+   the copy switches to warm-dark ink in light mode automatically. */
+.themed-footer {
+  /* Very subtle static ember warmth — just enough to hint at life
+     without turning the footer into a spotlight. */
+  background:
+    radial-gradient(ellipse 55% 50% at 12% 0%, rgba(255, 107, 53, 0.06) 0%, transparent 55%),
+    radial-gradient(ellipse 45% 40% at 88% 8%, rgba(244, 162, 97, 0.04) 0%, transparent 50%),
+    #050403;
+  color: var(--text-strong);
+}
+/* Footer stays a deep near-black on the LIGHT theme too. The rest of
+   the page is cream, but the footer reads as a closing "night panel."
+   The base .themed-footer already supplies the black + warm radial
+   ambient, so we only need to reverse the text/border shims here so
+   off-whites stay light on the black backing. */
+[data-theme='light'] .themed-footer {
+  color: rgba(250, 245, 238, 0.95);
+  border-top-color: rgba(255, 240, 220, 0.08);
+}
+[data-theme='light'] .themed-footer .text-white\/95,
+[data-theme='light'] .themed-footer .text-white\/90,
+[data-theme='light'] .themed-footer .text-white\/85 { color: rgba(250,245,238,0.95); }
+[data-theme='light'] .themed-footer .text-white\/80,
+[data-theme='light'] .themed-footer .text-white\/75,
+[data-theme='light'] .themed-footer .text-white\/70,
+[data-theme='light'] .themed-footer .text-white\/65,
+[data-theme='light'] .themed-footer .text-white\/60,
+[data-theme='light'] .themed-footer .text-white\/55 { color: rgba(250,245,238,0.72); }
+[data-theme='light'] .themed-footer .text-white\/50,
+[data-theme='light'] .themed-footer .text-white\/45,
+[data-theme='light'] .themed-footer .text-white\/40,
+[data-theme='light'] .themed-footer .text-white\/35 { color: rgba(250,245,238,0.45); }
+[data-theme='light'] .themed-footer .text-white\/32,
+[data-theme='light'] .themed-footer .text-white\/30,
+[data-theme='light'] .themed-footer .text-white\/28,
+[data-theme='light'] .themed-footer .text-white\/25,
+[data-theme='light'] .themed-footer .text-white\/20,
+[data-theme='light'] .themed-footer .text-white\/15,
+[data-theme='light'] .themed-footer .text-white\/\[0\.12\] { color: rgba(250,245,238,0.28); }
+[data-theme='light'] .themed-footer .border-white\/\[0\.05\],
+[data-theme='light'] .themed-footer .border-white\/\[0\.06\],
+[data-theme='light'] .themed-footer .border-white\/\[0\.08\] { border-color: rgba(255,240,220,0.08); }
+[data-theme='light'] .themed-footer .border-white\/\[0\.10\],
+[data-theme='light'] .themed-footer .border-white\/\[0\.12\],
+[data-theme='light'] .themed-footer .border-white\/\[0\.14\] { border-color: rgba(255,240,220,0.14); }
+[data-theme='light'] .themed-footer .bg-white\/\[0\.02\],
+[data-theme='light'] .themed-footer .bg-white\/\[0\.03\],
+[data-theme='light'] .themed-footer .bg-white\/\[0\.04\],
+[data-theme='light'] .themed-footer .bg-white\/\[0\.05\],
+[data-theme='light'] .themed-footer .bg-white\/\[0\.06\] { background-color: rgba(255,240,220,0.04); }
+/* Watermark stays a very faint warm off-white on the dark footer in
+   both themes. */
+[data-theme='light'] .themed-footer > div:last-child {
+  color: rgba(255, 240, 220, 0.05) !important;
+}
+/* Footer cursor-following glow — swap color/opacity per theme.
+   Dark: warm ember lift. Light: deeper ember pigment for warmth on cream. */
+.footer-glow {
+  background: radial-gradient(
+    280px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgba(255, 143, 92, 0.40) 0%,
+    rgba(255, 107, 53, 0.20) 40%,
+    transparent 60%
+  );
+}
+/* Footer stays black in both themes, so the cursor-follow ember glow
+   uses NORMAL blend in light mode (multiply-on-black is invisible).
+   Modest opacity — enough to lift the black without spotlighting. */
+[data-theme='light'] .footer-glow {
+  background: radial-gradient(
+    280px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgba(255, 143, 92, 0.40) 0%,
+    rgba(255, 107, 53, 0.20) 40%,
+    transparent 60%
+  );
+  mix-blend-mode: normal;
+}
+
+/* ─── Global cursor spotlight (fixed, follows cursor) ─────────
+   Dark theme: screen-blend ember glow lifts the ink like a warm
+   lamp. Light theme: multiply-blend deeper ember pigment casts a
+   subtle warm shadow — screen would wash out on cream. */
+.cursor-spotlight {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: radial-gradient(
+    600px circle at var(--cursor-x) var(--cursor-y),
+    rgba(255, 107, 53, 0.08),
+    rgba(244, 162, 97, 0.03) 30%,
+    transparent 55%
+  );
+  mix-blend-mode: screen;
+  transition: opacity 400ms var(--ease-out);
+  will-change: background;
+}
+[data-theme='light'] .cursor-spotlight {
+  background: radial-gradient(
+    500px circle at var(--cursor-x) var(--cursor-y),
+    rgba(224, 82, 32, 0.14),
+    rgba(255, 143, 92, 0.06) 35%,
+    transparent 60%
+  );
+  mix-blend-mode: multiply;
+}
+
+/* ─── Workflow background pattern (animated) ────────────────── */
+.workflow-bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.04;
+}
+
+.workflow-bg svg { width: 100%; height: 100%; }
+
+@keyframes flow-dash {
+  from { stroke-dashoffset: 0; }
+  to { stroke-dashoffset: -200; }
+}
+
+.workflow-bg .flow-path {
+  stroke-dasharray: 8 12;
+  animation: flow-dash 12s linear infinite;
+}
+
+@keyframes drift-slow {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(30px, -20px, 0); }
+}
+
+.orb-drift { animation: drift-slow 22s ease-in-out infinite; will-change: transform; }
+
+/* ─── Motion primitive keyframes ───────────────────────────── */
+
+/* PulseDot outer ring */
+@keyframes pulse-ring {
+  0%   { transform: scale(1);   opacity: 0.6; }
+  70%  { transform: scale(2.4); opacity: 0;   }
+  100% { transform: scale(2.4); opacity: 0;   }
+}
+.pulse-dot-ring {
+  transform-origin: center;
+  transform-box: fill-box;
+  animation: pulse-ring 2.4s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+  will-change: transform, opacity;
+}
+
+/* FlowingLine — dash marches along the path */
+@keyframes flow-march {
+  from { stroke-dashoffset: 0;    }
+  to   { stroke-dashoffset: -160; }
+}
+.flowing-line {
+  animation-name: flow-march;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  will-change: stroke-dashoffset;
+}
+
+/* Waveform bar bounce */
+@keyframes wave-bounce {
+  0%, 100% { transform: scaleY(0.35); opacity: 0.55; }
+  50%      { transform: scaleY(1);    opacity: 1;    }
+}
+.waveform-bar {
+  animation: wave-bounce 1.4s ease-in-out infinite;
+  transform-box: fill-box;
+  will-change: transform, opacity;
+}
+
+/* Peak bar pulse for analytics chart */
+@keyframes bar-peak-pulse {
+  0%, 100% { box-shadow: 0 0 8px rgba(255, 107, 53, 0.5); }
+  50%      { box-shadow: 0 0 18px rgba(255, 107, 53, 0.9); }
+}
+.bar-peak-pulse { animation: bar-peak-pulse 2s ease-in-out infinite; }
+
+/* Architecture-diagram activity animations */
+@keyframes arch-dot-ping {
+  0%   { transform: scale(1);   opacity: 0.5; }
+  70%  { transform: scale(2.4); opacity: 0;   }
+  100% { transform: scale(2.4); opacity: 0;   }
+}
+.arch-dot-ring {
+  animation: arch-dot-ping 2.4s ease-out infinite;
+}
+@keyframes arch-tick {
+  0%, 20% { opacity: 0.15; transform: scaleX(1);   }
+  40%     { opacity: 0.9;  transform: scaleX(1.15); }
+  60%     { opacity: 0.4;  transform: scaleX(1);    }
+  100%    { opacity: 0.15; transform: scaleX(1);    }
+}
+.arch-tick {
+  animation: arch-tick 2.4s ease-in-out infinite;
+  transform-origin: left center;
+}
+@keyframes arch-sweep {
+  0%, 100% { transform: translateX(-100%); opacity: 0;    }
+  50%      { transform: translateX(100%);  opacity: 0.65; }
+}
+.arch-sweep {
+  animation: arch-sweep 4.5s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+/* NetworkNode rings — two-phase radar ping */
+@keyframes node-ring-out {
+  0%   { transform: scale(1);   opacity: 0.4; }
+  100% { transform: scale(3.2); opacity: 0;   }
+}
+.node-ring-outer {
+  transform-origin: center;
+  transform-box: fill-box;
+  animation: node-ring-out 3.2s ease-out infinite;
+  will-change: transform, opacity;
+}
+.node-ring-inner {
+  transform-origin: center;
+  transform-box: fill-box;
+  animation: node-ring-out 3.2s ease-out infinite;
+  animation-delay: 0.6s;
+  will-change: transform, opacity;
+}
+
+/* ─── Section divider — warm gradient ──────────────────────── */
+.gradient-divider {
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(233, 196, 106, 0.35) 20%,
+    rgba(255, 107, 53, 0.45) 50%,
+    rgba(244, 162, 97, 0.35) 80%,
+    transparent 100%
+  );
+}
+
+/* ─── Hero ambient — warm ember glow ───────────────────────── */
+.hero-gradient {
+  background:
+    radial-gradient(ellipse 70% 60% at 20% 0%, rgba(255, 107, 53, 0.18) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 40% at 80% 10%, rgba(244, 162, 97, 0.10) 0%, transparent 50%),
+    radial-gradient(ellipse 40% 30% at 60% 80%, rgba(233, 196, 106, 0.06) 0%, transparent 50%);
+}
+
+/* Hero cursor halo — soft warm blob that follows the pointer within
+   the hero. Sits above the SVG detector field so it can lift the
+   heading text as the visitor moves through it. */
+.hero-cursor-halo {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  background: radial-gradient(
+    280px circle at var(--hx, 50%) var(--hy, 50%),
+    rgba(255, 143, 92, 0.18) 0%,
+    rgba(244, 162, 97, 0.08) 30%,
+    transparent 60%
+  );
+  mix-blend-mode: screen;
+  transition: opacity 400ms cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: background;
+}
+[data-theme='light'] .hero-cursor-halo {
+  /* Brighter, more saturated ember in light mode — the halo needs to
+     read stronger than the dark-mode version because ember on cream
+     has less perceived glow than ember on near-black. */
+  background: radial-gradient(
+    320px circle at var(--hx, 50%) var(--hy, 50%),
+    rgba(224, 82, 32, 0.45) 0%,
+    rgba(255, 107, 53, 0.24) 25%,
+    rgba(255, 143, 92, 0.10) 50%,
+    transparent 68%
+  );
+  mix-blend-mode: multiply;
+}
+
+/* Reticle ring brightness — the ember crosshair that follows the
+   cursor. In light mode the base opacities (0.45 / 0.4) read dim
+   against cream, so we punch them up to full ember + add a warm
+   drop-shadow for glow. */
+.hero-reticle circle,
+.hero-reticle line { transition: opacity 240ms ease; }
+[data-theme='light'] .hero-reticle circle,
+[data-theme='light'] .hero-reticle line {
+  opacity: 0.95 !important;
+  filter: drop-shadow(0 0 4px rgba(224, 82, 32, 0.7));
+}
+
+/* Section headings — sit below where the navbar floats so scroll
+   jumps and heading-in transitions never collide with the pills. */
+h2, h3 { scroll-margin-top: 96px; }
+[data-scroll-anchor] { scroll-margin-top: 96px; }
+
+/* Heading entry blur — a section heading lightly blurs and lifts
+   when entering the top-of-viewport "nav zone", so it feels like
+   it emerges from under the navbar rather than getting sliced.
+   Wire this class on section h2 elements. */
+@keyframes heading-emerge {
+  0%   { filter: blur(6px); opacity: 0; transform: translateY(14px); }
+  100% { filter: blur(0);   opacity: 1; transform: translateY(0);    }
+}
+.heading-emerge {
+  animation: heading-emerge 700ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Scroll-jump indicator (fixed bottom-right glass pill). Two states:
+   .scroll-jump-down (arrow down, near top / mid) and .scroll-jump-up
+   (arrow up, near page bottom). Sits above content, small radius,
+   translucent glass like the navbar pills. */
+.scroll-jump {
+  position: fixed;
+  right: clamp(14px, 2.5vw, 28px);
+  bottom: clamp(20px, 3vw, 32px);
+  z-index: 40;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-strong);
+  background: var(--bg-panel);
+  border: 1px solid var(--border-glass);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  box-shadow: 0 8px 32px -12px rgba(0, 0, 0, 0.4),
+              inset 0 1px 0 0 var(--highlight-top);
+  cursor: pointer;
+  transition:
+    transform 260ms var(--ease-out),
+    box-shadow 260ms var(--ease-out),
+    background-color 260ms var(--ease-out),
+    border-color 260ms var(--ease-out),
+    opacity 260ms var(--ease-out);
+  will-change: transform, opacity;
+}
+.scroll-jump::before {
+  /* soft outer aura that surrounds the pill — subtle warm bloom */
+  content: '';
+  position: absolute;
+  inset: -18px;
+  border-radius: 999px;
+  background: radial-gradient(closest-side, rgba(255, 143, 92, 0.22) 0%, transparent 70%);
+  filter: blur(6px);
+  z-index: -1;
+  opacity: 0.6;
+  pointer-events: none;
+}
+.scroll-jump:hover {
+  transform: translateY(-3px);
+  background: linear-gradient(135deg, rgba(255, 107, 53, 0.85) 0%, rgba(255, 143, 92, 0.85) 100%);
+  border-color: rgba(255, 143, 92, 0.6);
+  color: #FFFFFF;
+  box-shadow:
+    0 14px 34px -10px rgba(255, 107, 53, 0.55),
+    inset 0 1px 0 0 rgba(255, 240, 220, 0.4);
+}
+.scroll-jump:active { transform: translateY(-1px) scale(0.96); }
+.scroll-jump svg { transition: transform 320ms var(--ease-out); }
+.scroll-jump.is-up svg { transform: rotate(180deg); }
+[data-theme='light'] .scroll-jump {
+  box-shadow: 0 10px 30px -12px rgba(120, 60, 20, 0.28),
+              inset 0 1px 0 0 rgba(255, 255, 255, 0.9);
+}
+[data-theme='light'] .scroll-jump::before {
+  background: radial-gradient(closest-side, rgba(224, 82, 32, 0.28) 0%, transparent 70%);
+}
+[data-theme='light'] .scroll-jump:hover {
+  box-shadow:
+    0 14px 34px -10px rgba(224, 82, 32, 0.55),
+    inset 0 1px 0 0 rgba(255, 240, 220, 0.5);
+}
+@media (prefers-reduced-motion: reduce) {
+  .heading-emerge { animation: none !important; }
+  .scroll-jump { transition: none !important; }
+}
+
+.text-gradient-primary {
+  background: linear-gradient(135deg, #FAF5EE 0%, #FABD6C 60%, #FF8F5C 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+[data-theme='light'] .text-gradient-primary {
+  background: linear-gradient(135deg, #1A130E 0%, #E05220 55%, #FF6B35 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-gradient-ember {
+  background: linear-gradient(90deg, #FF6B35 0%, #F4A261 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Editorial italic accent — for hero moments */
+.editorial {
+  font-family: var(--font-editorial), 'Instrument Serif', serif;
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+
+/* Section ambient light */
+.section-glow-left  { background: radial-gradient(ellipse 60% 50% at -10% 50%, rgba(255, 107, 53, 0.08) 0%, transparent 60%); }
+.section-glow-right { background: radial-gradient(ellipse 60% 50% at 110% 50%, rgba(244, 162, 97, 0.07) 0%, transparent 60%); }
+
+/* Focus ring */
+:focus-visible {
+  outline: 2px solid rgba(255, 107, 53, 0.8);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .cursor-spotlight { display: none; }
+  .flow-path { animation: none !important; }
+  .orb-drift { animation: none !important; }
+  .pulse-dot-ring,
+  .flowing-line,
+  .waveform-bar,
+  .node-ring-outer,
+  .node-ring-inner,
+  .arch-dot-ring,
+  .arch-tick,
+  .arch-sweep,
+  .bar-peak-pulse { animation: none !important; }
+}
+
+/* Heading defaults */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display), system-ui, sans-serif;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  font-weight: 400;
+}
+
+/* Container utility */
+.container-pad {
+  padding-left: clamp(1.25rem, 0.75rem + 2.5vw, 2rem);
+  padding-right: clamp(1.25rem, 0.75rem + 2.5vw, 2rem);
+}
+
+/* Elevated card — double-bezel premium (used sparingly) */
+.card-bezel {
+  padding: 6px;
+  background: linear-gradient(135deg, rgba(255, 240, 220, 0.04), rgba(255, 240, 220, 0.01));
+  border: 1px solid rgba(255, 240, 220, 0.06);
+  border-radius: 20px;
+}
+.card-bezel > .inner {
+  background: #14100D;
+  border-radius: 14px;
+  box-shadow: inset 0 1px 0 0 rgba(255, 240, 220, 0.04);
+}
