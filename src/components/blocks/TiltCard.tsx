@@ -54,6 +54,14 @@ export function TiltCard({
   const highlightX = useSpring(useTransform(x, [-0.5, 0.5], [0, 100]), springConfig)
   const highlightY = useSpring(useTransform(y, [-0.5, 0.5], [0, 100]), springConfig)
 
+  // Ember gloss background — hook must be called unconditionally, so
+  // compute the MotionValue up here before any early return path.
+  const glossBackground = useTransform(
+    [highlightX, highlightY],
+    ([hx, hy]) =>
+      `radial-gradient(220px circle at ${hx}% ${hy}%, rgba(255,143,92,0.22), rgba(244,162,97,0.08) 40%, transparent 60%)`,
+  )
+
   const onMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (shouldReduce) return
     const rect = ref.current?.getBoundingClientRect()
@@ -105,11 +113,7 @@ export function TiltCard({
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 rounded-[inherit] opacity-0 transition-opacity duration-300"
         style={{
-          background: useTransform(
-            [highlightX, highlightY],
-            ([hx, hy]) =>
-              `radial-gradient(220px circle at ${hx}% ${hy}%, rgba(255,143,92,0.22), rgba(244,162,97,0.08) 40%, transparent 60%)`,
-          ),
+          background: glossBackground,
           mixBlendMode: 'screen',
           transform: 'translateZ(1px)',
         }}

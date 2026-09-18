@@ -3,7 +3,6 @@ import { ArrowRight } from 'lucide-react'
 import { PageHero } from '@/components/blocks/PageHero'
 import { SectionLabel } from '@/components/blocks/SectionLabel'
 import { ClayFrame } from '@/components/blocks/ClayFrame'
-import { TiltCard } from '@/components/blocks/TiltCard'
 import { ServicesPipelineScene } from '@/components/illustrations/ServicesPipelineScene'
 import {
   DataServicesGlyph,
