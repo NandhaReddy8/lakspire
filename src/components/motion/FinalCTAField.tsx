@@ -138,7 +138,11 @@ export function FinalCTAField() {
             />
           ))}
 
-          {/* Flowing arcs + streaming packets */}
+          {/* Flowing arcs + streaming packets. Each packet is wrapped
+              in a visibility-gated <g> so it never renders at the SVG
+              origin during the tiny window before <animateMotion>
+              attaches — that was the "circles moving to the corner"
+              glitch on the hero and lower sections. */}
           {ARCS.map((arc, i) => (
             <g key={`arc-${i}`}>
               <path
@@ -148,30 +152,27 @@ export function FinalCTAField() {
                 strokeWidth={1.1}
                 opacity={0.55}
               />
-              <circle r={3} fill={arc.color} opacity={0.9}>
-                <animateMotion
-                  dur={`${arc.dur}s`}
-                  repeatCount="indefinite"
-                  begin={`-${arc.offset}s`}
-                  path={arc.d}
-                />
-              </circle>
-              <circle r={2} fill={arc.color} opacity={0.55}>
-                <animateMotion
-                  dur={`${arc.dur}s`}
-                  repeatCount="indefinite"
-                  begin={`-${arc.offset + 0.6}s`}
-                  path={arc.d}
-                />
-              </circle>
-              <circle r={1.4} fill={arc.color} opacity={0.35}>
-                <animateMotion
-                  dur={`${arc.dur}s`}
-                  repeatCount="indefinite"
-                  begin={`-${arc.offset + 1.2}s`}
-                  path={arc.d}
-                />
-              </circle>
+              {[
+                { r: 3, op: 0.9, delay: arc.offset },
+                { r: 2, op: 0.55, delay: arc.offset + 0.6 },
+                { r: 1.4, op: 0.35, delay: arc.offset + 1.2 },
+              ].map((pk, pi) => (
+                <g key={`arc-${i}-p-${pi}`} visibility="hidden">
+                  <set
+                    attributeName="visibility"
+                    to="visible"
+                    begin="0.08s"
+                    fill="freeze"
+                  />
+                  <animateMotion
+                    dur={`${arc.dur}s`}
+                    repeatCount="indefinite"
+                    begin={`-${pk.delay}s`}
+                    path={arc.d}
+                  />
+                  <circle r={pk.r} fill={arc.color} opacity={pk.op} />
+                </g>
+              ))}
             </g>
           ))}
 

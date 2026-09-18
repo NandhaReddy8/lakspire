@@ -1,20 +1,24 @@
 'use client'
 import { useEffect } from 'react'
-import { getLenis, destroyLenis } from '@/lib/lenis'
+import { ensureLenis, destroyLenis } from '@/lib/lenis'
 
 export function SmoothScroll({ children }: { children: React.ReactNode }) {
   useEffect(() => {
-    const lenis = getLenis()
+    let rafId: number | null = null
+    let cancelled = false
 
-    let rafId: number
-    function raf(time: number) {
-      lenis.raf(time)
+    ensureLenis().then((lenis) => {
+      if (cancelled) return
+      const raf = (time: number) => {
+        lenis.raf(time)
+        rafId = requestAnimationFrame(raf)
+      }
       rafId = requestAnimationFrame(raf)
-    }
-    rafId = requestAnimationFrame(raf)
+    })
 
     return () => {
-      cancelAnimationFrame(rafId)
+      cancelled = true
+      if (rafId !== null) cancelAnimationFrame(rafId)
       destroyLenis()
     }
   }, [])

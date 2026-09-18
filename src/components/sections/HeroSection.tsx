@@ -56,12 +56,17 @@ export function HeroSection() {
       <HeroAnnotationField />
 
       <div className="relative z-10 mx-auto max-w-container container-pad">
-        <div className="grid min-h-[calc(92svh-6rem)] grid-cols-1 items-center gap-12 py-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)] lg:gap-16">
-          {/* Left: copy */}
+        <div className="grid min-h-[calc(92svh-6rem)] grid-cols-1 items-center gap-10 py-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.34fr)] lg:gap-10">
+          {/* Left: copy.
+              Vertical rhythm tightened (mb-5→4, mb-6→4, mb-8→6, mt-10→7)
+              and subtitle widened (max-w-lg → max-w-xl) so the whole
+              stack — title, description, both CTAs and the three stat
+              tiles — always lands inside the initial viewport instead
+              of being pushed below the fold on shorter screens. */}
           <div className="flex flex-col">
             <motion.p
               {...fadeUp(0.05)}
-              className="mb-5 text-[11px] font-semibold uppercase"
+              className="mb-4 text-[11px] font-semibold uppercase"
               style={{
                 letterSpacing: '0.14em',
                 fontFamily: 'var(--font-body)',
@@ -76,12 +81,12 @@ export function HeroSection() {
 
             <motion.h1
               {...fadeUp(0.12)}
-              className="mb-6"
+              className="mb-4"
               style={{
                 fontFamily: 'var(--font-display)',
-                fontSize: 'clamp(2.4rem, 1.8rem + 3vw, 4.4rem)',
+                fontSize: 'clamp(2.2rem, 1.6rem + 2.6vw, 3.8rem)',
                 fontWeight: 350,
-                lineHeight: 1.06,
+                lineHeight: 1.05,
                 letterSpacing: '-0.03em',
               }}
             >
@@ -93,7 +98,7 @@ export function HeroSection() {
 
             <motion.p
               {...fadeUp(0.2)}
-              className="mb-8 max-w-lg text-[15px] leading-relaxed"
+              className="mb-6 max-w-xl text-[15px] leading-relaxed"
               style={{ fontFamily: 'var(--font-body)', color: 'var(--text-muted)' }}
             >
               Lakspire delivers data processing, management, analytics and AI-enabled solutions that
@@ -126,14 +131,14 @@ export function HeroSection() {
               </Link>
             </motion.div>
 
-            <motion.div {...fadeUp(0.36)} className="mt-10 flex flex-wrap items-center gap-6">
+            <motion.div {...fadeUp(0.36)} className="mt-7 flex flex-wrap items-center gap-5">
               <div className="h-8 w-px bg-white/[0.08]" />
               {[
                 { value: '99.2%', label: 'Accuracy Rate' },
                 { value: '2.4M+', label: 'Records Daily' },
                 { value: '50+', label: 'Global Clients' },
               ].map((stat, i) => (
-                <div key={stat.label} className="flex items-center gap-6">
+                <div key={stat.label} className="flex items-center gap-5">
                   <div>
                     <p
                       className="themed-stat-gradient text-[18px] font-semibold"
@@ -158,10 +163,14 @@ export function HeroSection() {
           </div>
 
           {/* Right: live workspace scene — unframed, blends into
-              atmosphere. This is the hero's product-in-action visual. */}
+              atmosphere. This is the hero's product-in-action visual.
+              Bleeds RIGHTWARD only, past the container-pad and into the
+              viewport margin, so the rectangle fills the empty space
+              to the right without stealing width from the copy on the
+              left. */}
           <motion.div
             {...fadeUp(0.18)}
-            className="relative w-full"
+            className="relative w-full lg:mr-[-11vw] xl:mr-[-17vw] 2xl:mr-[-22vw]"
           >
             <HeroWorkspaceScene />
           </motion.div>

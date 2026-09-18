@@ -212,17 +212,19 @@ export function ContactCallScene() {
         </g>
       ))}
 
-      {/* "Available" chip pinned bottom-right */}
-      <g transform={`translate(${VIEW.w - 130} ${VIEW.h - 32})`}>
+      {/* "Available" chip pinned bottom-right — widened so the full
+          "LIVE · MON–FRI" label sits comfortably inside the rounded
+          rectangle with even trailing padding. */}
+      <g transform={`translate(${VIEW.w - 156} ${VIEW.h - 32})`}>
         <rect
-          width="110"
+          width="140"
           height="22"
           rx="11"
           fill="rgba(20,15,11,0.75)"
           stroke="rgba(233,196,106,0.5)"
           strokeWidth="0.7"
         />
-        <circle cx="12" cy="11" r="3.2" fill="#E9C46A">
+        <circle cx="14" cy="11" r="3.2" fill="#E9C46A">
           <animate
             attributeName="opacity"
             values="1; 0.35; 1"
@@ -231,7 +233,7 @@ export function ContactCallScene() {
           />
         </circle>
         <text
-          x="24"
+          x="26"
           y="15"
           fontSize="9.5"
           fill="rgba(250,245,238,0.85)"

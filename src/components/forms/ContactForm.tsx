@@ -197,8 +197,12 @@ export function ContactForm() {
     setDone(true)
   }
 
+  // contact-field carries the theme-aware background, text and
+  // placeholder colors — see globals.css. On light theme, a
+  // bg-transparent input on a cream panel disappears; contact-field
+  // gives it a soft cream surface with warm-ink text.
   const fieldClass =
-    'w-full rounded-lg border bg-transparent px-3.5 py-2.5 text-[14px] text-white/90 placeholder-white/30 outline-none transition-colors duration-200 focus:border-[#FF8F5C]/60 focus:ring-2 focus:ring-[#FF6B35]/25'
+    'contact-field w-full rounded-lg border px-3.5 py-2.5 text-[14px] outline-none transition-colors duration-200 focus:border-[#FF8F5C]/60 focus:ring-2 focus:ring-[#FF6B35]/25'
 
   if (done) return <SuccessState reduced={!!shouldReduce} />
 
@@ -489,7 +493,7 @@ function FileInput({
 }) {
   return (
     <div
-      className="flex items-center gap-3 rounded-lg border px-3.5 py-2.5"
+      className="contact-file-shell flex items-center gap-3 rounded-lg border px-3.5 py-2.5"
       style={{ borderColor: hasError ? 'rgba(255, 143, 92, 0.65)' : 'var(--border-glass-strong)' }}
     >
       <input

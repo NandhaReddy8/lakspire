@@ -31,12 +31,18 @@ export function DataStream({
       {Array.from({ length: count }).map((_, i) => {
         const begin = (offset + (duration / count) * i).toFixed(2)
         return (
-          <circle
-            key={i}
-            r={size}
-            fill={color}
-            filter={glow ? `drop-shadow(0 0 4px ${color})` : undefined}
-          >
+          // Wrapped in a visibility-gated <g>: the SVG spec applies
+          // <animateMotion> as a translate on top of the referenced
+          // element, and until begin fires the circle sits at (0,0)
+          // fully opaque. Without this gate every waiting packet piled
+          // up in the top-left corner of the parent SVG.
+          <g key={i} visibility="hidden">
+            <set
+              attributeName="visibility"
+              to="visible"
+              begin={`${begin}s`}
+              fill="freeze"
+            />
             <animateMotion
               dur={`${duration}s`}
               repeatCount="indefinite"
@@ -44,15 +50,22 @@ export function DataStream({
               rotate="0"
               path={path}
             />
-            <animate
-              attributeName="opacity"
-              values="0;1;1;0"
-              keyTimes="0;0.15;0.85;1"
-              dur={`${duration}s`}
-              repeatCount="indefinite"
-              begin={`${begin}s`}
-            />
-          </circle>
+            <circle
+              r={size}
+              fill={color}
+              opacity={0}
+              filter={glow ? `drop-shadow(0 0 4px ${color})` : undefined}
+            >
+              <animate
+                attributeName="opacity"
+                values="0;1;1;0"
+                keyTimes="0;0.15;0.85;1"
+                dur={`${duration}s`}
+                repeatCount="indefinite"
+                begin={`${begin}s`}
+              />
+            </circle>
+          </g>
         )
       })}
     </>

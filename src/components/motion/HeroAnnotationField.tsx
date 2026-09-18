@@ -175,7 +175,10 @@ export function HeroAnnotationField() {
             />
           ))}
 
-          {/* Horizontal scan rows — quiet, only three, edges only */}
+          {/* Horizontal scan rows — quiet, only three, edges only.
+              Circle stays at (0,0); the position lives in the motion
+              path. Group is visibility-hidden until motion attaches so
+              nothing flashes at the left corner. */}
           {SCAN_ROWS.map((row, i) => {
             const y = (row.y / 100) * VIEW.h
             return (
@@ -189,24 +192,47 @@ export function HeroAnnotationField() {
                   strokeWidth={0.5}
                   opacity={0.15}
                 />
-                {/* cx/cy pinned so a pre-animation render never shows
-                    the circle at SVG (0,0). */}
-                <circle cx={-30} cy={y} r={row.size} fill={row.color} opacity={0}>
+                <g visibility="hidden">
+                  <set
+                    attributeName="visibility"
+                    to="visible"
+                    begin="0.08s"
+                    fill="freeze"
+                  />
                   <animateMotion
                     dur={`${row.duration}s`}
                     repeatCount="indefinite"
                     begin={`-${row.offset}s`}
                     path={`M -30 ${y} L ${VIEW.w + 30} ${y}`}
                   />
-                  <animate
-                    attributeName="opacity"
-                    values="0; 0.65; 0.65; 0"
-                    keyTimes="0; 0.15; 0.85; 1"
-                    dur={`${row.duration}s`}
-                    begin={`-${row.offset}s`}
-                    repeatCount="indefinite"
-                  />
-                </circle>
+                  {/* Trailing halo around each scan packet */}
+                  <circle cx={0} cy={0} r={row.size + 3} fill={row.color} opacity={0}>
+                    <animate
+                      attributeName="r"
+                      values={`${row.size + 2};${row.size + 9};${row.size + 2}`}
+                      dur="1.6s"
+                      repeatCount="indefinite"
+                    />
+                    <animate
+                      attributeName="opacity"
+                      values="0; 0.22; 0.22; 0"
+                      keyTimes="0; 0.15; 0.85; 1"
+                      dur={`${row.duration}s`}
+                      begin={`-${row.offset}s`}
+                      repeatCount="indefinite"
+                    />
+                  </circle>
+                  <circle cx={0} cy={0} r={row.size} fill={row.color} opacity={0}>
+                    <animate
+                      attributeName="opacity"
+                      values="0; 0.65; 0.65; 0"
+                      keyTimes="0; 0.15; 0.85; 1"
+                      dur={`${row.duration}s`}
+                      begin={`-${row.offset}s`}
+                      repeatCount="indefinite"
+                    />
+                  </circle>
+                </g>
               </g>
             )
           })}

@@ -108,13 +108,10 @@ export default function ContactPage() {
               </FadeIn>
 
               <FadeIn delay={0.2}>
-                <div
-                  className="mt-8 rounded-2xl border p-6"
-                  style={{
-                    borderColor: 'var(--border-glass)',
-                    background: 'var(--card-surface)',
-                  }}
-                >
+                {/* Sits ~120px below the ClayFrame with its own opaque
+                    surface + z-index above the ember shadow bleed. Without
+                    both the shadow visibly merged into the card border. */}
+                <div className="contact-direct-card relative z-10 mt-[7.5rem] rounded-2xl p-6">
                   <p
                     className="mb-2 text-[11px] font-semibold uppercase"
                     style={{
@@ -150,18 +147,11 @@ export default function ContactPage() {
               </FadeIn>
             </div>
 
-            {/* Right: the form */}
+            {/* Right: the form. The .contact-panel class handles both
+                themes — warm-dark translucent in dark, cream card with
+                soft ember drop in light. */}
             <FadeIn delay={0.1}>
-              <div
-                className="rounded-3xl border p-7 md:p-10"
-                style={{
-                  borderColor: 'var(--border-glass)',
-                  background:
-                    'linear-gradient(160deg, rgba(28, 23, 19, 0.55) 0%, rgba(20, 16, 13, 0.35) 100%)',
-                  boxShadow:
-                    '0 22px 60px -18px rgba(255,107,53,0.35), inset 0 1px 0 0 var(--highlight-top)',
-                }}
-              >
+              <div className="contact-panel p-7 md:p-10">
                 <ContactForm />
               </div>
             </FadeIn>

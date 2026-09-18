@@ -153,19 +153,46 @@ export function HeroWorkspaceScene() {
     [nodes],
   )
 
-  // Drift orbs — soft ambient particles floating around the network,
-  // each pulsing on its own phase. Adds the "circles + flow" density
-  // the user wanted on top of the scene.
+  // Drift orbs — soft ambient particles that actually drift instead of
+  // pulsing in place. Each orb gets its own looping bezier "orbit" so the
+  // ambient layer reads as flow, not a field of static dots. cx/cy stay
+  // at 0 (see the highlighted-packet fix for why) and the base position
+  // lives in the animateMotion path's M-coordinate.
   const DRIFT_ORBS = useMemo(() => {
-    const orbs: Array<{ x: number; y: number; r: number; color: string; dur: number; delay: number }> = []
-    for (let i = 0; i < 18; i++) {
+    const orbs: Array<{
+      cx: number
+      cy: number
+      r: number
+      color: string
+      pulseDur: number
+      driftDur: number
+      driftPath: string
+      pulseDelay: number
+      driftDelay: number
+    }> = []
+    for (let i = 0; i < 14; i++) {
+      // Base positions kept well inside the frame so the wandering
+      // ellipse can never carry an orb into a corner. Previously
+      // cx=80 + rx=90 let orbs cross x=-10, showing them briefly
+      // clustered at the left edge — the glitch the user kept flagging.
+      const cx = 170 + hashRand(i * 17) * (VIEW.w - 340)
+      const cy = 150 + hashRand(i * 29) * (VIEW.h - 280)
+      const rx = 30 + hashRand(i * 83) * 50
+      const ry = 20 + hashRand(i * 89) * 30
+      const driftPath =
+        `M ${cx} ${cy - ry} ` +
+        `C ${cx + rx} ${cy - ry}, ${cx + rx} ${cy + ry}, ${cx} ${cy + ry} ` +
+        `C ${cx - rx} ${cy + ry}, ${cx - rx} ${cy - ry}, ${cx} ${cy - ry} Z`
       orbs.push({
-        x: 80 + hashRand(i * 17) * (VIEW.w - 160),
-        y: 80 + hashRand(i * 29) * (VIEW.h - 200),
+        cx,
+        cy,
         r: 0.8 + hashRand(i * 41) * 1.8,
         color: COLORS[i % COLORS.length],
-        dur: 3 + hashRand(i * 53) * 3,
-        delay: hashRand(i * 71) * -3,
+        pulseDur: 3 + hashRand(i * 53) * 3,
+        driftDur: 9 + hashRand(i * 47) * 8,
+        driftPath,
+        pulseDelay: hashRand(i * 71) * -3,
+        driftDelay: hashRand(i * 61) * -12,
       })
     }
     return orbs
@@ -390,9 +417,12 @@ export function HeroWorkspaceScene() {
       <div
         className="illust-frame"
         style={{
-          borderRadius: 28,
+          borderRadius: 22,
           border: '1px solid rgba(255, 143, 92, 0.22)',
-          padding: 'clamp(12px, 1.4vw, 20px)',
+          // Tightened from clamp(12,1.4vw,20) — the earlier padding
+          // wasted a fat ring of dark around the scene which made the
+          // visualization feel undersized inside its own frame.
+          padding: 'clamp(4px, 0.5vw, 9px)',
           backdropFilter: 'none',
         }}
       >
@@ -435,43 +465,55 @@ export function HeroWorkspaceScene() {
           {/* Grid backdrop */}
           <rect width={VIEW.w} height={VIEW.h} fill="url(#ws-grid)" />
 
-          {/* Drift orbs — ambient warm particles pulsing across the scene */}
+          {/* Drift orbs — each orbits its own base position along a soft
+              looping bezier while pulsing on an independent phase. Wrapped
+              in a hidden <g> that flips visible once motion attaches, so
+              no orb flashes at (0,0). */}
           {DRIFT_ORBS.map((o, i) => (
-            <circle
-              key={`orb-${i}`}
-              cx={o.x}
-              cy={o.y}
-              r={o.r}
-              fill={o.color}
-              opacity={0.5}
-            >
-              <animate
-                attributeName="opacity"
-                values="0.15;0.7;0.15"
-                dur={`${o.dur}s`}
-                repeatCount="indefinite"
-                begin={`${o.delay}s`}
+            <g key={`orb-${i}`} visibility="hidden">
+              <set
+                attributeName="visibility"
+                to="visible"
+                begin="0.08s"
+                fill="freeze"
               />
-              <animate
-                attributeName="r"
-                values={`${o.r * 0.7};${o.r * 1.4};${o.r * 0.7}`}
-                dur={`${o.dur}s`}
+              <animateMotion
+                dur={`${o.driftDur}s`}
                 repeatCount="indefinite"
-                begin={`${o.delay}s`}
+                begin={`${o.driftDelay}s`}
+                path={o.driftPath}
+                calcMode="linear"
               />
-            </circle>
+              <circle cx={0} cy={0} r={o.r} fill={o.color} opacity={0.5}>
+                <animate
+                  attributeName="opacity"
+                  values="0.15;0.7;0.15"
+                  dur={`${o.pulseDur}s`}
+                  repeatCount="indefinite"
+                  begin={`${o.pulseDelay}s`}
+                />
+                <animate
+                  attributeName="r"
+                  values={`${o.r * 0.7};${o.r * 1.4};${o.r * 0.7}`}
+                  dur={`${o.pulseDur}s`}
+                  repeatCount="indefinite"
+                  begin={`${o.pulseDelay}s`}
+                />
+              </circle>
+            </g>
           ))}
 
-          {/* Layer eyebrow labels */}
+          {/* Layer eyebrow labels — bumped 9 → 11.5 so INGEST / ENCODE /
+              REASON / INSIGHT read cleanly at hero display sizes. */}
           {LAYERS.map((layer, li) => (
             <text
               key={`ll-${li}`}
               x={layer.x}
-              y={VIEW.h - 90}
+              y={VIEW.h - 86}
               textAnchor="middle"
-              fontSize="9"
-              letterSpacing="1.8"
-              fill="rgba(250,245,238,0.4)"
+              fontSize="11.5"
+              letterSpacing="2.2"
+              fill="rgba(250,245,238,0.55)"
               fontFamily="var(--font-mono)"
             >
               {layer.label}
@@ -494,7 +536,15 @@ export function HeroWorkspaceScene() {
             />
           ))}
 
-          {/* Highlighted paths + streaming packets */}
+          {/* Highlighted paths + streaming packets.
+
+              animateMotion adds a translate transform on top of a circle's
+              cx/cy — so if cx/cy are non-zero, the packet ends up at
+              (cx + motion_x, cy + motion_y), off the path. Circle stays
+              at (0,0); wrapping <g> starts hidden and flips visible after
+              a tick so the (0,0) frame before motion attaches never
+              paints. Together this kills the corner glitch AND keeps the
+              packet on the flow line. */}
           {highlights.map((h, i) => (
             <g key={`hl-${i}`}>
               <path
@@ -508,26 +558,51 @@ export function HeroWorkspaceScene() {
                 className="flowing-line"
                 style={{ animationDuration: '5s', animationDelay: `${h.delay}s` }}
               />
-              {/* cx/cy pinned to the path's source so the packet never
-                  renders at SVG (0,0) if the SMIL animation hasn't
-                  attached yet — that top-left corner flash was the
-                  "circles running wild" glitch. */}
-              <circle cx={h.a.x} cy={h.a.y} r={3} fill={h.color} opacity={0}>
+              <g visibility="hidden">
+                <set
+                  attributeName="visibility"
+                  to="visible"
+                  begin="0.08s"
+                  fill="freeze"
+                />
                 <animateMotion
                   dur="4.2s"
                   repeatCount="indefinite"
                   begin={`-${h.delay}s`}
                   path={curvePath(h.a, h.b)}
                 />
-                <animate
-                  attributeName="opacity"
-                  values="0; 0.95; 0.95; 0"
-                  keyTimes="0; 0.15; 0.85; 1"
-                  dur="4.2s"
-                  begin={`-${h.delay}s`}
-                  repeatCount="indefinite"
-                />
-              </circle>
+                {/* Trailing aura — soft filled disc breathing 4→13px
+                    around the packet on a 1.4s loop while the outer
+                    opacity envelope keeps it in sync with packet
+                    visibility. Gives every dot a warm comet halo. */}
+                <circle cx={0} cy={0} r={5} fill={h.color} opacity={0}>
+                  <animate
+                    attributeName="r"
+                    values="4;13;4"
+                    dur="1.4s"
+                    repeatCount="indefinite"
+                  />
+                  <animate
+                    attributeName="opacity"
+                    values="0; 0.28; 0.28; 0"
+                    keyTimes="0; 0.15; 0.85; 1"
+                    dur="4.2s"
+                    begin={`-${h.delay}s`}
+                    repeatCount="indefinite"
+                  />
+                </circle>
+                {/* Bright core dot */}
+                <circle cx={0} cy={0} r={3} fill={h.color} opacity={0}>
+                  <animate
+                    attributeName="opacity"
+                    values="0; 0.95; 0.95; 0"
+                    keyTimes="0; 0.15; 0.85; 1"
+                    dur="4.2s"
+                    begin={`-${h.delay}s`}
+                    repeatCount="indefinite"
+                  />
+                </circle>
+              </g>
             </g>
           ))}
 
@@ -538,7 +613,16 @@ export function HeroWorkspaceScene() {
                 nodeRefs.current[li] = nodeRefs.current[li] || []
                 return (
                   <g key={`n-${li}-${i}`}>
-                    {/* radar ping */}
+                    {/* radar ping.
+                        DO NOT set an inline transform-origin in px here.
+                        `.pulse-dot-ring` uses `transform-box: fill-box`
+                        + `transform-origin: center`, which scales the
+                        circle around its own centre. Adding
+                        `transform-origin: <n.x>px <n.y>px` overrode the
+                        keyword with an absolute pixel value that lives
+                        OUTSIDE the fill-box, so every ping scaled toward
+                        the SVG origin — reading as "circles drifting to
+                        the corner." Kept animationDelay only. */}
                     <circle
                       cx={n.x}
                       cy={n.y}
@@ -547,7 +631,7 @@ export function HeroWorkspaceScene() {
                       stroke={LAYER_COLORS[li]}
                       strokeWidth={0.8}
                       className="pulse-dot-ring"
-                      style={{ animationDelay: `${(li * 3 + i) * 0.2}s`, transformOrigin: `${n.x}px ${n.y}px` }}
+                      style={{ animationDelay: `${(li * 3 + i) * 0.2}s` }}
                       opacity={0.35}
                     />
                     {/* core */}
@@ -697,26 +781,27 @@ export function HeroWorkspaceScene() {
             </g>
           ))}
 
-          {/* Top-left metadata chip */}
+          {/* Top-left metadata chip — widened + text bumped 9.5 → 11 so
+              the "annotation.pipeline / live" label is readable. */}
           <g>
             <rect
               x={28}
-              y={32}
-              width={190}
-              height={22}
-              rx={3}
-              fill="rgba(20,15,11,0.7)"
-              stroke="rgba(255,143,92,0.4)"
-              strokeWidth={0.6}
+              y={30}
+              width={228}
+              height={26}
+              rx={4}
+              fill="rgba(20,15,11,0.72)"
+              stroke="rgba(255,143,92,0.45)"
+              strokeWidth={0.7}
             />
-            <circle cx={40} cy={43} r={3} fill="#FF6B35">
+            <circle cx={42} cy={43} r={3.4} fill="#FF6B35">
               <animate attributeName="opacity" values="1;0.35;1" dur="1.6s" repeatCount="indefinite" />
             </circle>
             <text
-              x={52}
+              x={56}
               y={47}
-              fontSize={9.5}
-              fill="rgba(250,245,238,0.75)"
+              fontSize={11}
+              fill="rgba(250,245,238,0.85)"
               fontFamily="var(--font-mono)"
               style={{ letterSpacing: '0.06em' }}
             >
@@ -746,10 +831,10 @@ export function HeroWorkspaceScene() {
             <text
               ref={progressLabelRef}
               x={VIEW.w - 82}
-              y={65}
+              y={66}
               textAnchor="middle"
-              fontSize={11}
-              fill="rgba(250,245,238,0.9)"
+              fontSize={13}
+              fill="rgba(250,245,238,0.95)"
               fontFamily="var(--font-display)"
               style={{ letterSpacing: '-0.02em', fontWeight: 500 }}
             >
@@ -757,10 +842,10 @@ export function HeroWorkspaceScene() {
             </text>
             <text
               x={VIEW.w - 82}
-              y={102}
+              y={104}
               textAnchor="middle"
-              fontSize={8}
-              fill="rgba(250,245,238,0.45)"
+              fontSize={10}
+              fill="rgba(250,245,238,0.55)"
               fontFamily="var(--font-mono)"
               style={{ letterSpacing: '0.14em' }}
             >
@@ -784,22 +869,22 @@ export function HeroWorkspaceScene() {
                   style={{ filter: `drop-shadow(0 0 4px ${m.dot})` }}
                 />
                 <text
-                  x={m.x + 12}
+                  x={m.x + 14}
                   y={VIEW.h - 47}
-                  fontSize={13}
-                  fill="rgba(250,245,238,0.9)"
+                  fontSize={16}
+                  fill="rgba(250,245,238,0.95)"
                   fontFamily="var(--font-display)"
                   style={{ letterSpacing: '-0.02em', fontWeight: 500 }}
                 >
                   {m.value}
                 </text>
                 <text
-                  x={m.x + 12}
-                  y={VIEW.h - 34}
-                  fontSize={8}
-                  fill="rgba(250,245,238,0.4)"
+                  x={m.x + 14}
+                  y={VIEW.h - 32}
+                  fontSize={10}
+                  fill="rgba(250,245,238,0.55)"
                   fontFamily="var(--font-mono)"
-                  style={{ letterSpacing: '0.14em' }}
+                  style={{ letterSpacing: '0.16em' }}
                 >
                   {m.label}
                 </text>
