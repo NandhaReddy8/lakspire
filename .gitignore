@@ -87,3 +87,7 @@ skills-lock.json
 # Local screenshots + Playwright MCP scratch — dev-only artifacts
 /screenshots/
 /.playwright-mcp/
+/chk-*.png
+/story-*.png
+/*.debug.png
+CHANGES.pdf

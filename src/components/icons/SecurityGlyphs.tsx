@@ -122,15 +122,3 @@ export function PactGlyph({ className, size = 26 }: GlyphProps) {
     </svg>
   )
 }
-
-// ─── Compliance honesty (used in "what we don't claim") ─────────
-export function TransparencyGlyph({ className, size = 26 }: GlyphProps) {
-  return (
-    <svg viewBox="0 0 32 32" width={size} height={size} className={className} aria-hidden="true">
-      <circle cx="16" cy="16" r="11" {...s} />
-      <path d="M16 10 v8" {...s} strokeWidth="1.8" />
-      <circle cx="16" cy="22" r="1.2" fill="currentColor" />
-      <path d="M6 6 l4 4 M22 6 l4 4" {...s} opacity="0.55" />
-    </svg>
-  )
-}
