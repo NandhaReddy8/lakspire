@@ -185,7 +185,7 @@ export function Navigation() {
       {/* Mobile overlay */}
       <div
         className={cn(
-          'fixed inset-0 z-40 flex flex-col backdrop-blur-xl transition-all duration-300 lg:hidden',
+          'fixed inset-0 z-[60] flex flex-col backdrop-blur-xl transition-all duration-300 lg:hidden',
           'mobile-overlay',
           mobileOpen
             ? 'opacity-100 pointer-events-auto'
