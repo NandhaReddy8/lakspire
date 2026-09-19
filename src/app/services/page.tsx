@@ -22,23 +22,27 @@ export const metadata = {
 
 // Broader capability groups shown beneath the AI Annotation section.
 // Group numbering starts at 02 because the AI Annotation console is 01.
+// Groups 02–05 are the operations wrapped around the annotation console
+// in Section 01. Copy is written from a data-annotation partner's angle
+// — every group here supports labelling pipelines rather than describing
+// generic data work.
 const groups = [
   {
     Glyph: DataServicesGlyph,
     slug: 'data-services',
     accent: '#FF6B35',
     label: 'Group 02',
-    title: 'Data Services',
-    lede: 'Everything that turns raw information into structured, reliable, useful data — before it reaches an analyst or a model.',
+    title: 'Data Operations',
+    lede: 'Everything that has to happen before a sample is ready to annotate — sourcing, entry, cleansing, conversion and validation of the raw material that feeds the labelling console.',
     items: [
       'Data collection',
-      'Data entry',
-      'Data processing',
-      'Data cleansing',
-      'Data conversion',
+      'Data entry & transcription',
+      'Data cleansing & normalisation',
+      'Format conversion',
       'Data validation',
-      'Data classification',
-      'Data management',
+      'PII redaction',
+      'Deduplication',
+      'Sample preparation',
     ],
   },
   {
@@ -46,15 +50,15 @@ const groups = [
     slug: 'analytics-reporting',
     accent: '#F4A261',
     label: 'Group 03',
-    title: 'Analytics & Reporting',
-    lede: 'Transform datasets into reports, insights and decisions — with the level of rigour the answer actually deserves.',
+    title: 'Annotation Analytics & Reporting',
+    lede: 'The numbers behind the labels — coverage, class distribution, inter-annotator agreement, throughput and quality trends — reported clearly enough that decisions get made.',
     items: [
-      'Data analysis',
-      'Business reporting',
-      'Research support',
-      'Information analysis',
-      'Data visualisation',
-      'Report preparation',
+      'Annotation coverage analysis',
+      'Class distribution reports',
+      'Inter-annotator agreement',
+      'Throughput dashboards',
+      'Quality trend reporting',
+      'Delivery reporting',
     ],
   },
   {
@@ -62,15 +66,15 @@ const groups = [
     slug: 'ai-ml-data',
     accent: '#FF8F5C',
     label: 'Group 04',
-    title: 'AI & Machine Learning Data',
-    lede: 'The training, evaluation and human-in-the-loop data that modern AI and ML systems depend on to be reliable. See the full catalogue in Section 01.',
+    title: 'Training & Evaluation Datasets',
+    lede: 'Assembled, versioned datasets that ship straight into your training and evaluation pipelines — training splits, gold sets, HITL corrections, edge-case packs. Section 01 is the bench that produces them.',
     items: [
-      'Data annotation',
-      'Data labelling',
-      'AI training data',
-      'Data classification',
-      'AI evaluation',
-      'Human-in-the-loop review',
+      'Training splits',
+      'Evaluation gold sets',
+      'Preference & ranking data',
+      'HITL correction sets',
+      'Edge-case packs',
+      'Dataset versioning',
     ],
   },
   {
@@ -78,14 +82,15 @@ const groups = [
     slug: 'business-support',
     accent: '#E9C46A',
     label: 'Group 05',
-    title: 'Business Support',
-    lede: 'The information-management and operational work that keeps a business running — done properly, so leaders can focus on decisions.',
+    title: 'Programme Support',
+    lede: 'The programme layer around an annotation engagement — guidelines, taxonomy management, reviewer onboarding, documentation and delivery co-ordination. The quiet work that keeps a labelling operation honest.',
     items: [
-      'Information management',
-      'Research',
-      'Documentation',
-      'Administrative data support',
-      'Operational support',
+      'Annotation guideline authoring',
+      'Taxonomy & schema management',
+      'Reviewer onboarding',
+      'Documentation & runbooks',
+      'Delivery co-ordination',
+      'Programme reporting',
     ],
   },
 ]
@@ -103,7 +108,7 @@ export default function ServicesPage() {
             </span>
           </>
         }
-        subtitle="A nine-role annotation console for modern AI teams, plus the broader data operations — collection, cleansing, analytics, reporting — that keep your models honest. Structured scope. Human review where it matters."
+        subtitle="A nine-service annotation console for modern AI teams, plus the surrounding data operations — collection, cleansing, coverage analytics and programme support — that keep every labelled dataset honest end to end."
       />
 
       {/* Pipeline visual — the story before the groups */}
@@ -162,14 +167,15 @@ export default function ServicesPage() {
                   color: 'var(--text-strong)',
                 }}
               >
-                Beyond annotation — the full data lifecycle.
+                Around every labelled dataset — the operations that make it work.
               </h2>
               <p
                 className="mt-4 text-[15.5px] leading-relaxed"
                 style={{ fontFamily: 'var(--font-body)', color: 'var(--text-body)' }}
               >
-                Data services, analytics, ML enablement and business support — the surrounding work
-                that turns annotation output into decisions and shipped products.
+                Sample preparation, annotation analytics, versioned training sets and programme
+                support — the surrounding work that turns Section 01&apos;s labelling into
+                production-ready training data.
               </p>
             </div>
           </FadeIn>
@@ -245,10 +251,10 @@ export default function ServicesPage() {
                       "effect appears on hover-off" artefact caused by
                       opacity flashing while transform still eases. */}
                   <StaggerGroup
-                    className={`grid grid-cols-1 gap-2.5 sm:grid-cols-2 ${flip ? 'lg:order-1' : ''}`}
+                    className={`grid grid-cols-1 gap-2.5 auto-rows-fr sm:grid-cols-2 ${flip ? 'lg:order-1' : ''}`}
                   >
                     {g.items.map((item) => (
-                      <StaggerItem key={item}>
+                      <StaggerItem key={item} className="h-full">
                         <div
                           className="service-pill group"
                           style={{

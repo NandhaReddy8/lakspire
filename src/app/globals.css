@@ -85,10 +85,12 @@
    ───────────────────────────────────────────────────────── */
 [data-theme='light'] {
   --bg-page: #FBF6EF;
+  /* Stronger ember washes at the corners so the cream background
+     actually reads as warm-lit rather than beige. */
   --bg-page-gradient:
-    radial-gradient(ellipse 70% 50% at 15% 0%, rgba(255, 143, 92, 0.14) 0%, transparent 55%),
-    radial-gradient(ellipse 50% 40% at 85% 10%, rgba(233, 196, 106, 0.10) 0%, transparent 50%),
-    radial-gradient(ellipse 60% 40% at 50% 100%, rgba(255, 189, 132, 0.10) 0%, transparent 55%),
+    radial-gradient(ellipse 70% 55% at 12% 0%, rgba(255, 107, 53, 0.24) 0%, transparent 58%),
+    radial-gradient(ellipse 55% 45% at 88% 8%, rgba(244, 162, 97, 0.20) 0%, transparent 55%),
+    radial-gradient(ellipse 65% 45% at 50% 100%, rgba(255, 143, 92, 0.16) 0%, transparent 58%),
     #FBF6EF;
   --bg-panel: rgba(255, 251, 244, 0.75);
   --bg-panel-strong: rgba(255, 253, 248, 0.95);
@@ -100,13 +102,15 @@
   --text-body: rgba(38, 26, 18, 0.72);
   --text-muted: rgba(38, 26, 18, 0.48);
   --text-faint: rgba(38, 26, 18, 0.32);
-  --highlight-top: rgba(255, 143, 92, 0.35);
-  --shadow-elev: 0 10px 40px -14px rgba(120, 60, 20, 0.22),
-                 inset 0 1px 0 0 rgba(255, 255, 255, 0.9);
+  --highlight-top: rgba(255, 107, 53, 0.48);
+  --shadow-elev: 0 12px 42px -14px rgba(224, 82, 32, 0.34),
+                 inset 0 1px 0 0 rgba(255, 255, 255, 0.85);
   --rail-track: rgba(38, 26, 18, 0.12);
   --overlay-scrim: rgba(255, 253, 248, 0.55);
+  /* Site-wide ember glow envelope for cards — resting state. */
+  --card-ember-shadow: 0 6px 18px -8px rgba(224, 82, 32, 0.28),
+                       0 12px 32px -16px rgba(255, 107, 53, 0.22);
 }
-
 /* Dark theme (default) — same values as :root, scoped so they don't
    override the [data-theme='light'] block above. This is required
    because CSS custom property cascade is order-dependent when
@@ -116,6 +120,8 @@ html:not([data-theme='light']) {
   --card-surface-2: rgba(20, 16, 13, 0.88);
   --text-faint: rgba(250, 245, 238, 0.28);
   --rail-track: rgba(255, 240, 220, 0.08);
+  --card-ember-shadow: 0 6px 20px -10px rgba(255, 107, 53, 0.35),
+                       0 14px 36px -18px rgba(224, 82, 32, 0.28);
   --overlay-scrim: rgba(10, 9, 8, 0.55);
 }
 
@@ -503,30 +509,37 @@ body {
 
 /* Bump content sizing at desktop breakpoints. Mobile is unchanged. */
 @media (min-width: 768px) {
-  body { font-size: 1rem; }
+  body { font-size: 1.125rem; }
   /* Site-wide small-text bump — most descriptions across pages
      use inline Tailwind arbitrary sizes. Override at md+ so the
      copy reads a touch larger on desktop without touching mobile.
      Headings use clamp() and are unaffected. */
-  .text-\[12\.5px\]  { font-size: 13px; }
-  .text-\[13px\]     { font-size: 13.5px; }
-  .text-\[13\.5px\]  { font-size: 14.5px; }
-  .text-\[14px\]     { font-size: 15px; }
-  .text-\[14\.5px\]  { font-size: 15.5px; }
-  .text-\[15px\]     { font-size: 16px; }
-  .text-\[15\.5px\]  { font-size: 16.5px; }
-  .text-\[16px\]     { font-size: 17px; }
-  .text-\[17px\]     { font-size: 18px; }
+  .text-\[12\.5px\]  { font-size: 14px; }
+  .text-\[13px\]     { font-size: 14.5px; }
+  .text-\[13\.5px\]  { font-size: 15.5px; }
+  .text-\[14px\]     { font-size: 16px; }
+  .text-\[14\.5px\]  { font-size: 16.5px; }
+  .text-\[15px\]     { font-size: 17.5px; }
+  .text-\[15\.5px\]  { font-size: 18px; }
+  .text-\[16px\]     { font-size: 18.5px; }
+  .text-\[17px\]     { font-size: 19.5px; }
 }
 @media (min-width: 1280px) {
-  body { font-size: 1.0625rem; }
-  .text-\[13\.5px\]  { font-size: 15px; }
-  .text-\[14px\]     { font-size: 15.5px; }
-  .text-\[14\.5px\]  { font-size: 16px; }
-  .text-\[15px\]     { font-size: 16.5px; }
-  .text-\[15\.5px\]  { font-size: 17px; }
-  .text-\[16px\]     { font-size: 17.5px; }
-  .text-\[17px\]     { font-size: 18.5px; }
+  body { font-size: 1.1875rem; }
+  .text-\[13\.5px\]  { font-size: 16.5px; }
+  .text-\[14px\]     { font-size: 17px; }
+  .text-\[14\.5px\]  { font-size: 17.5px; }
+  .text-\[15px\]     { font-size: 18px; }
+  .text-\[15\.5px\]  { font-size: 18.5px; }
+  .text-\[16px\]     { font-size: 19px; }
+  .text-\[17px\]     { font-size: 20px; }
+}
+
+/* Paragraph copy carries clear weight so long blocks read confidently
+   on the light backdrop. Sits between normal 400 and bold 700 — heavier
+   than before but not shouty. */
+main p, main li {
+  font-weight: 500;
 }
 
 /* Also clip at the root so absolutely-positioned decorative backdrops
@@ -649,26 +662,31 @@ html {
 [data-theme='light'] .themed-footer > div:last-child {
   color: rgba(255, 240, 220, 0.05) !important;
 }
-/* Footer cursor-following glow — swap color/opacity per theme.
-   Dark: warm ember lift. Light: deeper ember pigment for warmth on cream. */
+/* Footer cursor-following glow — tuned to feel like a torch beam in
+   a dark room. Wider radius, softer intensity, longer fall-off. The
+   effect should be a warm halo the eye follows, not a bright spot. */
 .footer-glow {
   background: radial-gradient(
-    280px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
-    rgba(255, 143, 92, 0.40) 0%,
-    rgba(255, 107, 53, 0.20) 40%,
-    transparent 60%
+    620px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgba(255, 155, 100, 0.18) 0%,
+    rgba(255, 120, 70, 0.11) 22%,
+    rgba(255, 107, 53, 0.05) 48%,
+    transparent 78%
   );
+  filter: blur(6px);
 }
-/* Footer stays black in both themes, so the cursor-follow ember glow
-   uses NORMAL blend in light mode (multiply-on-black is invisible).
-   Modest opacity — enough to lift the black without spotlighting. */
+/* Footer stays black in both themes, so the same torch treatment
+   works on cream — normal blend so the warm light reads on top of
+   the dark footer. Slightly warmer stops for pigment on light. */
 [data-theme='light'] .footer-glow {
   background: radial-gradient(
-    280px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
-    rgba(255, 143, 92, 0.40) 0%,
-    rgba(255, 107, 53, 0.20) 40%,
-    transparent 60%
+    620px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgba(255, 165, 110, 0.20) 0%,
+    rgba(255, 130, 80, 0.12) 22%,
+    rgba(240, 105, 55, 0.05) 48%,
+    transparent 78%
   );
+  filter: blur(6px);
   mix-blend-mode: normal;
 }
 
@@ -752,6 +770,8 @@ html {
   background: var(--card-surface);
   color: inherit;
   text-decoration: none;
+  box-shadow: 0 4px 14px -8px color-mix(in srgb, var(--card-accent) 32%, transparent),
+              0 10px 28px -16px color-mix(in srgb, var(--card-accent) 22%, transparent);
   transition: transform 260ms var(--ease-out),
               border-color 260ms var(--ease-out),
               background-color 260ms var(--ease-out),
@@ -822,10 +842,42 @@ html {
 }
 .link-card--icon .lc-plate {
   flex-shrink: 0;
-  transition: transform 260ms var(--ease-out);
+  transition: transform 380ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 @media (hover: hover) {
-  .link-card:hover .lc-plate { transform: scale(1.06) rotate(-2deg); }
+  .link-card:hover .lc-plate {
+    transform: scale(1.08) rotate(-3deg);
+  }
+}
+
+/* Practice card — Security page. Adds a soft aurora on hover and a
+   longer, gentler transition so the eight-card grid feels calm and
+   deliberate rather than snappy. */
+.practice-card {
+  transition: transform 420ms cubic-bezier(0.22, 1, 0.36, 1),
+              border-color 380ms var(--ease-out),
+              background-color 380ms var(--ease-out),
+              box-shadow 420ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.practice-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    460px circle at 20% 0%,
+    color-mix(in srgb, var(--card-accent) 14%, transparent) 0%,
+    transparent 60%
+  );
+  opacity: 0;
+  transition: opacity 480ms var(--ease-out);
+  pointer-events: none;
+}
+@media (hover: hover) {
+  .practice-card:hover {
+    transform: translateY(-4px);
+  }
+  .practice-card:hover::before { opacity: 1; }
 }
 
 /* ─── Service pill (Groups 2-5 items) ────────────────────────
@@ -843,10 +895,14 @@ html {
   align-items: center;
   gap: 0.75rem;
   overflow: hidden;
-  padding: 12px 44px 12px 18px;
+  padding: 14px 44px 14px 18px;
   border-radius: 12px;
   border: 1px solid var(--border-glass);
   background: var(--card-surface);
+  min-height: 56px;    /* every pill stands at the same base height */
+  height: 100%;        /* stretches to the tallest sibling in its row */
+  box-shadow: 0 4px 12px -8px color-mix(in srgb, var(--pill-accent) 32%, transparent),
+              0 10px 22px -14px color-mix(in srgb, var(--pill-accent) 20%, transparent);
   transition: transform 260ms var(--ease-out),
               border-color 260ms var(--ease-out),
               background-color 260ms var(--ease-out),
@@ -966,8 +1022,16 @@ html {
 
 /* ─── Role card (AI Annotation section) ─────────────────────
    Bounding-box corner brackets that animate in on hover,
-   echoing the annotation-cursor language. */
-.role-card { position: relative; }
+   echoing the annotation-cursor language. Resting ember shadow
+   ties the card grid into the site-wide warm envelope. */
+.role-card {
+  position: relative;
+  box-shadow: 0 4px 14px -8px color-mix(in srgb, var(--role-accent, #FF8F5C) 30%, transparent),
+              0 12px 28px -16px color-mix(in srgb, var(--role-accent, #FF8F5C) 22%, transparent);
+  transition: transform 300ms var(--ease-out),
+              border-color 300ms var(--ease-out),
+              box-shadow 300ms var(--ease-out);
+}
 .role-bracket {
   position: absolute;
   width: 14px;
@@ -984,6 +1048,87 @@ html {
 .role-card:hover .role-bracket {
   opacity: 0.85;
   transform: translate(0, 0);
+}
+
+/* Industry card icon — animated ring pulses out on hover, glyph
+   inside eases up slightly. Keeps the sector cards feeling alive
+   without competing with the copy for attention. */
+.industry-icon {
+  position: relative;
+  transition: transform 320ms var(--ease-out);
+}
+.industry-icon__ring {
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  border: 1px solid color-mix(in srgb, var(--plate-accent, #FF6B35) 45%, transparent);
+  opacity: 0;
+  transform: scale(0.9);
+  transition: opacity 380ms var(--ease-out), transform 520ms cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+.industry-icon svg {
+  transition: transform 380ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+@media (hover: hover) {
+  .group:hover .industry-icon {
+    transform: translateZ(20px) scale(1.06);
+  }
+  .group:hover .industry-icon__ring {
+    opacity: 1;
+    transform: scale(1.14);
+  }
+  .group:hover .industry-icon svg {
+    transform: translateY(-1.5px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .industry-icon,
+  .industry-icon svg,
+  .industry-icon__ring { transition: none; }
+}
+
+/* Role icon — glyph is split into .glyph-a / .glyph-b groups so a
+   split-and-reunite motion runs on hover. Two elements ease apart
+   along opposite axes then come back together. Kept short and
+   subtle (no continuous animation, no scale explosion). */
+.role-icon__svg .glyph-a,
+.role-icon__svg .glyph-b {
+  transition: transform 520ms cubic-bezier(0.34, 1.4, 0.5, 1);
+  transform-origin: center;
+}
+@media (hover: hover) {
+  .role-card:hover .role-icon__svg {
+    animation: role-icon-pulse 620ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .role-card:hover .role-icon__svg .glyph-a {
+    animation: glyph-split-a 620ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .role-card:hover .role-icon__svg .glyph-b {
+    animation: glyph-split-b 620ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
+@keyframes role-icon-pulse {
+  0%   { transform: scale(1); }
+  55%  { transform: scale(1.06); }
+  100% { transform: scale(1); }
+}
+@keyframes glyph-split-a {
+  0%   { transform: translate(0, 0); }
+  55%  { transform: translate(-2.2px, -1.6px); }
+  100% { transform: translate(0, 0); }
+}
+@keyframes glyph-split-b {
+  0%   { transform: translate(0, 0); }
+  55%  { transform: translate(2.2px, 1.6px); }
+  100% { transform: translate(0, 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .role-card:hover .role-icon__svg,
+  .role-card:hover .role-icon__svg .glyph-a,
+  .role-card:hover .role-icon__svg .glyph-b {
+    animation: none;
+  }
 }
 
 /* ─── Global cursor spotlight (fixed, follows cursor) ─────────
@@ -1007,10 +1152,10 @@ html {
 }
 [data-theme='light'] .cursor-spotlight {
   background: radial-gradient(
-    500px circle at var(--cursor-x) var(--cursor-y),
-    rgba(224, 82, 32, 0.14),
-    rgba(255, 143, 92, 0.06) 35%,
-    transparent 60%
+    560px circle at var(--cursor-x) var(--cursor-y),
+    rgba(224, 82, 32, 0.22),
+    rgba(255, 143, 92, 0.10) 35%,
+    transparent 62%
   );
   mix-blend-mode: multiply;
 }
@@ -1020,179 +1165,39 @@ html {
    to the client-supplied logo image. Deep amber gradient on light
    theme so it reads clearly against cream. */
 .lakspire-wordmark {
-  font-family: var(--font-editorial), Georgia, serif;
-  background: linear-gradient(135deg, #F5D28A 0%, #C8963A 60%, #8B6423 100%);
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-feature-settings: 'ss01', 'cv01';
+  background: linear-gradient(135deg, #F5D28A 0%, #C8963A 55%, #8B6423 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   display: inline-block;
 }
 [data-theme='light'] .lakspire-wordmark {
-  background: linear-gradient(135deg, #8B4A15 0%, #6B3A10 55%, #3A200B 100%);
+  background: linear-gradient(135deg, #7A3E10 0%, #5A2E0A 55%, #331A05 100%);
   -webkit-background-clip: text;
   background-clip: text;
 }
 
-/* ─── Annotation cursor — solid dot + trailing halo ───────────
-   Perf-tuned: only transform is animated per frame. box-shadow
-   is static, no mix-blend, no continuous animation. State
-   changes use short transform+opacity transitions only. */
-body.custom-cursor-on,
-body.custom-cursor-on * { cursor: none !important; }
-body.custom-cursor-on input,
-body.custom-cursor-on textarea,
-body.custom-cursor-on [contenteditable='true'],
-body.custom-cursor-on iframe { cursor: text !important; }
-
-.cursor-dot,
-.cursor-halo {
-  position: fixed;
-  top: 0;
-  left: 0;
-  /* Zero-sized parent, but no `contain: paint` — that would clip the
-     absolutely-positioned dot/halo children (which sit outside the
-     parent's box after the translate). */
-  width: 0;
-  height: 0;
-  pointer-events: none;
-  z-index: 60;
-  opacity: 0;
-  transition: opacity 180ms var(--ease-out);
-  transform: translate3d(-100px, -100px, 0);
-  will-change: transform;
+/* ─── Brand mark — zoomed LS from the client-supplied logo ────
+   The raw logo is LS mark + wordmark stacked. Rounded avatars
+   crop the wordmark out but the LS lands too small. We scale
+   the image inside the mask so the LS fills the circle. */
+.lakspire-mark {
+  background: #0B0805;
+  box-shadow: inset 0 1px 0 0 rgba(255, 220, 170, 0.14),
+              0 2px 10px -4px rgba(0, 0, 0, 0.4);
 }
-.cursor-dot.is-visible,
-.cursor-halo.is-visible { opacity: 1; }
-
-/* Solid dot — 8px ember, pinned exactly on pointer */
-.cd-core {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  background: radial-gradient(circle, #FFB07A 0%, #FF6B35 55%, #C24A20 100%);
-  box-shadow: 0 0 10px rgba(255, 107, 53, 0.5);
-  transition: transform 160ms var(--ease-out), opacity 160ms var(--ease-out);
+.lakspire-mark__img {
+  object-fit: cover;
+  object-position: center 32%;
+  transform: scale(2.15);
+  transform-origin: center 32%;
 }
-.cd-ibeam {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 1.5px;
-  height: 20px;
-  border-radius: 1px;
-  background: rgba(255, 240, 220, 0.9);
-  transform: translate(-50%, -50%) scaleY(0);
-  opacity: 0;
-  transition: transform 160ms var(--ease-out), opacity 160ms var(--ease-out);
-}
-.cursor-dot.is-text .cd-core  { opacity: 0; transform: translate(-50%, -50%) scale(0.4); }
-.cursor-dot.is-text .cd-ibeam { opacity: 1; transform: translate(-50%, -50%) scaleY(1); }
-
-/* Halo — 48px ring with a deep-ember radial glow. The gradient
-   is what gives the cursor its "warm shade" — background painted
-   inside the ring extends the ember tint beyond a thin border. */
-.ch-fill {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  border: 1.25px solid rgba(224, 82, 32, 0.8);
-  background: radial-gradient(
-    circle,
-    rgba(200, 60, 20, 0.28) 0%,
-    rgba(255, 107, 53, 0.14) 45%,
-    rgba(255, 143, 92, 0.05) 78%,
-    transparent 100%
-  );
-  transition: width 200ms var(--ease-out), height 200ms var(--ease-out),
-              border-color 200ms var(--ease-out), border-radius 200ms var(--ease-out),
-              background 200ms var(--ease-out);
-}
-
-/* Target — halo bulges + glow deepens */
-.cursor-halo.is-target .ch-fill {
-  width: 64px;
-  height: 64px;
-  border-color: rgba(180, 50, 15, 1);
-  background: radial-gradient(
-    circle,
-    rgba(180, 50, 15, 0.38) 0%,
-    rgba(224, 82, 32, 0.2) 45%,
-    rgba(255, 107, 53, 0.06) 78%,
-    transparent 100%
-  );
-}
-.cursor-dot.is-target .cd-core {
-  transform: translate(-50%, -50%) scale(0.85);
-}
-
-/* Text — halo compresses to a slim vertical marker (no glow) */
-.cursor-halo.is-text .ch-fill {
-  width: 12px;
-  height: 22px;
-  border-radius: 3px;
-  border-color: rgba(255, 240, 220, 0.35);
-  background: transparent;
-}
-
-/* Press — brief inward pulse with the deepest ember */
-.cursor-halo.is-down .ch-fill {
-  width: 34px;
-  height: 34px;
-  border-color: rgba(160, 40, 10, 1);
-  background: radial-gradient(
-    circle,
-    rgba(160, 40, 10, 0.45) 0%,
-    rgba(224, 82, 32, 0.22) 55%,
-    transparent 100%
-  );
-}
-.cursor-dot.is-down .cd-core {
-  transform: translate(-50%, -50%) scale(1.35);
-}
-
-/* Light theme — deeper ember for contrast on cream */
-[data-theme='light'] .cd-core {
-  background: radial-gradient(circle, #FF8F5C 0%, #E05220 60%, #8B3410 100%);
-  box-shadow: 0 0 8px rgba(224, 82, 32, 0.45);
-}
-[data-theme='light'] .ch-fill {
-  border-color: rgba(180, 60, 20, 0.85);
-  background: radial-gradient(
-    circle,
-    rgba(180, 60, 20, 0.24) 0%,
-    rgba(224, 82, 32, 0.12) 45%,
-    rgba(255, 143, 92, 0.05) 78%,
-    transparent 100%
-  );
-}
-[data-theme='light'] .cursor-halo.is-target .ch-fill {
-  border-color: rgba(140, 40, 10, 1);
-  background: radial-gradient(
-    circle,
-    rgba(140, 40, 10, 0.34) 0%,
-    rgba(200, 60, 20, 0.18) 45%,
-    rgba(255, 107, 53, 0.06) 78%,
-    transparent 100%
-  );
-}
-[data-theme='light'] .cd-ibeam { background: rgba(38, 26, 18, 0.85); }
-
-/* Accessible fallbacks — always restore native cursor */
-@media (prefers-reduced-motion: reduce) {
-  body.custom-cursor-on, body.custom-cursor-on * { cursor: auto !important; }
-  .cursor-dot, .cursor-halo { display: none; }
-}
-@media (hover: none), (pointer: coarse) {
-  body.custom-cursor-on, body.custom-cursor-on * { cursor: auto !important; }
-  .cursor-dot, .cursor-halo { display: none; }
+[data-theme='light'] .lakspire-mark {
+  background: #0F0906;
+  box-shadow: inset 0 1px 0 0 rgba(255, 220, 170, 0.2),
+              0 2px 12px -4px rgba(120, 60, 20, 0.22);
 }
 
 /* ─── Workflow background pattern (animated) ────────────────── */
@@ -1620,4 +1625,236 @@ h1, h2, h3, h4, h5, h6 {
   background: linear-gradient(160deg, #FFFDF8 0%, #F8F1E6 100%);
   border: 1px solid var(--border-glass-strong);
   box-shadow: 0 14px 32px -18px rgba(224, 82, 32, 0.22);
+}
+
+/* ─── Cookie consent — bottom-centre chip (non-blocking) ─────── */
+.cookie-consent {
+  position: fixed;
+  left: 50%;
+  bottom: 16px;
+  transform: translateX(-50%);
+  z-index: 55;
+  max-width: min(92vw, 640px);
+  animation: cookie-slide-up 380ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.cookie-consent[data-open='true'] {
+  max-width: min(94vw, 560px);
+}
+@keyframes cookie-slide-up {
+  from { opacity: 0; transform: translate(-50%, 16px); }
+  to   { opacity: 1; transform: translate(-50%, 0); }
+}
+.cookie-chip {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 8px 8px 14px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--bg-panel-strong) 88%, transparent);
+  border: 1px solid var(--border-glass-strong);
+  backdrop-filter: blur(18px) saturate(160%);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  box-shadow: 0 12px 34px -14px rgba(0, 0, 0, 0.35),
+              inset 0 1px 0 0 var(--highlight-top);
+}
+.cookie-chip__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgba(255,107,53,0.16), rgba(233,196,106,0.12));
+  color: var(--color-gold, #E9C46A);
+}
+.cookie-chip__label {
+  font-family: var(--font-body);
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--text-body);
+  max-width: 360px;
+}
+.cookie-gear,
+.cookie-btn {
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  line-height: 1;
+  cursor: pointer;
+  border-radius: 999px;
+  border: 1px solid var(--border-glass);
+  transition: color 200ms var(--ease-out),
+              background-color 200ms var(--ease-out),
+              border-color 200ms var(--ease-out),
+              transform 160ms var(--ease-out);
+}
+.cookie-gear {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: transparent;
+  color: var(--text-muted);
+}
+.cookie-gear:hover {
+  color: var(--text-strong);
+  border-color: var(--border-glass-strong);
+  background: color-mix(in srgb, var(--card-surface) 60%, transparent);
+}
+.cookie-btn {
+  padding: 8px 14px;
+  font-weight: 500;
+}
+.cookie-btn--primary {
+  color: #FFFFFF;
+  background: linear-gradient(135deg, #FF6B35 0%, #FF8F5C 100%);
+  border-color: rgba(255, 143, 92, 0.5);
+  box-shadow: 0 6px 16px -6px rgba(255, 107, 53, 0.45);
+}
+.cookie-btn--primary:hover { transform: translateY(-1px); }
+.cookie-btn--ghost {
+  color: var(--text-body);
+  background: color-mix(in srgb, var(--card-surface) 60%, transparent);
+}
+.cookie-btn--ghost:hover {
+  color: var(--text-strong);
+  border-color: var(--border-glass-strong);
+}
+
+/* ─── Preferences panel ─── */
+.cookie-panel {
+  padding: 18px 20px 16px;
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--bg-panel-strong) 94%, transparent);
+  border: 1px solid var(--border-glass-strong);
+  backdrop-filter: blur(22px) saturate(160%);
+  -webkit-backdrop-filter: blur(22px) saturate(160%);
+  box-shadow: 0 22px 60px -20px rgba(0, 0, 0, 0.5),
+              inset 0 1px 0 0 var(--highlight-top);
+}
+.cookie-panel__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+  color: var(--text-strong);
+}
+.cookie-panel__title {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+.cookie-panel__intro {
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+}
+.cookie-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 8px 0 14px;
+}
+.cookie-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--border-glass);
+  background: color-mix(in srgb, var(--card-surface) 50%, transparent);
+}
+.cookie-row__name {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-strong);
+  letter-spacing: -0.01em;
+}
+.cookie-row__desc {
+  font-family: var(--font-body);
+  font-size: 11.5px;
+  line-height: 1.4;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+.cookie-panel__actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.cookie-link {
+  font-family: var(--font-body);
+  font-size: 12px;
+  color: var(--text-muted);
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, currentColor 40%, transparent);
+  text-underline-offset: 3px;
+  transition: color 200ms var(--ease-out);
+}
+.cookie-link:hover { color: var(--text-strong); }
+
+/* Toggle switch */
+.cookie-toggle {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.cookie-toggle input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+.cookie-toggle__track {
+  display: inline-block;
+  width: 34px;
+  height: 20px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--card-surface) 80%, transparent);
+  border: 1px solid var(--border-glass-strong);
+  position: relative;
+  transition: background-color 200ms var(--ease-out), border-color 200ms var(--ease-out);
+}
+.cookie-toggle__thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  background: var(--text-body);
+  transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1),
+              background-color 220ms var(--ease-out);
+}
+.cookie-toggle input:checked ~ .cookie-toggle__track {
+  background: linear-gradient(135deg, #FF6B35 0%, #FF8F5C 100%);
+  border-color: rgba(255, 143, 92, 0.6);
+}
+.cookie-toggle input:checked ~ .cookie-toggle__track .cookie-toggle__thumb {
+  transform: translateX(14px);
+  background: #FFFFFF;
+}
+.cookie-toggle--locked {
+  width: 34px;
+  height: 20px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--card-surface) 60%, transparent);
+  border: 1px dashed var(--border-glass-strong);
+  color: var(--text-muted);
+}
+
+/* Small screens — stack the actions */
+@media (max-width: 640px) {
+  .cookie-chip { flex-wrap: wrap; padding: 10px 12px; border-radius: 22px; }
+  .cookie-chip__label { flex: 1 1 100%; }
+  .cookie-panel__actions { justify-content: flex-end; }
 }

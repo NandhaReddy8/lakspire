@@ -1,22 +1,21 @@
 import Link from 'next/link'
-import {
-  ArrowRight,
-  Lock,
-  KeyRound,
-  ShieldCheck,
-  FileCheck,
-  Clipboard,
-  Trash2,
-  Scale,
-  Handshake,
-  AlertCircle,
-} from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 import { PageHero } from '@/components/blocks/PageHero'
 import { SectionLabel } from '@/components/blocks/SectionLabel'
 import { ClayFrame } from '@/components/blocks/ClayFrame'
 import { SecurityShieldScene } from '@/components/illustrations/SecurityShieldScene'
 import { FadeIn } from '@/components/motion/FadeIn'
 import { StaggerGroup, StaggerItem } from '@/components/motion/StaggerGroup'
+import {
+  ConfidentialityGlyph,
+  AccessGlyph,
+  TransferGlyph,
+  HandlingGlyph,
+  ReviewGlyph,
+  RetentionGlyph,
+  ProtectionGlyph,
+  PactGlyph,
+} from '@/components/icons/SecurityGlyphs'
 
 export const metadata = {
   title: 'Security & Data Protection — Lakspire',
@@ -26,49 +25,49 @@ export const metadata = {
 
 const practices = [
   {
-    Icon: Lock,
+    Glyph: ConfidentialityGlyph,
     accent: '#FF6B35',
     title: 'Data confidentiality',
     body: 'Client information is treated as confidential by default. NDAs are welcomed, expected and honoured.',
   },
   {
-    Icon: KeyRound,
+    Glyph: AccessGlyph,
     accent: '#F4A261',
     title: 'Role-based access controls',
     body: 'Access to client datasets is restricted to the team assigned to the engagement, on a need-to-know basis.',
   },
   {
-    Icon: ShieldCheck,
+    Glyph: TransferGlyph,
     accent: '#FF8F5C',
     title: 'Secure data transfer',
     body: 'Data is transferred over encrypted channels using client-approved mechanisms. No unencrypted transit.',
   },
   {
-    Icon: FileCheck,
+    Glyph: HandlingGlyph,
     accent: '#E9C46A',
     title: 'Data handling procedures',
     body: 'Documented processes for how data is stored, accessed, processed and reviewed during an engagement.',
   },
   {
-    Icon: Clipboard,
+    Glyph: ReviewGlyph,
     accent: '#FABD6C',
     title: 'Quality assurance & review',
     body: 'Layered quality checks — including human review where accuracy or context matters — before delivery.',
   },
   {
-    Icon: Trash2,
+    Glyph: RetentionGlyph,
     accent: '#FF6B35',
     title: 'Retention & deletion',
     body: 'Data is retained only as long as the engagement requires, then securely deleted per the agreed schedule.',
   },
   {
-    Icon: Scale,
+    Glyph: ProtectionGlyph,
     accent: '#F4A261',
     title: 'Applicable data protection',
     body: 'We aim to align with the data-protection requirements relevant to your jurisdiction and use case.',
   },
   {
-    Icon: Handshake,
+    Glyph: PactGlyph,
     accent: '#FF8F5C',
     title: 'Client confidentiality',
     body: 'What we work on, and for whom, stays private unless the client agrees to have it referenced publicly.',
@@ -164,19 +163,19 @@ export default function SecurityPage() {
               return (
                 <StaggerItem key={p.title}>
                   <article
-                    className="practice-card link-card link-card--icon link-card--static"
+                    className="practice-card link-card link-card--icon"
                     style={{ ['--card-accent' as string]: p.accent }}
                   >
                     <span aria-hidden="true" className="lc-bar" />
                     <span aria-hidden="true" className="lc-sweep" />
                     <span
-                      className="lc-plate icon-plate inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-xl"
+                      className="lc-plate icon-plate inline-flex h-14 w-14 shrink-0 items-center justify-center rounded-xl"
                       style={{
                         color: p.accent,
                         ['--plate-accent' as string]: p.accent,
                       }}
                     >
-                      <p.Icon size={20} strokeWidth={1.5} />
+                      <p.Glyph size={26} />
                     </span>
                     <div className="min-w-0 flex-1">
                       <div className="mb-1.5 flex items-baseline justify-between gap-3">
@@ -214,51 +213,6 @@ export default function SecurityPage() {
               )
             })}
           </StaggerGroup>
-        </div>
-      </section>
-
-      {/* Compliance honesty note — gold accent, static hover polish */}
-      <section className="py-section border-t border-white/[0.05]" data-scroll-anchor="scope">
-        <div className="mx-auto max-w-container container-pad">
-          <FadeIn>
-            <div
-              className="link-card link-card--icon link-card--static md:p-8"
-              style={{ ['--card-accent' as string]: '#E9C46A', padding: '24px' }}
-            >
-              <span aria-hidden="true" className="lc-bar" />
-              <span aria-hidden="true" className="lc-sweep" />
-              <span
-                className="lc-plate icon-plate inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-xl"
-                style={{
-                  color: '#E9C46A',
-                  ['--plate-accent' as string]: '#E9C46A',
-                }}
-              >
-                <AlertCircle size={20} strokeWidth={1.5} />
-              </span>
-              <div>
-                <p
-                  className="mb-2 text-[15.5px] font-medium"
-                  style={{
-                    fontFamily: 'var(--font-display)',
-                    color: 'var(--text-strong)',
-                    letterSpacing: '-0.01em',
-                  }}
-                >
-                  What we don&apos;t claim.
-                </p>
-                <p
-                  className="text-[13.5px] leading-relaxed"
-                  style={{ fontFamily: 'var(--font-body)', color: 'var(--text-body)' }}
-                >
-                  We deliberately don&apos;t claim certifications we don&apos;t hold. If your
-                  engagement requires ISO, SOC 2 or another specific certification, tell us up front
-                  — we&apos;ll be plain about what we do and don&apos;t currently carry, and how we
-                  can support your compliance requirements alongside the parts we do own.
-                </p>
-              </div>
-            </div>
-          </FadeIn>
         </div>
       </section>
 

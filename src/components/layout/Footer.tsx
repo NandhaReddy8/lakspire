@@ -7,11 +7,7 @@ import { siteConfig } from '@/data/siteConfig'
 
 const footerLinks = {
   Services: [
-    { label: 'AI Annotation & Training', href: '/services#ai-annotation' },
-    { label: 'Data Services', href: '/services#data-services' },
-    { label: 'Analytics & Reporting', href: '/services#analytics-reporting' },
-    { label: 'AI & ML Data', href: '/services#ai-ml-data' },
-    { label: 'Business Support', href: '/services#business-support' },
+    { label: 'All services', href: '/services' },
   ],
   Company: [
     { label: 'About', href: '/about' },
@@ -22,6 +18,7 @@ const footerLinks = {
   Legal: [
     { label: 'Privacy Policy', href: '/privacy-policy' },
     { label: 'Terms & Conditions', href: '/terms' },
+    { label: 'Cookie Policy', href: '/cookie-policy' },
   ],
 }
 
@@ -89,16 +86,17 @@ export function Footer() {
               aria-label="Lakspire Home"
               className="group inline-flex items-center gap-3 transition-opacity hover:opacity-90"
             >
-              <Image
-                src="/lakspire-logo.jpg"
-                alt=""
-                aria-hidden="true"
-                width={44}
-                height={44}
-                className="rounded-xl"
-                style={{ objectFit: 'cover' }}
-              />
-              <span className="lakspire-wordmark text-[20px] font-medium tracking-[0.2em]">
+              <span className="lakspire-mark relative inline-flex h-11 w-11 shrink-0 overflow-hidden rounded-2xl">
+                <Image
+                  src="/lakspire-logo.jpg"
+                  alt=""
+                  aria-hidden="true"
+                  width={160}
+                  height={160}
+                  className="lakspire-mark__img h-full w-full"
+                />
+              </span>
+              <span className="lakspire-wordmark text-[20px] font-semibold tracking-[0.2em]">
                 LAKSPIRE
               </span>
             </Link>

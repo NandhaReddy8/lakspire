@@ -8,12 +8,12 @@ import { AICapabilityRadial } from '@/components/illustrations/AICapabilityRadia
 import { ClayFrame } from '@/components/blocks/ClayFrame'
 
 const capabilities = [
-  { label: 'LLM Fine-tuning Data', desc: 'High-quality instruction-tuning and preference datasets', accent: '#FF6B35' },
-  { label: 'Model Evaluation',     desc: 'Expert-graded evaluation sets and benchmark construction',   accent: '#F4A261' },
-  { label: 'RAG Pipeline Support', desc: 'Structured retrieval corpora and knowledge base curation',   accent: '#FF8F5C' },
-  { label: 'Agent Workflow Data',  desc: 'Tool-use traces, trajectory grading and RL environments',    accent: '#E9C46A' },
-  { label: 'Multimodal Datasets',  desc: 'Image, audio, video and document annotation at scale',       accent: '#FABD6C' },
-  { label: 'Data Curation',        desc: 'Deduplication, filtering and quality scoring pipelines',     accent: '#FF6B35' },
+  { label: 'LLM Fine-tuning Labels',  desc: 'Instruction-tuning and preference-labelled datasets',      accent: '#FF6B35' },
+  { label: 'Evaluation Gold Sets',    desc: 'Expert-graded evaluation sets and benchmark annotations',  accent: '#F4A261' },
+  { label: 'RAG Corpus Labelling',    desc: 'Structured retrieval corpora and knowledge-base tagging',  accent: '#FF8F5C' },
+  { label: 'Agent Trajectory Data',   desc: 'Tool-use traces, trajectory grading and RL-ready labels',  accent: '#E9C46A' },
+  { label: 'Multimodal Annotation',   desc: 'Image, audio, video and document labelling at scale',      accent: '#FABD6C' },
+  { label: 'Pre-labelling Curation',  desc: 'Deduplication, redaction and sample-quality scoring',      accent: '#FF6B35' },
 ]
 
 export function AIDataSolutions() {
@@ -40,7 +40,7 @@ export function AIDataSolutions() {
               With Better Data.
             </h2>
             <p className="mb-6 text-[15px] leading-relaxed text-white/45" style={{ fontFamily: 'var(--font-body)' }}>
-              The quality of your AI is a direct function of the quality of your data. We specialise in building the datasets that frontier AI teams rely on — from initial scoping to production-scale delivery.
+              The quality of your AI is a direct function of the quality of your labels. Lakspire is a data-annotation partner — we build and maintain the labelled datasets frontier AI teams actually rely on, from initial scoping to production-scale delivery.
             </p>
             <Link
               href="/ai-data-solutions"

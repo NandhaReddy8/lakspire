@@ -5,13 +5,13 @@ import { FadeIn } from '@/components/motion/FadeIn'
 import { StaggerGroup, StaggerItem } from '@/components/motion/StaggerGroup'
 
 const industries = [
-  { name: 'Healthcare & Life Sciences', desc: 'Clinical data, medical records, trial datasets', accent: '#FF6B35' },
-  { name: 'Financial Services',          desc: 'Transactions, compliance, risk data processing', accent: '#F4A261' },
-  { name: 'Technology',                  desc: 'Product analytics, telemetry, AI training data',   accent: '#FF8F5C' },
-  { name: 'Retail & E-commerce',         desc: 'Catalogue data, customer behaviour, inventory',    accent: '#E9C46A' },
-  { name: 'Education',                   desc: 'Learning content, assessment data, LMS analytics', accent: '#FABD6C' },
-  { name: 'Professional Services',       desc: 'Document processing, knowledge management',        accent: '#FF6B35' },
-  { name: 'Public Sector',               desc: 'Government data, citizen services, public records', accent: '#F4A261' },
+  { name: 'Healthcare & Life Sciences', desc: 'De-identified clinical text, medical imaging, trial-record annotation', accent: '#FF6B35' },
+  { name: 'Financial Services',          desc: 'Transaction tagging, KYC document labelling, risk-signal annotation', accent: '#F4A261' },
+  { name: 'Technology',                  desc: 'LLM training data, prompt evaluation, telemetry labelling',            accent: '#FF8F5C' },
+  { name: 'Retail & E-commerce',         desc: 'Product-catalogue tagging, review sentiment, image classification',    accent: '#E9C46A' },
+  { name: 'Education',                   desc: 'Content classification, assessment tagging, learning-signal review',   accent: '#FABD6C' },
+  { name: 'Professional Services',       desc: 'Contract & clause annotation, redaction, knowledge tagging',           accent: '#FF6B35' },
+  { name: 'Public Sector',               desc: 'Record classification, form extraction, citizen-data annotation',      accent: '#F4A261' },
 ]
 
 export function Industries() {
@@ -38,8 +38,8 @@ export function Industries() {
               className="text-[14px] leading-relaxed text-white/40"
               style={{ fontFamily: 'var(--font-body)' }}
             >
-              We understand that data challenges vary by industry. Our teams bring domain knowledge
-              alongside data expertise.
+              Annotation is never generic. Each sector has its own vocabulary, sensitivity and
+              accuracy bar — and that&apos;s what we tune to, sector by sector.
             </p>
             <Link
               href="/industries"

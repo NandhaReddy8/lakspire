@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { ArrowRight, AlertCircle } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 import { PageHero } from '@/components/blocks/PageHero'
 import { SectionLabel } from '@/components/blocks/SectionLabel'
 import { ClayFrame } from '@/components/blocks/ClayFrame'
@@ -23,48 +23,50 @@ export const metadata = {
     'Data services for healthcare, financial services, technology, retail, education, professional services and the public sector — with genuine experience, no invented case studies.',
 }
 
+// Sector copy from an annotation partner's angle — every entry names
+// the labelling work Lakspire actually delivers in that sector.
 const industries = [
   {
     Glyph: HealthcareGlyph,
     accent: '#FF6B35',
     title: 'Healthcare & Life Sciences',
-    body: 'Data processing, research support, information management and analytics — with a careful eye on sensitivity and consent.',
+    body: 'De-identified clinical-text annotation, medical-imaging labelling and trial-record classification — with the sensitivity handling clinical data demands.',
   },
   {
     Glyph: FinanceGlyph,
     accent: '#F4A261',
     title: 'Financial Services',
-    body: 'Data validation, processing, classification and reporting — where accuracy under audit matters more than speed.',
+    body: 'Transaction tagging, KYC document labelling and risk-signal annotation — where every label has to hold up under audit, not just under a demo.',
   },
   {
     Glyph: TechnologyGlyph,
     accent: '#FF8F5C',
     title: 'Technology',
-    body: 'AI training data, annotation, data processing and research support for teams shipping real ML products.',
+    body: 'LLM training data, prompt/response evaluation, preference labelling and telemetry annotation for teams shipping real ML into production.',
   },
   {
     Glyph: RetailGlyph,
     accent: '#E9C46A',
     title: 'Retail & E-commerce',
-    body: 'Product data, cataloguing, classification and data-quality work that keeps merchandising and search honest.',
+    body: 'Product-catalogue attribute tagging, review-sentiment labelling and image classification that keeps merchandising, search and recommendation honest.',
   },
   {
     Glyph: EducationGlyph,
     accent: '#FABD6C',
     title: 'Education',
-    body: 'Research, data processing and information management for institutions and edtech providers.',
+    body: 'Content classification, assessment-item tagging and learning-signal review for institutions, publishers and edtech ML teams.',
   },
   {
     Glyph: ProfessionalGlyph,
     accent: '#FF6B35',
     title: 'Professional Services',
-    body: 'Research, reporting, document processing and business support — often confidential, always structured.',
+    body: 'Contract & clause annotation, document redaction and knowledge-base tagging — confidential work, structured properly.',
   },
   {
     Glyph: PublicSectorGlyph,
     accent: '#F4A261',
     title: 'Public Sector',
-    body: 'Data processing, information management and administrative support with the discipline that public work requires.',
+    body: 'Record classification, form-field extraction and citizen-data annotation with the discipline that public work demands.',
   },
 ]
 
@@ -80,7 +82,7 @@ export default function IndustriesPage() {
             </span>
           </>
         }
-        subtitle="We adapt to the sector, not the other way around. Below is where our experience is genuine — and where we won't take on work simply because it sounds relevant."
+        subtitle="Annotation is never sector-neutral. Below is where our labelling experience is genuine — the vocabularies, sensitivities and accuracy bars we've actually delivered against."
       />
 
       {/* Sector motif carousel */}
@@ -110,9 +112,9 @@ export default function IndustriesPage() {
                   className="max-w-md text-[15px] leading-relaxed"
                   style={{ fontFamily: 'var(--font-body)', color: 'var(--text-muted)' }}
                 >
-                  A medical dataset asks for one kind of care — a financial report for another,
-                  an ML training set for another still. The engineering underneath is shared;
-                  the sensitivity to context is what we tailor per sector.
+                  A clinical transcript needs one kind of care — a financial contract another, a
+                  product-catalogue image another still. The annotation console underneath is
+                  shared; the guidelines, taxonomies and review bar are tuned per sector.
                 </p>
               </div>
             </div>
@@ -148,14 +150,15 @@ export default function IndustriesPage() {
                     }}
                   />
                   <span
-                    className="icon-plate relative z-10 mb-6 inline-flex h-14 w-14 items-center justify-center rounded-xl"
+                    className="industry-icon icon-plate relative z-10 mb-6 inline-flex h-16 w-16 items-center justify-center rounded-2xl"
                     style={{
                       color: ind.accent,
                       ['--plate-accent' as string]: ind.accent,
                       transform: 'translateZ(20px)',
                     }}
                   >
-                    <ind.Glyph size={28} />
+                    <span aria-hidden className="industry-icon__ring" />
+                    <ind.Glyph size={34} />
                   </span>
                   <p
                     className="relative z-10 mb-3 text-[15.5px] font-medium"
@@ -178,51 +181,6 @@ export default function IndustriesPage() {
               </StaggerItem>
             ))}
           </StaggerGroup>
-        </div>
-      </section>
-
-      {/* Honesty note */}
-      <section className="py-section border-t border-white/[0.05]" data-scroll-anchor="honesty">
-        <div className="mx-auto max-w-container container-pad">
-          <FadeIn>
-            <div
-              className="flex flex-col items-start gap-4 rounded-2xl border p-6 md:flex-row md:items-center md:gap-6 md:p-8"
-              style={{
-                borderColor: 'var(--border-glass)',
-                background: 'var(--card-surface)',
-              }}
-            >
-              <span
-                className="icon-plate inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl"
-                style={{
-                  color: '#E9C46A',
-                  ['--plate-accent' as string]: '#E9C46A',
-                }}
-              >
-                <AlertCircle size={18} strokeWidth={1.5} />
-              </span>
-              <div>
-                <p
-                  className="mb-1.5 text-[15px] font-medium"
-                  style={{
-                    fontFamily: 'var(--font-display)',
-                    color: 'var(--text-strong)',
-                    letterSpacing: '-0.01em',
-                  }}
-                >
-                  We only claim experience we can point to.
-                </p>
-                <p
-                  className="text-[13.5px] leading-relaxed"
-                  style={{ fontFamily: 'var(--font-body)', color: 'var(--text-muted)' }}
-                >
-                  No fabricated case studies, no invented logos. If your industry isn&apos;t listed
-                  and you think it should be, tell us the specifics — we&apos;ll be honest about
-                  whether we can help.
-                </p>
-              </div>
-            </div>
-          </FadeIn>
         </div>
       </section>
 

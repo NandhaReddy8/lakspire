@@ -242,11 +242,14 @@ export function WhyLakspire() {
             // Horizontal offset — 360px stride between neighbours
             const x = d * 360
 
-            // Depth-based transforms — center is front, neighbours behind
+            // Depth-based transforms — center is front, neighbours behind.
+            // Side cards use lighter blur + lower opacity so the focused
+            // card stands out cleanly without the neighbours reading as
+            // a heavy frosted wall.
             const scale = abs === 0 ? 1 : abs === 1 ? 0.86 : 0.72
-            const blur = abs === 0 ? 0 : abs === 1 ? 6 : 14
+            const blur = abs === 0 ? 0 : abs === 1 ? 3 : 7
             const opacity =
-              abs === 0 ? 1 : abs === 1 ? 0.45 : abs === 2 ? 0.18 : 0
+              abs === 0 ? 1 : abs === 1 ? 0.28 : abs === 2 ? 0.1 : 0
             const z = 20 - abs
 
             const isFocus = abs === 0

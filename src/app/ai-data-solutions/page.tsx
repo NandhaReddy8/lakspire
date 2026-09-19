@@ -7,7 +7,6 @@ import {
   Users,
   Database,
   FileSearch,
-  AlertCircle,
 } from 'lucide-react'
 import { PageHero } from '@/components/blocks/PageHero'
 import { SectionLabel } from '@/components/blocks/SectionLabel'
@@ -22,42 +21,46 @@ export const metadata = {
     'Structured, validated and human-reviewed data services for modern AI and machine-learning workflows — annotation, classification, human-in-the-loop, training data and intelligent document processing.',
 }
 
+// Capability copy from a data-annotation partner's angle. Every card
+// names a concrete labelling deliverable rather than an abstract "AI
+// capability" — the honest framing for a company whose core service
+// is data annotation.
 const capabilities = [
   {
     Icon: Layers,
     accent: '#FF6B35',
-    title: 'AI Data Annotation',
-    body: 'Supporting machine-learning models through structured data labelling and annotation — with clear guidelines, calibrated reviewers and quality controls.',
+    title: 'Data Annotation',
+    body: 'Structured labelling across text, image, audio and video — bounding boxes, segmentation, transcription, entity and intent tags — delivered with clear guidelines and calibrated reviewers.',
   },
   {
     Icon: Tags,
     accent: '#F4A261',
     title: 'Data Classification',
-    body: 'Organising and categorising datasets using technology-assisted workflows and layered quality controls so downstream models get what they expect.',
+    body: 'Multi-label taxonomy application at scale — intent, topic, sentiment, entity — with disciplined guideline enforcement so every sample lands in the right bucket.',
   },
   {
     Icon: Cpu,
     accent: '#FF8F5C',
-    title: 'AI-Assisted Data Processing',
-    body: 'Combining automation with human review where it improves throughput without sacrificing correctness — designed pipeline by pipeline, not one-size-fits-all.',
+    title: 'Assisted Labelling Pipelines',
+    body: 'Model-assisted pre-labels reviewed by humans, tuned pipeline by pipeline — throughput without giving up the accuracy that matters at review time.',
   },
   {
     Icon: Users,
     accent: '#E9C46A',
-    title: 'Human-in-the-Loop AI',
-    body: 'Structured human review and validation for workflows where accuracy, context and judgement matter — model output is one input, not the final answer.',
+    title: 'Human-in-the-Loop Review',
+    body: 'Reviewers correcting live model predictions in the loop — the safety net that turns a promising model into a production-ready one, and produces correction sets for retraining.',
   },
   {
     Icon: Database,
     accent: '#FABD6C',
-    title: 'AI Training Data',
-    body: 'High-quality instruction-tuning, preference and evaluation datasets prepared for machine-learning and AI applications — with provenance you can audit.',
+    title: 'Training & Evaluation Datasets',
+    body: 'Assembled, versioned training splits, evaluation gold sets and preference-labelled datasets — prepared for real ML pipelines with provenance you can audit.',
   },
   {
     Icon: FileSearch,
     accent: '#FF6B35',
-    title: 'Intelligent Document Processing',
-    body: 'Extracting, structuring and validating information from documents — receipts, forms, contracts, records — where accuracy under variation matters.',
+    title: 'Document Annotation',
+    body: 'Field, clause and entity annotation on documents — invoices, forms, contracts, records — where accuracy under variation is the only useful measure.',
   },
 ]
 
@@ -69,11 +72,11 @@ export default function AIPage() {
         title={
           <>
             <span className="text-gradient-primary">
-              Building better AI <span className="editorial">with better data</span>.
+              Better models start <span className="editorial">with better labels</span>.
             </span>
           </>
         }
-        subtitle="AI is only as reliable as the data behind it. We support modern AI and machine-learning workflows with structured, validated and human-reviewed data services designed for real models in real deployments."
+        subtitle="Every AI or ML system is only as reliable as the labelled data behind it. Lakspire is a data-annotation partner — structured labelling, human-in-the-loop review and versioned training sets, built for real models in real deployments."
       >
         <Link
           href="/contact"
@@ -110,15 +113,15 @@ export default function AIPage() {
                   color: 'var(--text-strong)',
                 }}
               >
-                Six capabilities that meet real ML teams where they are.
+                Six annotation capabilities that meet real ML teams where they are.
               </h2>
               <p
                 className="text-[15px] leading-relaxed"
                 style={{ fontFamily: 'var(--font-body)', color: 'var(--text-muted)' }}
               >
-                Everything below reflects work Lakspire genuinely delivers — from prototype-grade
-                labelling to production-scale evaluation pipelines. We won&apos;t sell you a
-                capability we can&apos;t stand behind.
+                Everything below is annotation work Lakspire genuinely delivers — from
+                prototype-grade labelling to production-scale evaluation gold sets. Structured
+                guidelines, calibrated reviewers and quality controls, engagement after engagement.
               </p>
 
               <ClayFrame className="mt-10" variant="petal">
@@ -172,51 +175,6 @@ export default function AIPage() {
         </div>
       </section>
 
-      {/* Honesty note */}
-      <section className="py-section border-t border-white/[0.05]" data-scroll-anchor="honesty">
-        <div className="mx-auto max-w-container container-pad">
-          <FadeIn>
-            <div
-              className="flex flex-col items-start gap-4 rounded-2xl border p-6 md:flex-row md:items-center md:gap-6 md:p-8"
-              style={{
-                borderColor: 'var(--border-glass)',
-                background: 'var(--card-surface)',
-              }}
-            >
-              <span
-                className="icon-plate inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl"
-                style={{
-                  color: '#E9C46A',
-                  ['--plate-accent' as string]: '#E9C46A',
-                }}
-              >
-                <AlertCircle size={18} strokeWidth={1.5} />
-              </span>
-              <div>
-                <p
-                  className="mb-1.5 text-[15px] font-medium"
-                  style={{
-                    fontFamily: 'var(--font-display)',
-                    color: 'var(--text-strong)',
-                    letterSpacing: '-0.01em',
-                  }}
-                >
-                  Only what we can deliver — nothing more.
-                </p>
-                <p
-                  className="text-[13.5px] leading-relaxed"
-                  style={{ fontFamily: 'var(--font-body)', color: 'var(--text-muted)' }}
-                >
-                  AI is a real capability at Lakspire, not a marketing theme. If a project asks for
-                  something outside our range, we&apos;ll say so — and, where we can, point you to
-                  someone who does it well.
-                </p>
-              </div>
-            </div>
-          </FadeIn>
-        </div>
-      </section>
-
       {/* CTA */}
       <section className="py-section border-t border-white/[0.05]" data-scroll-anchor="cta">
         <div className="mx-auto max-w-container container-pad">
@@ -240,7 +198,7 @@ export default function AIPage() {
                   color: 'var(--text-strong)',
                 }}
               >
-                Have training data, evaluation or IDP work in flight?
+                Have annotation, evaluation or document-labelling work in flight?
               </h3>
               <Link
                 href="/contact"

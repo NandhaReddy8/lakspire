@@ -97,17 +97,18 @@ export function Navigation() {
             aria-label="Lakspire Home"
             className="group flex items-center gap-2.5 rounded-full py-1 pl-1 pr-3 transition-colors"
           >
-            <Image
-              src="/lakspire-logo.jpg"
-              alt=""
-              aria-hidden="true"
-              width={34}
-              height={34}
-              priority
-              className="rounded-full"
-              style={{ objectFit: 'cover' }}
-            />
-            <span className="lakspire-wordmark text-[17px] font-medium tracking-[0.18em]">
+            <span className="lakspire-mark relative inline-flex h-9 w-9 shrink-0 overflow-hidden rounded-full">
+              <Image
+                src="/lakspire-logo.jpg"
+                alt=""
+                aria-hidden="true"
+                width={140}
+                height={140}
+                priority
+                className="lakspire-mark__img h-full w-full"
+              />
+            </span>
+            <span className="lakspire-wordmark text-[17px] font-semibold tracking-[0.18em]">
               LAKSPIRE
             </span>
           </Link>
@@ -198,16 +199,17 @@ export function Navigation() {
             aria-label="Lakspire Home"
             className="flex items-center gap-2.5"
           >
-            <Image
-              src="/lakspire-logo.jpg"
-              alt=""
-              aria-hidden="true"
-              width={32}
-              height={32}
-              className="rounded-full"
-              style={{ objectFit: 'cover' }}
-            />
-            <span className="lakspire-wordmark text-[17px] font-medium tracking-[0.18em]">
+            <span className="lakspire-mark relative inline-flex h-9 w-9 shrink-0 overflow-hidden rounded-full">
+              <Image
+                src="/lakspire-logo.jpg"
+                alt=""
+                aria-hidden="true"
+                width={140}
+                height={140}
+                className="lakspire-mark__img h-full w-full"
+              />
+            </span>
+            <span className="lakspire-wordmark text-[17px] font-semibold tracking-[0.18em]">
               LAKSPIRE
             </span>
           </Link>
