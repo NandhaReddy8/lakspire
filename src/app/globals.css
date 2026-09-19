@@ -1926,27 +1926,49 @@ h1, h2, h3, h4, h5, h6 {
     animation: cookie-slide-up-mobile 380ms cubic-bezier(0.22, 1, 0.36, 1) both;
   }
 
+  /* Bottom row uses flexbox with flex: 1 on both buttons so they
+     always match — a grid `1fr` would inherit content-min widths
+     from the auto tracks above and land uneven. */
   .cookie-chip {
-    display: grid;
-    grid-template-columns: auto 1fr auto;
-    grid-template-areas:
-      "icon copy gear"
-      "reject reject accept";
-    gap: 10px 10px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    row-gap: 12px;
+    column-gap: 10px;
     padding: 14px;
     border-radius: 18px;
-    align-items: center;
   }
-  .cookie-chip__icon    { grid-area: icon; }
+  .cookie-chip__icon    { flex: 0 0 auto; order: 1; }
   .cookie-chip__label   {
-    grid-area: copy;
+    /* Label takes ALL remaining width in row 1 (icon + gear are the
+       other two items). flex-basis: 100% with flex-shrink lets it
+       shrink when icon+gear are present but always fills whatever
+       is left, forcing both buttons to wrap onto row 2. */
+    flex: 1 1 calc(100% - 34px - 34px - 30px);
+    order: 2;
     font-size: 12.5px;
     line-height: 1.4;
     max-width: none;
   }
-  .cookie-chip > .cookie-gear         { grid-area: gear; width: 34px; height: 34px; border-radius: 10px; }
-  .cookie-chip > .cookie-btn--primary { grid-area: accept; height: 40px; border-radius: 10px; }
-  .cookie-chip > .cookie-btn--ghost   { grid-area: reject; height: 40px; border-radius: 10px; }
+  .cookie-chip > .cookie-gear {
+    order: 3;
+    flex: 0 0 34px;
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+  }
+  /* Force the button row onto a new line: give each button flex-basis
+     of ~48% and order them last. Because row 1 fills to viewport
+     width, the buttons wrap together and split the row evenly. */
+  .cookie-chip > .cookie-btn--ghost,
+  .cookie-chip > .cookie-btn--primary {
+    flex: 1 1 40%;
+    height: 40px;
+    border-radius: 10px;
+    padding: 0 12px;
+  }
+  .cookie-chip > .cookie-btn--ghost   { order: 4; }
+  .cookie-chip > .cookie-btn--primary { order: 5; }
 
   .cookie-panel { padding: 16px; border-radius: 16px; }
   .cookie-panel__actions {
