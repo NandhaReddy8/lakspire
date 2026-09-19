@@ -218,6 +218,7 @@ export function WhyLakspire() {
               progress dots row below. */}
           <button
             type="button"
+            data-floating="true"
             onClick={() => setCurrent((c) => (c - 1 + N) % N)}
             aria-label="Previous principle"
             className="carousel-nav absolute left-2 top-1/2 z-30 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full sm:left-4 sm:flex md:left-6"
@@ -226,6 +227,7 @@ export function WhyLakspire() {
           </button>
           <button
             type="button"
+            data-floating="true"
             onClick={() => setCurrent((c) => (c + 1) % N)}
             aria-label="Next principle"
             className="carousel-nav absolute right-2 top-1/2 z-30 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full sm:right-4 sm:flex md:right-6"

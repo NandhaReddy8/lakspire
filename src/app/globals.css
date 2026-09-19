@@ -445,25 +445,33 @@ html:not([data-theme='light']) {
               transform 200ms var(--ease-out);
   cursor: pointer;
 }
-.carousel-nav:hover {
-  color: #FFFFFF;
-  background: linear-gradient(135deg, #FF6B35 0%, #FF8F5C 100%);
-  border-color: rgba(255, 143, 92, 0.5);
-  box-shadow: 0 10px 28px -8px rgba(255, 107, 53, 0.5),
-              inset 0 1px 0 0 rgba(255, 240, 220, 0.35);
-  transform: translateY(-50%) scale(1.06);
+/* Hover styles gated to hover-capable pointers only. Touch devices
+   used to keep the ember state stuck after tap — and the mobile
+   inline chevrons additionally got shifted up by translateY(-50%),
+   which is only meaningful for the absolutely-positioned desktop
+   variant. Marker attribute data-floating="true" flags the desktop
+   chevrons that need the -50% recentre. */
+@media (hover: hover) {
+  .carousel-nav:hover {
+    color: #FFFFFF;
+    background: linear-gradient(135deg, #FF6B35 0%, #FF8F5C 100%);
+    border-color: rgba(255, 143, 92, 0.5);
+    box-shadow: 0 10px 28px -8px rgba(255, 107, 53, 0.5),
+                inset 0 1px 0 0 rgba(255, 240, 220, 0.35);
+  }
+  .carousel-nav[data-floating='true']:hover { transform: translateY(-50%) scale(1.06); }
+  .carousel-nav:not([data-floating='true']):hover { transform: scale(1.06); }
+  [data-theme='light'] .carousel-nav:hover {
+    color: #FFFFFF;
+    box-shadow: 0 10px 28px -8px rgba(224, 82, 32, 0.45),
+                inset 0 1px 0 0 rgba(255, 240, 220, 0.35);
+  }
 }
-.carousel-nav:active {
-  transform: translateY(-50%) scale(0.96);
-}
+.carousel-nav[data-floating='true']:active { transform: translateY(-50%) scale(0.96); }
+.carousel-nav:not([data-floating='true']):active { transform: scale(0.96); }
 [data-theme='light'] .carousel-nav {
   box-shadow: 0 6px 18px -8px rgba(120, 60, 20, 0.22),
               inset 0 1px 0 0 rgba(255, 255, 255, 0.9);
-}
-[data-theme='light'] .carousel-nav:hover {
-  color: #FFFFFF;
-  box-shadow: 0 10px 28px -8px rgba(224, 82, 32, 0.45),
-              inset 0 1px 0 0 rgba(255, 240, 220, 0.35);
 }
 
 * {
@@ -479,8 +487,10 @@ body {
   background: var(--bg-page-gradient);
   color: var(--text-strong);
   font-family: var(--font-display), system-ui, sans-serif;
+  /* Mobile stays at 15px per user preference. Desktop bumps to 16px,
+     large screens 17px — reads more premium on wider viewports. */
   font-size: 0.9375rem;
-  line-height: 1.6;
+  line-height: 1.65;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   /* clip (not hidden) — overflow-x: hidden establishes a new formatting
@@ -489,6 +499,34 @@ body {
      creating a scroll container. */
   overflow-x: clip;
   transition: background-color 400ms var(--ease-out), color 400ms var(--ease-out);
+}
+
+/* Bump content sizing at desktop breakpoints. Mobile is unchanged. */
+@media (min-width: 768px) {
+  body { font-size: 1rem; }
+  /* Site-wide small-text bump — most descriptions across pages
+     use inline Tailwind arbitrary sizes. Override at md+ so the
+     copy reads a touch larger on desktop without touching mobile.
+     Headings use clamp() and are unaffected. */
+  .text-\[12\.5px\]  { font-size: 13px; }
+  .text-\[13px\]     { font-size: 13.5px; }
+  .text-\[13\.5px\]  { font-size: 14.5px; }
+  .text-\[14px\]     { font-size: 15px; }
+  .text-\[14\.5px\]  { font-size: 15.5px; }
+  .text-\[15px\]     { font-size: 16px; }
+  .text-\[15\.5px\]  { font-size: 16.5px; }
+  .text-\[16px\]     { font-size: 17px; }
+  .text-\[17px\]     { font-size: 18px; }
+}
+@media (min-width: 1280px) {
+  body { font-size: 1.0625rem; }
+  .text-\[13\.5px\]  { font-size: 15px; }
+  .text-\[14px\]     { font-size: 15.5px; }
+  .text-\[14\.5px\]  { font-size: 16px; }
+  .text-\[15px\]     { font-size: 16.5px; }
+  .text-\[15\.5px\]  { font-size: 17px; }
+  .text-\[16px\]     { font-size: 17.5px; }
+  .text-\[17px\]     { font-size: 18.5px; }
 }
 
 /* Also clip at the root so absolutely-positioned decorative backdrops
@@ -634,6 +672,320 @@ html {
   mix-blend-mode: normal;
 }
 
+/* ─── Group plate (Services page: Groups 02-05) ──────────────
+   Larger icon surface, uniform 80×80 across all four groups.
+   Ambient concentric ring breathes continuously so the icon
+   never feels static; on hover of the whole FadeIn wrapper
+   (`group/plate`) the plate lifts, glyph enlarges, and a
+   second ring expands outward. */
+.group-plate {
+  position: relative;
+  background: linear-gradient(160deg, rgba(28, 22, 17, 0.85) 0%, rgba(20, 15, 11, 0.90) 100%);
+  border: 1px solid color-mix(in srgb, var(--plate-accent, #FF6B35) 32%, transparent);
+  transition: transform 340ms var(--ease-out),
+              border-color 340ms var(--ease-out),
+              box-shadow 340ms var(--ease-out);
+}
+[data-theme='light'] .group-plate {
+  background: linear-gradient(160deg, #1A130E 0%, #241811 100%);
+  border-color: color-mix(in srgb, var(--plate-accent, #FF6B35) 45%, transparent);
+}
+.gp-glyph {
+  position: relative;
+  z-index: 2;
+  display: inline-flex;
+  transition: transform 340ms var(--ease-out);
+}
+.gp-ring {
+  position: absolute;
+  inset: -6px;
+  border-radius: inherit;
+  border: 1px solid color-mix(in srgb, var(--plate-accent, #FF6B35) 55%, transparent);
+  opacity: 0.35;
+  pointer-events: none;
+  animation: gp-breathe 3.6s ease-in-out infinite;
+}
+.gp-ring--hover {
+  inset: 0;
+  opacity: 0;
+  border-color: color-mix(in srgb, var(--plate-accent, #FF6B35) 85%, transparent);
+  animation: none;
+  transition: inset 400ms var(--ease-out), opacity 400ms var(--ease-out);
+}
+@keyframes gp-breathe {
+  0%, 100% { transform: scale(0.94); opacity: 0.25; }
+  50%      { transform: scale(1.05); opacity: 0.45; }
+}
+
+@media (hover: hover) {
+  .group\/plate:hover .group-plate {
+    transform: translateY(-4px);
+    border-color: color-mix(in srgb, var(--plate-accent, #FF6B35) 65%, transparent);
+    box-shadow: 0 20px 48px -18px color-mix(in srgb, var(--plate-accent, #FF6B35) 50%, transparent),
+                0 0 0 1px color-mix(in srgb, var(--plate-accent, #FF6B35) 25%, transparent),
+                inset 0 1px 0 0 rgba(255, 240, 220, 0.08);
+  }
+  .group\/plate:hover .gp-glyph {
+    transform: scale(1.08) rotate(-2deg);
+  }
+  .group\/plate:hover .gp-ring--hover {
+    inset: -14px;
+    opacity: 0.55;
+  }
+}
+
+/* ─── Link card (shared hover surface) ───────────────────────
+   Sitewide interactive card. Same animation vocabulary as the
+   service pill (accent bar, sweep, chevron) tuned for two-line
+   content. Used on the home page (Industries, AI Data Solutions
+   list) and the AI Data Solutions page. Opt into the anchor
+   variant by rendering as `<a>`/`<Link>`; static cards drop the
+   chevron via .link-card--static. */
+.link-card {
+  --card-accent: #FF6B35;
+  position: relative;
+  display: block;
+  overflow: hidden;
+  padding: 18px 46px 18px 20px;
+  border-radius: 14px;
+  border: 1px solid var(--border-glass);
+  background: var(--card-surface);
+  color: inherit;
+  text-decoration: none;
+  transition: transform 260ms var(--ease-out),
+              border-color 260ms var(--ease-out),
+              background-color 260ms var(--ease-out),
+              box-shadow 260ms var(--ease-out);
+}
+.lc-bar {
+  position: absolute;
+  top: 14px;
+  bottom: 14px;
+  left: 0;
+  width: 2px;
+  border-radius: 0 2px 2px 0;
+  background: var(--card-accent);
+  opacity: 0;
+  transform: scaleY(0.4);
+  transform-origin: center;
+  transition: opacity 260ms var(--ease-out), transform 260ms var(--ease-out);
+  pointer-events: none;
+}
+.lc-sweep {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    100deg,
+    color-mix(in srgb, var(--card-accent) 12%, transparent) 0%,
+    color-mix(in srgb, var(--card-accent) 4%, transparent) 45%,
+    transparent 80%
+  );
+  opacity: 0;
+  transform: translateX(-8%);
+  transition: opacity 260ms var(--ease-out), transform 320ms var(--ease-out);
+  pointer-events: none;
+}
+.lc-chev {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%) translateX(-8px);
+  font-family: var(--font-mono, monospace);
+  font-size: 14px;
+  line-height: 1;
+  color: var(--card-accent);
+  opacity: 0;
+  transition: opacity 260ms var(--ease-out), transform 320ms var(--ease-out);
+  pointer-events: none;
+}
+.link-card--static { padding-right: 20px; }
+.link-card--static .lc-chev { display: none; }
+
+@media (hover: hover) {
+  .link-card:hover {
+    transform: translateY(-3px);
+    border-color: color-mix(in srgb, var(--card-accent) 45%, transparent);
+    background: color-mix(in srgb, var(--card-accent) 5%, var(--card-surface));
+    box-shadow: 0 14px 36px -16px color-mix(in srgb, var(--card-accent) 55%, transparent),
+                inset 0 1px 0 0 rgba(255, 240, 220, 0.06);
+  }
+  .link-card:hover .lc-bar   { opacity: 1; transform: scaleY(1); }
+  .link-card:hover .lc-sweep { opacity: 1; transform: translateX(0); }
+  .link-card:hover .lc-chev  { opacity: 1; transform: translateY(-50%) translateX(0); }
+}
+
+/* Icon-forward variant — used where a glyph plate leads the row */
+.link-card--icon {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+.link-card--icon .lc-plate {
+  flex-shrink: 0;
+  transition: transform 260ms var(--ease-out);
+}
+@media (hover: hover) {
+  .link-card:hover .lc-plate { transform: scale(1.06) rotate(-2deg); }
+}
+
+/* ─── Service pill (Groups 2-5 items) ────────────────────────
+   The old inline Tailwind version used `transition-transform`
+   only, so `opacity-0 → opacity-100` on hover was instant and the
+   ping ripple's `opacity-70 → opacity-0` played BACKWARDS on
+   hover-off — which looked like "the effect appears when you
+   move off". Rebuilt so all four hover properties (opacity,
+   transform, background, border) transition together, in the
+   same direction, both on enter and on leave. */
+.service-pill {
+  --pill-accent: #FF6B35;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  overflow: hidden;
+  padding: 12px 44px 12px 18px;
+  border-radius: 12px;
+  border: 1px solid var(--border-glass);
+  background: var(--card-surface);
+  transition: transform 260ms var(--ease-out),
+              border-color 260ms var(--ease-out),
+              background-color 260ms var(--ease-out),
+              box-shadow 260ms var(--ease-out);
+  will-change: transform;
+}
+.pill-bar {
+  position: absolute;
+  top: 12px;
+  bottom: 12px;
+  left: 0;
+  width: 2px;
+  border-radius: 0 2px 2px 0;
+  background: var(--pill-accent);
+  opacity: 0;
+  transform: scaleY(0.4);
+  transform-origin: center;
+  transition: opacity 260ms var(--ease-out), transform 260ms var(--ease-out);
+}
+.pill-sweep {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--pill-accent) 14%, transparent) 0%,
+    color-mix(in srgb, var(--pill-accent) 6%, transparent) 40%,
+    transparent 75%
+  );
+  opacity: 0;
+  transform: translateX(-8%);
+  transition: opacity 260ms var(--ease-out), transform 320ms var(--ease-out);
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+.pill-dot {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 10px;
+  height: 10px;
+  flex-shrink: 0;
+}
+.pill-dot-core {
+  position: absolute;
+  inset: 3px;
+  border-radius: 50%;
+  background: var(--pill-accent);
+  box-shadow: 0 0 6px color-mix(in srgb, var(--pill-accent) 55%, transparent);
+  transition: transform 260ms var(--ease-out), box-shadow 260ms var(--ease-out);
+}
+.pill-dot-halo {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: var(--pill-accent);
+  opacity: 0;
+  transform: scale(0.4);
+  transition: opacity 340ms var(--ease-out), transform 340ms var(--ease-out);
+  pointer-events: none;
+}
+.pill-label {
+  position: relative;
+  z-index: 1;
+  font-size: 14px;
+  line-height: 1.35;
+  transition: transform 260ms var(--ease-out), color 260ms var(--ease-out);
+}
+.pill-chev {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%) translateX(-8px);
+  font-family: var(--font-mono, monospace);
+  font-size: 13px;
+  color: var(--pill-accent);
+  opacity: 0;
+  transition: opacity 260ms var(--ease-out), transform 320ms var(--ease-out);
+}
+
+/* HOVER — all properties transition together, so leaving reverses
+   the same animation in the opposite direction. No inverted ping. */
+@media (hover: hover) {
+  .service-pill:hover {
+    transform: translateY(-2px);
+    border-color: color-mix(in srgb, var(--pill-accent) 40%, transparent);
+    background: color-mix(in srgb, var(--pill-accent) 6%, var(--card-surface));
+    box-shadow: 0 10px 32px -14px color-mix(in srgb, var(--pill-accent) 55%, transparent),
+                inset 0 1px 0 0 rgba(255, 240, 220, 0.06);
+  }
+  .service-pill:hover .pill-bar {
+    opacity: 1;
+    transform: scaleY(1);
+    box-shadow: 0 0 10px color-mix(in srgb, var(--pill-accent) 65%, transparent);
+  }
+  .service-pill:hover .pill-sweep {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  .service-pill:hover .pill-dot-core {
+    transform: scale(1.15);
+    box-shadow: 0 0 12px color-mix(in srgb, var(--pill-accent) 85%, transparent),
+                0 0 18px color-mix(in srgb, var(--pill-accent) 45%, transparent);
+  }
+  .service-pill:hover .pill-dot-halo {
+    opacity: 0.35;
+    transform: scale(2.4);
+  }
+  .service-pill:hover .pill-label {
+    transform: translateX(4px);
+  }
+  .service-pill:hover .pill-chev {
+    opacity: 1;
+    transform: translateY(-50%) translateX(0);
+  }
+}
+
+/* ─── Role card (AI Annotation section) ─────────────────────
+   Bounding-box corner brackets that animate in on hover,
+   echoing the annotation-cursor language. */
+.role-card { position: relative; }
+.role-bracket {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border: 1px solid var(--role-accent, #E9C46A);
+  opacity: 0;
+  transition: opacity 260ms var(--ease-out), transform 320ms var(--ease-out);
+  pointer-events: none;
+}
+.role-bracket--tl { top: 10px;    left: 10px;    border-right: 0; border-bottom: 0; transform: translate(4px, 4px); }
+.role-bracket--tr { top: 10px;    right: 10px;   border-left: 0;  border-bottom: 0; transform: translate(-4px, 4px); }
+.role-bracket--bl { bottom: 10px; left: 10px;    border-right: 0; border-top: 0;    transform: translate(4px, -4px); }
+.role-bracket--br { bottom: 10px; right: 10px;   border-left: 0;  border-top: 0;    transform: translate(-4px, -4px); }
+.role-card:hover .role-bracket {
+  opacity: 0.85;
+  transform: translate(0, 0);
+}
+
 /* ─── Global cursor spotlight (fixed, follows cursor) ─────────
    Dark theme: screen-blend ember glow lifts the ink like a warm
    lamp. Light theme: multiply-blend deeper ember pigment casts a
@@ -661,6 +1013,143 @@ html {
     transparent 60%
   );
   mix-blend-mode: multiply;
+}
+
+/* ─── Lakspire wordmark — theme-aware gold gradient text ──────
+   Uses -webkit-background-clip so the LAKSPIRE serif letters get
+   a gold-metallic gradient fill. On dark the range is bright gold
+   → deep bronze; on cream the range shifts to deep amber so the
+   letters read clearly against the light nav pill. */
+.lakspire-wordmark {
+  font-family: var(--font-editorial), Georgia, serif;
+  background: linear-gradient(135deg, #F5D28A 0%, #C8963A 60%, #8B6423 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  display: inline-block;
+}
+[data-theme='light'] .lakspire-wordmark {
+  background: linear-gradient(135deg, #8B4A15 0%, #6B3A10 55%, #3A200B 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+/* ─── Annotation cursor — solid dot + trailing halo ───────────
+   Perf-tuned: only transform is animated per frame. box-shadow
+   is static, no mix-blend, no continuous animation. State
+   changes use short transform+opacity transitions only. */
+body.custom-cursor-on,
+body.custom-cursor-on * { cursor: none !important; }
+body.custom-cursor-on input,
+body.custom-cursor-on textarea,
+body.custom-cursor-on [contenteditable='true'],
+body.custom-cursor-on iframe { cursor: text !important; }
+
+.cursor-dot,
+.cursor-halo {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  z-index: 60;
+  opacity: 0;
+  transition: opacity 180ms var(--ease-out);
+  transform: translate3d(-100px, -100px, 0);
+  will-change: transform;
+  contain: layout style paint;
+}
+.cursor-dot.is-visible,
+.cursor-halo.is-visible { opacity: 1; }
+
+/* Solid dot — 8px ember, pinned exactly on pointer */
+.cd-core {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, #FFB07A 0%, #FF6B35 55%, #C24A20 100%);
+  box-shadow: 0 0 10px rgba(255, 107, 53, 0.5);
+  transition: transform 160ms var(--ease-out), opacity 160ms var(--ease-out);
+}
+.cd-ibeam {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1.5px;
+  height: 20px;
+  border-radius: 1px;
+  background: rgba(255, 240, 220, 0.9);
+  transform: translate(-50%, -50%) scaleY(0);
+  opacity: 0;
+  transition: transform 160ms var(--ease-out), opacity 160ms var(--ease-out);
+}
+.cursor-dot.is-text .cd-core  { opacity: 0; transform: translate(-50%, -50%) scale(0.4); }
+.cursor-dot.is-text .cd-ibeam { opacity: 1; transform: translate(-50%, -50%) scaleY(1); }
+
+/* Halo — 32px soft ring, trails pointer with easing */
+.ch-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  border: 1px solid rgba(255, 143, 92, 0.5);
+  transition: width 200ms var(--ease-out), height 200ms var(--ease-out),
+              border-color 200ms var(--ease-out), border-radius 200ms var(--ease-out);
+}
+
+/* Target — halo pops outward, dot slightly warmer */
+.cursor-halo.is-target .ch-fill {
+  width: 44px;
+  height: 44px;
+  border-color: rgba(255, 107, 53, 0.9);
+}
+.cursor-dot.is-target .cd-core {
+  transform: translate(-50%, -50%) scale(0.85);
+}
+
+/* Text — halo compresses to a slim vertical marker */
+.cursor-halo.is-text .ch-fill {
+  width: 12px;
+  height: 22px;
+  border-radius: 3px;
+  border-color: rgba(255, 240, 220, 0.3);
+}
+
+/* Press — brief inward pulse */
+.cursor-halo.is-down .ch-fill {
+  width: 22px;
+  height: 22px;
+  border-color: rgba(255, 107, 53, 1);
+}
+.cursor-dot.is-down .cd-core {
+  transform: translate(-50%, -50%) scale(1.35);
+}
+
+/* Light theme — deeper ember for contrast on cream */
+[data-theme='light'] .cd-core {
+  background: radial-gradient(circle, #FF8F5C 0%, #E05220 60%, #8B3410 100%);
+  box-shadow: 0 0 8px rgba(224, 82, 32, 0.45);
+}
+[data-theme='light'] .ch-fill { border-color: rgba(200, 80, 30, 0.65); }
+[data-theme='light'] .cursor-halo.is-target .ch-fill { border-color: rgba(180, 60, 20, 1); }
+[data-theme='light'] .cd-ibeam { background: rgba(38, 26, 18, 0.85); }
+
+/* Accessible fallbacks — always restore native cursor */
+@media (prefers-reduced-motion: reduce) {
+  body.custom-cursor-on, body.custom-cursor-on * { cursor: auto !important; }
+  .cursor-dot, .cursor-halo { display: none; }
+}
+@media (hover: none), (pointer: coarse) {
+  body.custom-cursor-on, body.custom-cursor-on * { cursor: auto !important; }
+  .cursor-dot, .cursor-halo { display: none; }
 }
 
 /* ─── Workflow background pattern (animated) ────────────────── */

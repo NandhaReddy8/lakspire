@@ -1,15 +1,16 @@
 'use client'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useRef, useCallback } from 'react'
+import { Linkedin, Instagram, Youtube, Twitter } from 'lucide-react'
 import { siteConfig } from '@/data/siteConfig'
 
 const footerLinks = {
   Services: [
-    { label: 'Data Processing', href: '/services#data-processing' },
-    { label: 'Data Management', href: '/services#data-management' },
-    { label: 'Data Analytics', href: '/services#data-analytics' },
-    { label: 'AI & Automation', href: '/services#ai-automation' },
-    { label: 'Data Annotation', href: '/services#data-annotation' },
+    { label: 'AI Annotation & Training', href: '/services#ai-annotation' },
+    { label: 'Data Services', href: '/services#data-services' },
+    { label: 'Analytics & Reporting', href: '/services#analytics-reporting' },
+    { label: 'AI & ML Data', href: '/services#ai-ml-data' },
     { label: 'Business Support', href: '/services#business-support' },
   ],
   Company: [
@@ -23,6 +24,14 @@ const footerLinks = {
     { label: 'Terms & Conditions', href: '/terms' },
   ],
 }
+
+/* Social links — placeholder hrefs until client provides the real URLs. */
+const socials = [
+  { label: 'LinkedIn',  href: '#',  Icon: Linkedin },
+  { label: 'Instagram', href: '#',  Icon: Instagram },
+  { label: 'YouTube',   href: '#',  Icon: Youtube },
+  { label: 'X',         href: '#',  Icon: Twitter },
+]
 
 export function Footer() {
   const containerRef = useRef<HTMLElement>(null)
@@ -77,17 +86,20 @@ export function Footer() {
           <div className="col-span-2 lg:col-span-2">
             <Link
               href="/"
-              style={{ fontFamily: 'var(--font-display)' }}
-              className="text-[15px] font-semibold tracking-tight text-white/90 transition-colors hover:text-white"
+              aria-label="Lakspire Home"
+              className="group inline-flex items-center gap-2.5 transition-opacity hover:opacity-90"
             >
-              Lakspire
+              <Image src="/favicon.svg" alt="" width={32} height={32} aria-hidden="true" />
+              <span className="lakspire-wordmark text-[20px] font-medium tracking-[0.2em]">
+                LAKSPIRE
+              </span>
             </Link>
-            <p className="mt-3 max-w-xs text-sm leading-relaxed text-white/40">
+            <p className="mt-4 max-w-xs text-sm leading-relaxed text-white/45">
               Turning Data Into Insight.
               <br />
               Powering Better Decisions.
             </p>
-            <p className="mt-6 text-xs text-white/30">{siteConfig.email}</p>
+            <p className="mt-5 text-xs text-white/30">{siteConfig.email}</p>
           </div>
 
           {/* Link columns */}
@@ -112,10 +124,27 @@ export function Footer() {
           ))}
         </div>
 
-        <div className="mt-16 flex flex-col items-start justify-between gap-4 border-t border-white/[0.06] pt-8 sm:flex-row sm:items-center">
-          <p className="text-xs text-white/25">
+        <div className="mt-16 flex flex-col items-start justify-between gap-6 border-t border-white/[0.06] pt-8 sm:flex-row sm:items-center">
+          <p className="text-xs text-white/30">
             © {new Date().getFullYear()} Lakspire. All rights reserved.
           </p>
+          {/* Social — reference: micro1.ai footer. Icons only, tight
+              rhythm, warm-hover to gold on dark, ember on light. */}
+          <ul className="flex items-center gap-1.5">
+            {socials.map(({ label, href, Icon }) => (
+              <li key={label}>
+                <a
+                  href={href}
+                  aria-label={label}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="social-btn group inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/[0.06] text-white/45 transition-all duration-200 hover:-translate-y-0.5 hover:border-white/[0.14] hover:text-[color:var(--color-gold,#E9C46A)]"
+                >
+                  <Icon size={15} strokeWidth={1.8} />
+                </a>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
 

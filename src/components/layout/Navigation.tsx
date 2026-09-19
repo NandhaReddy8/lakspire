@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { Menu, X, Sun, Moon } from 'lucide-react'
 import { navItems } from '@/data/navigation'
 import { cn } from '@/lib/utils'
@@ -94,40 +95,20 @@ export function Navigation() {
           <Link
             href="/"
             aria-label="Lakspire Home"
-            className="group flex items-center gap-2 rounded-full py-1.5 pl-2 pr-1 transition-colors"
+            className="group flex items-center gap-2 rounded-full py-1.5 pl-2 pr-2 transition-colors"
           >
-            <svg width="26" height="26" viewBox="0 0 28 28" fill="none" aria-hidden="true">
-              <defs>
-                <linearGradient id="logo-grad" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0%" stopColor="#FF6B35" />
-                  <stop offset="100%" stopColor="#F4A261" />
-                </linearGradient>
-              </defs>
-              <rect width="28" height="28" rx="8" fill="url(#logo-grad)" fillOpacity="0.18" />
-              <rect
-                x="1"
-                y="1"
-                width="26"
-                height="26"
-                rx="7"
-                stroke="url(#logo-grad)"
-                strokeOpacity="0.5"
-                strokeWidth="1"
-              />
-              <path
-                d="M8 20V8l10 6-10 6z"
-                fill="none"
-                stroke="#FABD6C"
-                strokeWidth="1.5"
-                strokeLinejoin="round"
-              />
-              <circle cx="18" cy="14" r="1.5" fill="#E9C46A" />
-            </svg>
-            <span
-              style={{ fontFamily: 'var(--font-display)' }}
-              className="text-[14px] font-semibold tracking-tight nav-text-strong"
-            >
-              Lakspire
+            {/* Golden LS monogram from the client-provided mark */}
+            <Image
+              src="/favicon.svg"
+              alt=""
+              width={26}
+              height={26}
+              aria-hidden="true"
+              className="rounded-md"
+              priority
+            />
+            <span className="lakspire-wordmark text-[17px] font-medium tracking-[0.18em]">
+              LAKSPIRE
             </span>
           </Link>
         </div>
@@ -213,11 +194,14 @@ export function Navigation() {
         <div className="flex h-20 items-center justify-between container-pad">
           <Link
             href="/"
-            style={{ fontFamily: 'var(--font-display)' }}
-            className="text-[15px] font-semibold tracking-tight nav-text-strong"
             onClick={() => setMobileOpen(false)}
+            aria-label="Lakspire Home"
+            className="flex items-center gap-2"
           >
-            Lakspire
+            <Image src="/favicon.svg" alt="" width={24} height={24} aria-hidden="true" />
+            <span className="lakspire-wordmark text-[17px] font-medium tracking-[0.18em]">
+              LAKSPIRE
+            </span>
           </Link>
           <div className="flex items-center gap-2">
             <button

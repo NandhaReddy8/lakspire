@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Favicon — golden LS monogram on a warm-dark rounded square, so it
+  reads on both dark browser chrome and cream light themes.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="favi-gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#F5D28A"/>
+      <stop offset="45%" stop-color="#E9B860"/>
+      <stop offset="100%" stop-color="#8B6423"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="14" fill="#0A0908"/>
+  <rect x="1" y="1" width="62" height="62" rx="13" fill="none" stroke="url(#favi-gold)" stroke-opacity="0.35" stroke-width="1"/>
+  <!-- L -->
+  <path d="M14 12 h7 v32 h14 v6 h-21 z" fill="url(#favi-gold)"/>
+  <!-- S woven -->
+  <path d="M40 16 c-6 0 -10 3.6 -10 8.6 c0 4.4 3.4 6.6 8 7.8 c4.4 1.2 6.4 2.2 6.4 4.6 c0 2.4 -2.6 3.8 -5.8 3.8 c-3.4 0 -6 -1.4 -7.2 -4.2 l-4.2 2.2 c2 4.4 6 6.6 11.4 6.6 c6.6 0 11 -3.4 11 -8.6 c0 -4.8 -3.6 -7.2 -8.6 -8.4 c-4.4 -1 -5.8 -2 -5.8 -4 c0 -2 2.4 -3.4 5.2 -3.4 c2.6 0 5 1.2 6.2 3.4 l4.2 -2.4 c-2 -3.8 -5.8 -6 -10.8 -6 z" fill="url(#favi-gold)"/>
+</svg>

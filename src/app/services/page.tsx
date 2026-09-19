@@ -12,6 +12,7 @@ import {
 } from '@/components/icons/ServiceGlyphs'
 import { FadeIn } from '@/components/motion/FadeIn'
 import { StaggerGroup, StaggerItem } from '@/components/motion/StaggerGroup'
+import { AiAnnotationRoles } from '@/components/sections/AiAnnotationRoles'
 
 export const metadata = {
   title: 'Services — Lakspire',
@@ -19,12 +20,14 @@ export const metadata = {
     'Data services, analytics & reporting, AI & machine-learning data, and business support — the four groups that make up Lakspire\'s capability across the data lifecycle.',
 }
 
+// Broader capability groups shown beneath the AI Annotation section.
+// Group numbering starts at 02 because the AI Annotation console is 01.
 const groups = [
   {
     Glyph: DataServicesGlyph,
     slug: 'data-services',
     accent: '#FF6B35',
-    label: 'Group 01',
+    label: 'Group 02',
     title: 'Data Services',
     lede: 'Everything that turns raw information into structured, reliable, useful data — before it reaches an analyst or a model.',
     items: [
@@ -42,7 +45,7 @@ const groups = [
     Glyph: AnalyticsGlyph,
     slug: 'analytics-reporting',
     accent: '#F4A261',
-    label: 'Group 02',
+    label: 'Group 03',
     title: 'Analytics & Reporting',
     lede: 'Transform datasets into reports, insights and decisions — with the level of rigour the answer actually deserves.',
     items: [
@@ -58,9 +61,9 @@ const groups = [
     Glyph: AIMLGlyph,
     slug: 'ai-ml-data',
     accent: '#FF8F5C',
-    label: 'Group 03',
+    label: 'Group 04',
     title: 'AI & Machine Learning Data',
-    lede: 'The training, evaluation and human-in-the-loop data that modern AI and ML systems depend on to be reliable.',
+    lede: 'The training, evaluation and human-in-the-loop data that modern AI and ML systems depend on to be reliable. See the full catalogue in Section 01.',
     items: [
       'Data annotation',
       'Data labelling',
@@ -74,7 +77,7 @@ const groups = [
     Glyph: BusinessSupportGlyph,
     slug: 'business-support',
     accent: '#E9C46A',
-    label: 'Group 04',
+    label: 'Group 05',
     title: 'Business Support',
     lede: 'The information-management and operational work that keeps a business running — done properly, so leaders can focus on decisions.',
     items: [
@@ -95,11 +98,12 @@ export default function ServicesPage() {
         title={
           <>
             <span className="text-gradient-primary">
-              Four capability groups. <span className="editorial">One data partner.</span>
+              AI annotation, training datasets{' '}
+              <span className="editorial">and the operations behind them.</span>
             </span>
           </>
         }
-        subtitle="From collection to reporting, and everything the modern AI stack needs in between. Structured services with clear scope, run by people who care whether the output is actually correct."
+        subtitle="A nine-role annotation console for modern AI teams, plus the broader data operations — collection, cleansing, analytics, reporting — that keep your models honest. Structured scope. Human review where it matters."
       />
 
       {/* Pipeline visual — the story before the groups */}
@@ -139,9 +143,36 @@ export default function ServicesPage() {
         </div>
       </section>
 
-      {/* Groups */}
+      {/* Section 01 — AI Annotation & Training Datasets (client's PDF focus) */}
+      <AiAnnotationRoles />
+
+      {/* Broader capability groups */}
       <section className="py-section border-t border-white/[0.05]" data-scroll-anchor="groups">
         <div className="mx-auto max-w-container container-pad">
+          <FadeIn>
+            <div className="mb-16 max-w-3xl">
+              <SectionLabel className="mb-4">02 — 05 · Broader capability</SectionLabel>
+              <h2
+                style={{
+                  fontFamily: 'var(--font-display)',
+                  fontSize: 'clamp(1.75rem, 1.35rem + 1.8vw, 2.5rem)',
+                  fontWeight: 350,
+                  lineHeight: 1.12,
+                  letterSpacing: '-0.03em',
+                  color: 'var(--text-strong)',
+                }}
+              >
+                Beyond annotation — the full data lifecycle.
+              </h2>
+              <p
+                className="mt-4 text-[15.5px] leading-relaxed"
+                style={{ fontFamily: 'var(--font-body)', color: 'var(--text-body)' }}
+              >
+                Data services, analytics, ML enablement and business support — the surrounding work
+                that turns annotation output into decisions and shipped products.
+              </p>
+            </div>
+          </FadeIn>
           <div className="space-y-24 md:space-y-32">
             {groups.map((g, i) => {
               const flip = i % 2 === 1
@@ -151,20 +182,28 @@ export default function ServicesPage() {
                   id={g.slug}
                   className="grid grid-cols-1 items-start gap-10 lg:grid-cols-2 lg:gap-20"
                 >
-                  {/* Copy column */}
-                  <FadeIn className={flip ? 'lg:order-2' : ''}>
-                    <div className="flex items-center gap-4">
+                  {/* Copy column — larger icon plate with hover animation.
+                      The whole group row is the hover surface so users
+                      just have to enter the group's space to trigger it. */}
+                  <FadeIn className={`group/plate ${flip ? 'lg:order-2' : ''}`}>
+                    <div className="flex items-center gap-5">
                       <span
-                        className="icon-plate inline-flex h-14 w-14 items-center justify-center rounded-xl"
+                        className="group-plate inline-flex h-20 w-20 items-center justify-center rounded-2xl"
                         style={{
                           color: g.accent,
                           ['--plate-accent' as string]: g.accent,
                         }}
                       >
-                        <g.Glyph size={30} />
+                        {/* Ambient concentric ring — pulses continuously */}
+                        <span aria-hidden className="gp-ring" />
+                        {/* Second ring — expands on hover */}
+                        <span aria-hidden className="gp-ring gp-ring--hover" />
+                        <span className="gp-glyph">
+                          <g.Glyph size={44} />
+                        </span>
                       </span>
                       <p
-                        className="text-[11px] font-semibold uppercase"
+                        className="text-[12px] font-semibold uppercase"
                         style={{
                           letterSpacing: '0.16em',
                           fontFamily: 'var(--font-mono)',
@@ -199,47 +238,34 @@ export default function ServicesPage() {
                     </p>
                   </FadeIn>
 
-                  {/* List column — each pill has a distinct dot-grow +
-                      slide hover, so item interaction reads different
-                      from the industry cards' 3D tilt. */}
+                  {/* List column — service pills. Hover animation is
+                      driven by CSS custom properties on the group root
+                      so transitions (opacity + transform + border)
+                      fire together and reset together, avoiding the
+                      "effect appears on hover-off" artefact caused by
+                      opacity flashing while transform still eases. */}
                   <StaggerGroup
-                    className={`grid grid-cols-1 gap-2 sm:grid-cols-2 ${flip ? 'lg:order-1' : ''}`}
+                    className={`grid grid-cols-1 gap-2.5 sm:grid-cols-2 ${flip ? 'lg:order-1' : ''}`}
                   >
                     {g.items.map((item) => (
                       <StaggerItem key={item}>
                         <div
-                          className="group relative flex items-center gap-3 overflow-hidden rounded-lg border px-4 py-3 transition-all duration-300 hover:-translate-y-0.5 hover:border-white/[0.14]"
+                          className="service-pill group"
                           style={{
-                            borderColor: 'var(--border-glass)',
-                            background: 'var(--card-surface)',
+                            ['--pill-accent' as string]: g.accent,
                           }}
                         >
-                          {/* Hover sweep — accent gradient wipes across
-                              the pill from left, blend-screen. */}
-                          <span
-                            aria-hidden="true"
-                            className="pointer-events-none absolute inset-0 origin-left scale-x-0 opacity-0 transition-transform duration-500 group-hover:scale-x-100 group-hover:opacity-100"
-                            style={{
-                              background: `linear-gradient(90deg, ${g.accent}22, transparent 70%)`,
-                              mixBlendMode: 'screen',
-                            }}
-                          />
-                          {/* Dot with concentric ping on hover */}
-                          <span className="relative flex h-2 w-2 shrink-0 items-center justify-center">
-                            <span
-                              className="absolute inline-flex h-full w-full rounded-full opacity-70 transition-transform duration-500 group-hover:scale-[3] group-hover:opacity-0"
-                              style={{ background: g.accent }}
-                            />
-                            <span
-                              className="relative h-1.5 w-1.5 rounded-full"
-                              style={{
-                                background: g.accent,
-                                boxShadow: `0 0 8px ${g.accent}`,
-                              }}
-                            />
+                          {/* Left accent bar — grows on hover */}
+                          <span aria-hidden="true" className="pill-bar" />
+                          {/* Ember sweep — inset gradient fades AND slides in on hover */}
+                          <span aria-hidden="true" className="pill-sweep" />
+                          {/* Dot — brightens + halos on hover (not inverted) */}
+                          <span aria-hidden="true" className="pill-dot">
+                            <span className="pill-dot-core" />
+                            <span className="pill-dot-halo" />
                           </span>
                           <p
-                            className="relative z-10 text-[13.5px] transition-transform duration-300 group-hover:translate-x-1"
+                            className="pill-label"
                             style={{
                               fontFamily: 'var(--font-display)',
                               color: 'var(--text-strong)',
@@ -248,6 +274,8 @@ export default function ServicesPage() {
                           >
                             {item}
                           </p>
+                          {/* Chevron cue — slides in on hover */}
+                          <span aria-hidden="true" className="pill-chev">→</span>
                         </div>
                       </StaggerItem>
                     ))}
