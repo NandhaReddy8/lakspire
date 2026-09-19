@@ -1093,43 +1093,67 @@ body.custom-cursor-on iframe { cursor: text !important; }
 .cursor-dot.is-text .cd-core  { opacity: 0; transform: translate(-50%, -50%) scale(0.4); }
 .cursor-dot.is-text .cd-ibeam { opacity: 1; transform: translate(-50%, -50%) scaleY(1); }
 
-/* Halo — 32px soft ring, trails pointer with easing */
+/* Halo — 48px ring with a deep-ember radial glow. The gradient
+   is what gives the cursor its "warm shade" — background painted
+   inside the ring extends the ember tint beyond a thin border. */
 .ch-fill {
   position: absolute;
   top: 0;
   left: 0;
-  width: 32px;
-  height: 32px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   transform: translate(-50%, -50%);
-  border: 1px solid rgba(255, 143, 92, 0.5);
+  border: 1.25px solid rgba(224, 82, 32, 0.8);
+  background: radial-gradient(
+    circle,
+    rgba(200, 60, 20, 0.28) 0%,
+    rgba(255, 107, 53, 0.14) 45%,
+    rgba(255, 143, 92, 0.05) 78%,
+    transparent 100%
+  );
   transition: width 200ms var(--ease-out), height 200ms var(--ease-out),
-              border-color 200ms var(--ease-out), border-radius 200ms var(--ease-out);
+              border-color 200ms var(--ease-out), border-radius 200ms var(--ease-out),
+              background 200ms var(--ease-out);
 }
 
-/* Target — halo pops outward, dot slightly warmer */
+/* Target — halo bulges + glow deepens */
 .cursor-halo.is-target .ch-fill {
-  width: 44px;
-  height: 44px;
-  border-color: rgba(255, 107, 53, 0.9);
+  width: 64px;
+  height: 64px;
+  border-color: rgba(180, 50, 15, 1);
+  background: radial-gradient(
+    circle,
+    rgba(180, 50, 15, 0.38) 0%,
+    rgba(224, 82, 32, 0.2) 45%,
+    rgba(255, 107, 53, 0.06) 78%,
+    transparent 100%
+  );
 }
 .cursor-dot.is-target .cd-core {
   transform: translate(-50%, -50%) scale(0.85);
 }
 
-/* Text — halo compresses to a slim vertical marker */
+/* Text — halo compresses to a slim vertical marker (no glow) */
 .cursor-halo.is-text .ch-fill {
   width: 12px;
   height: 22px;
   border-radius: 3px;
-  border-color: rgba(255, 240, 220, 0.3);
+  border-color: rgba(255, 240, 220, 0.35);
+  background: transparent;
 }
 
-/* Press — brief inward pulse */
+/* Press — brief inward pulse with the deepest ember */
 .cursor-halo.is-down .ch-fill {
-  width: 22px;
-  height: 22px;
-  border-color: rgba(255, 107, 53, 1);
+  width: 34px;
+  height: 34px;
+  border-color: rgba(160, 40, 10, 1);
+  background: radial-gradient(
+    circle,
+    rgba(160, 40, 10, 0.45) 0%,
+    rgba(224, 82, 32, 0.22) 55%,
+    transparent 100%
+  );
 }
 .cursor-dot.is-down .cd-core {
   transform: translate(-50%, -50%) scale(1.35);
@@ -1140,8 +1164,26 @@ body.custom-cursor-on iframe { cursor: text !important; }
   background: radial-gradient(circle, #FF8F5C 0%, #E05220 60%, #8B3410 100%);
   box-shadow: 0 0 8px rgba(224, 82, 32, 0.45);
 }
-[data-theme='light'] .ch-fill { border-color: rgba(200, 80, 30, 0.65); }
-[data-theme='light'] .cursor-halo.is-target .ch-fill { border-color: rgba(180, 60, 20, 1); }
+[data-theme='light'] .ch-fill {
+  border-color: rgba(180, 60, 20, 0.85);
+  background: radial-gradient(
+    circle,
+    rgba(180, 60, 20, 0.24) 0%,
+    rgba(224, 82, 32, 0.12) 45%,
+    rgba(255, 143, 92, 0.05) 78%,
+    transparent 100%
+  );
+}
+[data-theme='light'] .cursor-halo.is-target .ch-fill {
+  border-color: rgba(140, 40, 10, 1);
+  background: radial-gradient(
+    circle,
+    rgba(140, 40, 10, 0.34) 0%,
+    rgba(200, 60, 20, 0.18) 45%,
+    rgba(255, 107, 53, 0.06) 78%,
+    transparent 100%
+  );
+}
 [data-theme='light'] .cd-ibeam { background: rgba(38, 26, 18, 0.85); }
 
 /* Accessible fallbacks — always restore native cursor */
