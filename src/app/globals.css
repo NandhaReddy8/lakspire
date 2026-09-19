@@ -1050,6 +1050,9 @@ body.custom-cursor-on iframe { cursor: text !important; }
   position: fixed;
   top: 0;
   left: 0;
+  /* Zero-sized parent, but no `contain: paint` — that would clip the
+     absolutely-positioned dot/halo children (which sit outside the
+     parent's box after the translate). */
   width: 0;
   height: 0;
   pointer-events: none;
@@ -1058,7 +1061,6 @@ body.custom-cursor-on iframe { cursor: text !important; }
   transition: opacity 180ms var(--ease-out);
   transform: translate3d(-100px, -100px, 0);
   will-change: transform;
-  contain: layout style paint;
 }
 .cursor-dot.is-visible,
 .cursor-halo.is-visible { opacity: 1; }
