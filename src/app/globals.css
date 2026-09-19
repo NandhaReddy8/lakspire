@@ -1016,10 +1016,9 @@ html {
 }
 
 /* ─── Lakspire wordmark — theme-aware gold gradient text ──────
-   Uses -webkit-background-clip so the LAKSPIRE serif letters get
-   a gold-metallic gradient fill. On dark the range is bright gold
-   → deep bronze; on cream the range shifts to deep amber so the
-   letters read clearly against the light nav pill. */
+   Serif LAKSPIRE letters get a gold-metallic gradient fill next
+   to the client-supplied logo image. Deep amber gradient on light
+   theme so it reads clearly against cream. */
 .lakspire-wordmark {
   font-family: var(--font-editorial), Georgia, serif;
   background: linear-gradient(135deg, #F5D28A 0%, #C8963A 60%, #8B6423 100%);

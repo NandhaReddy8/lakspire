@@ -14,11 +14,9 @@ export const metadata: Metadata = {
   description:
     'Lakspire delivers data processing, data management, analytics and AI-enabled business solutions.',
   icons: {
-    icon: [
-      { url: '/favicon.svg', type: 'image/svg+xml' },
-    ],
-    shortcut: '/favicon.svg',
-    apple: '/favicon.svg',
+    icon: [{ url: '/lakspire-logo.jpg', type: 'image/jpeg' }],
+    shortcut: '/lakspire-logo.jpg',
+    apple: '/lakspire-logo.jpg',
   },
   openGraph: {
     title: 'Lakspire — Turning Data Into Insight',

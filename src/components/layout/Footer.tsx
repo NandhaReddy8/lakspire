@@ -87,9 +87,17 @@ export function Footer() {
             <Link
               href="/"
               aria-label="Lakspire Home"
-              className="group inline-flex items-center gap-2.5 transition-opacity hover:opacity-90"
+              className="group inline-flex items-center gap-3 transition-opacity hover:opacity-90"
             >
-              <Image src="/favicon.svg" alt="" width={32} height={32} aria-hidden="true" />
+              <Image
+                src="/lakspire-logo.jpg"
+                alt=""
+                aria-hidden="true"
+                width={44}
+                height={44}
+                className="rounded-xl"
+                style={{ objectFit: 'cover' }}
+              />
               <span className="lakspire-wordmark text-[20px] font-medium tracking-[0.2em]">
                 LAKSPIRE
               </span>

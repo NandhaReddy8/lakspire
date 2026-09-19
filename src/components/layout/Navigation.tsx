@@ -95,17 +95,17 @@ export function Navigation() {
           <Link
             href="/"
             aria-label="Lakspire Home"
-            className="group flex items-center gap-2 rounded-full py-1.5 pl-2 pr-2 transition-colors"
+            className="group flex items-center gap-2.5 rounded-full py-1 pl-1 pr-3 transition-colors"
           >
-            {/* Golden LS monogram from the client-provided mark */}
             <Image
-              src="/favicon.svg"
+              src="/lakspire-logo.jpg"
               alt=""
-              width={26}
-              height={26}
               aria-hidden="true"
-              className="rounded-md"
+              width={34}
+              height={34}
               priority
+              className="rounded-full"
+              style={{ objectFit: 'cover' }}
             />
             <span className="lakspire-wordmark text-[17px] font-medium tracking-[0.18em]">
               LAKSPIRE
@@ -196,9 +196,17 @@ export function Navigation() {
             href="/"
             onClick={() => setMobileOpen(false)}
             aria-label="Lakspire Home"
-            className="flex items-center gap-2"
+            className="flex items-center gap-2.5"
           >
-            <Image src="/favicon.svg" alt="" width={24} height={24} aria-hidden="true" />
+            <Image
+              src="/lakspire-logo.jpg"
+              alt=""
+              aria-hidden="true"
+              width={32}
+              height={32}
+              className="rounded-full"
+              style={{ objectFit: 'cover' }}
+            />
             <span className="lakspire-wordmark text-[17px] font-medium tracking-[0.18em]">
               LAKSPIRE
             </span>
