@@ -129,21 +129,21 @@ export default function AIPage() {
             <StaggerGroup className="space-y-3">
               {capabilities.map((c) => (
                 <StaggerItem key={c.title}>
-                  <div
-                    className="group flex items-start gap-4 rounded-xl border p-5 transition-colors"
-                    style={{
-                      borderColor: 'var(--border-glass)',
-                      background: 'var(--card-surface)',
-                    }}
+                  <Link
+                    href="/contact"
+                    className="link-card link-card--icon"
+                    style={{ ['--card-accent' as string]: c.accent }}
                   >
+                    <span aria-hidden="true" className="lc-bar" />
+                    <span aria-hidden="true" className="lc-sweep" />
                     <span
-                      className="icon-plate mt-0.5 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg"
+                      className="lc-plate icon-plate mt-0.5 inline-flex h-11 w-11 items-center justify-center rounded-lg"
                       style={{
                         color: c.accent,
                         ['--plate-accent' as string]: c.accent,
                       }}
                     >
-                      <c.Icon size={17} strokeWidth={1.5} />
+                      <c.Icon size={18} strokeWidth={1.5} />
                     </span>
                     <div>
                       <p
@@ -163,7 +163,8 @@ export default function AIPage() {
                         {c.body}
                       </p>
                     </div>
-                  </div>
+                    <span aria-hidden="true" className="lc-chev">→</span>
+                  </Link>
                 </StaggerItem>
               ))}
             </StaggerGroup>

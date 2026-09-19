@@ -1,15 +1,17 @@
+import Link from 'next/link'
+import { ArrowRight } from 'lucide-react'
 import { SectionLabel } from '@/components/blocks/SectionLabel'
 import { FadeIn } from '@/components/motion/FadeIn'
 import { StaggerGroup, StaggerItem } from '@/components/motion/StaggerGroup'
 
 const industries = [
-  { name: 'Healthcare & Life Sciences', desc: 'Clinical data, medical records, trial datasets' },
-  { name: 'Financial Services', desc: 'Transactions, compliance, risk data processing' },
-  { name: 'Technology', desc: 'Product analytics, telemetry, AI training data' },
-  { name: 'Retail & E-commerce', desc: 'Catalogue data, customer behaviour, inventory' },
-  { name: 'Education', desc: 'Learning content, assessment data, LMS analytics' },
-  { name: 'Professional Services', desc: 'Document processing, knowledge management' },
-  { name: 'Public Sector', desc: 'Government data, citizen services, public records' },
+  { name: 'Healthcare & Life Sciences', desc: 'Clinical data, medical records, trial datasets', accent: '#FF6B35' },
+  { name: 'Financial Services',          desc: 'Transactions, compliance, risk data processing', accent: '#F4A261' },
+  { name: 'Technology',                  desc: 'Product analytics, telemetry, AI training data',   accent: '#FF8F5C' },
+  { name: 'Retail & E-commerce',         desc: 'Catalogue data, customer behaviour, inventory',    accent: '#E9C46A' },
+  { name: 'Education',                   desc: 'Learning content, assessment data, LMS analytics', accent: '#FABD6C' },
+  { name: 'Professional Services',       desc: 'Document processing, knowledge management',        accent: '#FF6B35' },
+  { name: 'Public Sector',               desc: 'Government data, citizen services, public records', accent: '#F4A261' },
 ]
 
 export function Industries() {
@@ -32,21 +34,46 @@ export function Industries() {
               Expertise across
               every sector.
             </h2>
-            <p className="text-[14px] leading-relaxed text-white/40" style={{ fontFamily: 'var(--font-body)' }}>
-              We understand that data challenges vary by industry. Our teams bring domain knowledge alongside data expertise.
+            <p
+              className="text-[14px] leading-relaxed text-white/40"
+              style={{ fontFamily: 'var(--font-body)' }}
+            >
+              We understand that data challenges vary by industry. Our teams bring domain knowledge
+              alongside data expertise.
             </p>
+            <Link
+              href="/industries"
+              className="group mt-6 inline-flex items-center gap-1.5 text-[13px] font-medium text-[#F4A261] transition-colors hover:text-[#FFB07A]"
+            >
+              See all sectors
+              <ArrowRight size={14} className="transition-transform duration-200 group-hover:translate-x-0.5" />
+            </Link>
           </FadeIn>
 
-          <StaggerGroup className="lg:col-span-3 space-y-1.5">
+          <StaggerGroup className="lg:col-span-3 space-y-2">
             {industries.map((industry) => (
               <StaggerItem key={industry.name}>
-                <div className="flex items-center justify-between rounded-lg border border-white/[0.06] px-4 py-3 transition-all duration-200 hover:border-white/[0.12] hover:bg-white/[0.02]">
-                  <div>
-                    <p className="text-[13.5px] font-medium text-white/75" style={{ fontFamily: 'var(--font-display)' }}>{industry.name}</p>
-                    <p className="text-[11.5px] text-white/30" style={{ fontFamily: 'var(--font-body)' }}>{industry.desc}</p>
-                  </div>
-                  <span className="text-[12px] text-white/20">→</span>
-                </div>
+                <Link
+                  href="/industries"
+                  className="link-card"
+                  style={{ ['--card-accent' as string]: industry.accent }}
+                >
+                  <span aria-hidden="true" className="lc-bar" />
+                  <span aria-hidden="true" className="lc-sweep" />
+                  <p
+                    className="text-[13.5px] font-medium text-white/80"
+                    style={{ fontFamily: 'var(--font-display)' }}
+                  >
+                    {industry.name}
+                  </p>
+                  <p
+                    className="text-[12px] text-white/40"
+                    style={{ fontFamily: 'var(--font-body)' }}
+                  >
+                    {industry.desc}
+                  </p>
+                  <span aria-hidden="true" className="lc-chev">→</span>
+                </Link>
               </StaggerItem>
             ))}
           </StaggerGroup>
