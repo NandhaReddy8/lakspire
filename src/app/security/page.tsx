@@ -127,13 +127,15 @@ export default function SecurityPage() {
         </div>
       </section>
 
-      {/* Practices grid */}
+      {/* Practices grid — same hover language as the services + AI
+          Data Solutions cards. Each card carries a P01-P08 mono chip
+          echoing the R01-R09 role-card treatment. */}
       <section className="py-section border-t border-white/[0.05]" data-scroll-anchor="practices">
         <div className="mx-auto max-w-container container-pad">
           <FadeIn>
             <SectionLabel className="mb-4">How we handle client data</SectionLabel>
             <h2
-              className="mb-12 max-w-3xl"
+              className="mb-4 max-w-3xl"
               style={{
                 fontFamily: 'var(--font-display)',
                 fontSize: 'clamp(1.75rem, 1.35rem + 1.8vw, 2.5rem)',
@@ -145,74 +147,98 @@ export default function SecurityPage() {
             >
               Eight practices that shape every engagement.
             </h2>
+            <p
+              className="mb-12 max-w-2xl text-[15px] leading-relaxed"
+              style={{ fontFamily: 'var(--font-body)', color: 'var(--text-body)' }}
+            >
+              Confidentiality, access, transit and quality are engineering choices — not
+              marketing lines. Below is what every engagement actually does.
+            </p>
           </FadeIn>
-          <StaggerGroup className="grid grid-cols-1 gap-5 md:grid-cols-2">
-            {practices.map((p) => (
-              <StaggerItem key={p.title}>
-                <div
-                  className="group flex h-full items-start gap-4 rounded-2xl border p-6 transition-colors"
-                  style={{
-                    borderColor: 'var(--border-glass)',
-                    background: 'var(--card-surface)',
-                  }}
-                >
-                  <span
-                    className="icon-plate mt-0.5 inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl"
-                    style={{
-                      color: p.accent,
-                      ['--plate-accent' as string]: p.accent,
-                    }}
+          <StaggerGroup
+            staggerDelay={0.06}
+            className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-5"
+          >
+            {practices.map((p, i) => {
+              const id = `P${String(i + 1).padStart(2, '0')}`
+              return (
+                <StaggerItem key={p.title}>
+                  <article
+                    className="practice-card link-card link-card--icon link-card--static"
+                    style={{ ['--card-accent' as string]: p.accent }}
                   >
-                    <p.Icon size={18} strokeWidth={1.5} />
-                  </span>
-                  <div>
-                    <p
-                      className="mb-1.5 text-[15px] font-medium"
+                    <span aria-hidden="true" className="lc-bar" />
+                    <span aria-hidden="true" className="lc-sweep" />
+                    <span
+                      className="lc-plate icon-plate inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-xl"
                       style={{
-                        fontFamily: 'var(--font-display)',
-                        color: 'var(--text-strong)',
-                        letterSpacing: '-0.01em',
+                        color: p.accent,
+                        ['--plate-accent' as string]: p.accent,
                       }}
                     >
-                      {p.title}
-                    </p>
-                    <p
-                      className="text-[13.5px] leading-relaxed"
-                      style={{ fontFamily: 'var(--font-body)', color: 'var(--text-muted)' }}
-                    >
-                      {p.body}
-                    </p>
-                  </div>
-                </div>
-              </StaggerItem>
-            ))}
+                      <p.Icon size={20} strokeWidth={1.5} />
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <div className="mb-1.5 flex items-baseline justify-between gap-3">
+                        <p
+                          className="text-[15.5px] font-medium"
+                          style={{
+                            fontFamily: 'var(--font-display)',
+                            color: 'var(--text-strong)',
+                            letterSpacing: '-0.01em',
+                            lineHeight: 1.25,
+                          }}
+                        >
+                          {p.title}
+                        </p>
+                        <span
+                          className="shrink-0 text-[10px] font-medium uppercase"
+                          style={{
+                            fontFamily: 'var(--font-mono)',
+                            letterSpacing: '0.16em',
+                            color: 'var(--text-muted)',
+                          }}
+                        >
+                          {id}
+                        </span>
+                      </div>
+                      <p
+                        className="text-[13.5px] leading-relaxed"
+                        style={{ fontFamily: 'var(--font-body)', color: 'var(--text-body)' }}
+                      >
+                        {p.body}
+                      </p>
+                    </div>
+                  </article>
+                </StaggerItem>
+              )
+            })}
           </StaggerGroup>
         </div>
       </section>
 
-      {/* Compliance honesty note */}
+      {/* Compliance honesty note — gold accent, static hover polish */}
       <section className="py-section border-t border-white/[0.05]" data-scroll-anchor="scope">
         <div className="mx-auto max-w-container container-pad">
           <FadeIn>
             <div
-              className="flex flex-col items-start gap-4 rounded-2xl border p-6 md:flex-row md:items-start md:gap-6 md:p-8"
-              style={{
-                borderColor: 'var(--border-glass)',
-                background: 'var(--card-surface)',
-              }}
+              className="link-card link-card--icon link-card--static md:p-8"
+              style={{ ['--card-accent' as string]: '#E9C46A', padding: '24px' }}
             >
+              <span aria-hidden="true" className="lc-bar" />
+              <span aria-hidden="true" className="lc-sweep" />
               <span
-                className="icon-plate inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl"
+                className="lc-plate icon-plate inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-xl"
                 style={{
                   color: '#E9C46A',
                   ['--plate-accent' as string]: '#E9C46A',
                 }}
               >
-                <AlertCircle size={18} strokeWidth={1.5} />
+                <AlertCircle size={20} strokeWidth={1.5} />
               </span>
               <div>
                 <p
-                  className="mb-2 text-[15px] font-medium"
+                  className="mb-2 text-[15.5px] font-medium"
                   style={{
                     fontFamily: 'var(--font-display)',
                     color: 'var(--text-strong)',
@@ -223,7 +249,7 @@ export default function SecurityPage() {
                 </p>
                 <p
                   className="text-[13.5px] leading-relaxed"
-                  style={{ fontFamily: 'var(--font-body)', color: 'var(--text-muted)' }}
+                  style={{ fontFamily: 'var(--font-body)', color: 'var(--text-body)' }}
                 >
                   We deliberately don&apos;t claim certifications we don&apos;t hold. If your
                   engagement requires ISO, SOC 2 or another specific certification, tell us up front
