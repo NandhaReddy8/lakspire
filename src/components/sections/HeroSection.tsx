@@ -66,14 +66,10 @@ export function HeroSection() {
           <div className="flex flex-col">
             <motion.p
               {...fadeUp(0.05)}
-              className="mb-4 text-[11px] font-semibold uppercase"
+              className="hero-eyebrow mb-4 text-[12px] font-semibold uppercase"
               style={{
                 letterSpacing: '0.14em',
                 fontFamily: 'var(--font-body)',
-                background: 'linear-gradient(90deg, #E9C46A, #F4A261)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
               }}
             >
               B2B Data & Technology Services

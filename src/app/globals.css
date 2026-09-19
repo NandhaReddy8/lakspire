@@ -657,11 +657,10 @@ html {
 [data-theme='light'] .themed-footer .bg-white\/\[0\.04\],
 [data-theme='light'] .themed-footer .bg-white\/\[0\.05\],
 [data-theme='light'] .themed-footer .bg-white\/\[0\.06\] { background-color: rgba(255,240,220,0.04); }
-/* Watermark stays a very faint warm off-white on the dark footer in
-   both themes. */
-[data-theme='light'] .themed-footer > div:last-child {
-  color: rgba(255, 240, 220, 0.05) !important;
-}
+/* Legacy: the themed-footer light-theme cascade used to drop the
+   last child (the watermark) to near-invisible cream. The watermark
+   now uses .footer-watermark with its own ember gradient, so this
+   rule is intentionally left out. */
 /* Footer cursor-following glow — tuned to feel like a torch beam in
    a dark room. Wider radius, softer intensity, longer fall-off. The
    effect should be a warm halo the eye follows, not a bright spot. */
@@ -1479,6 +1478,59 @@ h2, h3 { scroll-margin-top: 96px; }
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
+
+/* Footer wordmark watermark — must be visible on the dark footer
+   AND scale edge-to-edge on every device width. The old rule used
+   `clamp(4rem, 15vw, 12rem)` which capped small phones at 64px and
+   left the wordmark tiny and centred. Using pure viewport width
+   with a display-font kerning ratio means the letters always land
+   ~2% inside each edge. Kept subtle by lowering opacity, not by
+   painting it in near-invisible border-glass tokens. */
+.footer-watermark {
+  font-family: var(--font-display), system-ui, sans-serif;
+  /* "Lakspire" is 8 chars. At tracking -0.05em on the display font,
+     roughly 0.52em per char ⇒ 8 × 0.52 = 4.16em wide. Solve for
+     font-size so width ≈ 96vw: font-size ≈ 96vw / 4.16 ≈ 23vw. */
+  font-size: 23vw;
+  font-weight: 700;
+  letter-spacing: -0.05em;
+  line-height: 1;
+  color: rgba(255, 220, 170, 0.10);
+  background: linear-gradient(180deg,
+    rgba(255, 200, 140, 0.14) 0%,
+    rgba(224, 82, 32, 0.10) 60%,
+    rgba(224, 82, 32, 0.04) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+[data-theme='light'] .footer-watermark {
+  /* Light theme footer is still dark (per themed-footer rules) so
+     the ember gradient reads warmer here — same treatment. */
+  color: rgba(255, 210, 160, 0.14);
+  background: linear-gradient(180deg,
+    rgba(255, 200, 140, 0.20) 0%,
+    rgba(224, 82, 32, 0.14) 60%,
+    rgba(224, 82, 32, 0.06) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Hero eyebrow — theme-aware ember gradient. Reads clearly on both
+   the dark ink background and the cream light theme. */
+.hero-eyebrow {
+  background: linear-gradient(90deg, #E9C46A, #F4A261);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+[data-theme='light'] .hero-eyebrow {
+  background: linear-gradient(90deg, #C24A1C, #7A3510);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
 [data-theme='light'] .text-gradient-primary {
   background: linear-gradient(135deg, #1A130E 0%, #E05220 55%, #FF6B35 100%);
   -webkit-background-clip: text;
@@ -1852,9 +1904,60 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--text-muted);
 }
 
-/* Small screens — stack the actions */
+/* Small screens — chip stretches full width with 12px side margins
+   and reshapes into a card:
+     row 1: [icon] [copy] [gear]
+     row 2: [reject]        [accept]
+   The desktop animation ends with `translate(-50%, 0)` which stays
+   applied due to `both` fill mode. On mobile we swap to a dedicated
+   animation that lands at `translateY(0)` so the chip doesn't get
+   pushed off the left edge. */
+@keyframes cookie-slide-up-mobile {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
 @media (max-width: 640px) {
-  .cookie-chip { flex-wrap: wrap; padding: 10px 12px; border-radius: 22px; }
-  .cookie-chip__label { flex: 1 1 100%; }
-  .cookie-panel__actions { justify-content: flex-end; }
+  .cookie-consent {
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    transform: translateY(0);
+    max-width: none;
+    animation: cookie-slide-up-mobile 380ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .cookie-chip {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    grid-template-areas:
+      "icon copy gear"
+      "reject reject accept";
+    gap: 10px 10px;
+    padding: 14px;
+    border-radius: 18px;
+    align-items: center;
+  }
+  .cookie-chip__icon    { grid-area: icon; }
+  .cookie-chip__label   {
+    grid-area: copy;
+    font-size: 12.5px;
+    line-height: 1.4;
+    max-width: none;
+  }
+  .cookie-chip > .cookie-gear         { grid-area: gear; width: 34px; height: 34px; border-radius: 10px; }
+  .cookie-chip > .cookie-btn--primary { grid-area: accept; height: 40px; border-radius: 10px; }
+  .cookie-chip > .cookie-btn--ghost   { grid-area: reject; height: 40px; border-radius: 10px; }
+
+  .cookie-panel { padding: 16px; border-radius: 16px; }
+  .cookie-panel__actions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+    gap: 8px;
+  }
+  .cookie-panel__actions > div {
+    justify-content: space-between;
+    display: flex;
+    gap: 8px;
+  }
+  .cookie-panel__actions .cookie-btn { flex: 1 1 0; height: 40px; }
 }

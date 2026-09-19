@@ -154,18 +154,12 @@ export function Footer() {
         </div>
       </div>
 
-      {/* Large watermark */}
+      {/* Large watermark — fills the footer width edge-to-edge across
+          every viewport. Font-size scales purely with viewport width
+          so the wordmark always sits ~2 % inside each edge. */}
       <div
         aria-hidden="true"
-        className="overflow-hidden pb-2 pt-4 text-center select-none"
-        style={{
-          fontFamily: 'var(--font-display)',
-          fontSize: 'clamp(4rem, 15vw, 12rem)',
-          fontWeight: 700,
-          letterSpacing: '-0.05em',
-          color: 'var(--border-glass)',
-          lineHeight: 1,
-        }}
+        className="footer-watermark overflow-hidden pb-2 pt-4 text-center select-none"
       >
         Lakspire
       </div>

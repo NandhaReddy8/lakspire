@@ -321,8 +321,8 @@ export function WhatWeDoStory() {
                           {service.title}
                         </h3>
                         <p
-                          className="line-clamp-3 max-w-lg text-[13px] leading-relaxed text-white/55 lg:line-clamp-none lg:text-[15px]"
-                          style={{ fontFamily: 'var(--font-body)' }}
+                          className="line-clamp-4 max-w-lg text-[15px] leading-relaxed text-white/70 lg:line-clamp-none lg:text-[17px]"
+                          style={{ fontFamily: 'var(--font-body)', fontWeight: 500 }}
                         >
                           {service.description}
                         </p>

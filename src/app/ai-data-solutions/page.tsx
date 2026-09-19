@@ -124,7 +124,7 @@ export default function AIPage() {
                 guidelines, calibrated reviewers and quality controls, engagement after engagement.
               </p>
 
-              <ClayFrame className="mt-10" variant="petal">
+              <ClayFrame className="mt-16 lg:mt-20" variant="petal">
                 <AICapabilityRadial />
               </ClayFrame>
             </FadeIn>
