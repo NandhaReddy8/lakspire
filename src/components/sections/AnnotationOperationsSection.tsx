@@ -23,47 +23,85 @@ import { SectionLabel } from '@/components/blocks/SectionLabel'
 // ─────────────────────────────────────────────────────────────
 
 function CollectionAnim() {
-  // Four source chips drop packets into a central funnel, packets
-  // exit at the bottom as a clean stream.
+  // Each source chip fires a packet that follows a curved SMIL path into
+  // the funnel centre — no CSS translateY so no transform-box issues.
   const sources = [
     { x: 22, label: 'IMG', color: '#FF8F5C' },
     { x: 74, label: 'TXT', color: '#E9C46A' },
     { x: 126, label: 'AUD', color: '#F4A261' },
     { x: 178, label: 'VID', color: '#FFB98A' },
   ]
+  // Funnel chute centre (x=110) is where all packets converge.
+  // Packet starts at (s.x+12, 34) → dx/dy relative motion for animateMotion.
+  const funnelCX = 110
+  const packetStartY = 34  // SVG y where packet originates (below chip)
+  const funnelEntryY = 118 // SVG y inside chute
   return (
     <svg viewBox="0 0 220 180" className="annot-svg" aria-hidden preserveAspectRatio="xMidYMid meet">
+      <defs>
+        {/* clip funnel interior so packets disappear inside */}
+        <clipPath id="funnel-clip">
+          <path d="M32 80 h156 l-52 36 v20 h-52 v-20 z" />
+        </clipPath>
+      </defs>
+
       {/* source chips */}
-      {sources.map((s, i) => (
-        <g key={s.label} transform={`translate(${s.x} 20)`}>
-          <rect width="24" height="14" rx="3" fill={s.color} />
-          <text x="12" y="10" fontSize="7.4" fontFamily="var(--font-mono)"
-            fill="#0A0805" fontWeight="700" textAnchor="middle">
-            {s.label}
-          </text>
-          {/* falling packet */}
-          <rect className="col-packet" style={{ animationDelay: `${(i * 0.6).toFixed(2)}s` }}
-            x="10" y="18" width="4" height="4" rx="1" fill={s.color} />
-        </g>
-      ))}
-      {/* funnel */}
-      <path d="M32 92 h156 l-52 34 v18 h-52 v-18 z"
+      {sources.map((s, i) => {
+        const chipCX = s.x + 12   // horizontal centre of chip
+        const dx = funnelCX - chipCX
+        const dy = funnelEntryY - packetStartY
+        return (
+          <g key={s.label} transform={`translate(${s.x} 12)`}>
+            <rect width="24" height="14" rx="3" fill={s.color} />
+            <text x="12" y="10" fontSize="7.4" fontFamily="ui-monospace,monospace"
+              fill="#0A0805" fontWeight="700" textAnchor="middle">
+              {s.label}
+            </text>
+            {/* packet — SMIL curved path into funnel, no CSS transform-box */}
+            <rect x="10" y="16" width="4" height="4" rx="1" fill={s.color}>
+              <animateMotion
+                dur="3s"
+                begin={`${(i * 0.65).toFixed(2)}s`}
+                repeatCount="indefinite"
+                calcMode="spline"
+                keyTimes="0;1"
+                keySplines="0.4 0 0.6 1"
+                path={`M0,0 Q${(dx / 2).toFixed(1)},${(dy * 0.55).toFixed(1)} ${dx},${dy}`}
+              />
+              <animate attributeName="opacity"
+                values="0;1;1;0"
+                keyTimes="0;0.07;0.72;0.85"
+                dur="3s"
+                begin={`${(i * 0.65).toFixed(2)}s`}
+                repeatCount="indefinite" />
+            </rect>
+          </g>
+        )
+      })}
+
+      {/* funnel body (moved up vs original so chute clears the ticks) */}
+      <path d="M32 80 h156 l-52 36 v20 h-52 v-20 z"
         fill="rgba(255,143,92,0.06)" stroke="#FF8F5C" strokeWidth="1.4" strokeLinejoin="round" />
-      {/* funnel guide dashes */}
-      <path d="M32 92 h156" stroke="rgba(246,235,218,0.28)" strokeWidth="0.8" strokeDasharray="2 3" />
-      {/* output stream */}
-      <g>
-        <line x1="110" y1="146" x2="110" y2="174" stroke="rgba(246,235,218,0.18)" strokeWidth="0.6" />
-        {[0, 1, 2, 3].map((i) => (
-          <circle key={i} className="col-outdot" style={{ animationDelay: `${(i * 0.35).toFixed(2)}s` }}
-            cx="110" cy="146" r="2.6" fill="#FF6B35" />
-        ))}
-      </g>
-      {/* provenance ticks */}
-      <g fontFamily="var(--font-mono)" fontSize="6.2" fill="rgba(246,235,218,0.5)">
-        <text x="16" y="164">✓ consent</text>
-        <text x="76" y="164">✓ provenance</text>
-        <text x="160" y="164">✓ coverage</text>
+      {/* top opening guide dashes */}
+      <path d="M32 80 h156" stroke="rgba(246,235,218,0.25)" strokeWidth="0.8" strokeDasharray="2 3" />
+
+      {/* output stream — ends well above the ticks */}
+      <line x1="110" y1="136" x2="110" y2="150" stroke="rgba(246,235,218,0.18)" strokeWidth="0.6" />
+      {[0, 1, 2, 3].map((i) => (
+        <circle key={i} cx="110" cy="137" r="2.6" fill="#FF6B35">
+          <animate attributeName="cy" values="137;150;150" keyTimes="0;0.7;1"
+            dur="1.8s" begin={`${(i * 0.38).toFixed(2)}s`} repeatCount="indefinite"
+            calcMode="spline" keySplines="0.4 0 0.6 1;0 0 0 0" />
+          <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.08;0.65;0.8"
+            dur="1.8s" begin={`${(i * 0.38).toFixed(2)}s`} repeatCount="indefinite" />
+        </circle>
+      ))}
+
+      {/* provenance ticks — below the stream, clear of dots */}
+      <g fontFamily="ui-monospace,monospace" fontSize="6.2" fill="rgba(246,235,218,0.5)">
+        <text x="10" y="168">✓ consent</text>
+        <text x="78" y="168">✓ provenance</text>
+        <text x="156" y="168">✓ coverage</text>
       </g>
     </svg>
   )

@@ -2041,28 +2041,7 @@ html {
 
 /* ─── Operations bench anims (AI & Data Solutions page) ──── */
 /* Raw data collection — falling packets + output stream */
-@keyframes col-packet-fall {
-  0% { transform: translateY(0); opacity: 0; }
-  10% { opacity: 1; }
-  60% { transform: translateY(64px); opacity: 1; }
-  70% { transform: translateY(74px); opacity: 0; }
-  100% { transform: translateY(74px); opacity: 0; }
-}
-@keyframes col-outdot {
-  0% { transform: translateY(0); opacity: 0; }
-  10% { opacity: 1; }
-  90% { transform: translateY(24px); opacity: 0; }
-  100% { transform: translateY(24px); opacity: 0; }
-}
-.col-packet {
-  transform-box: fill-box;
-  animation: col-packet-fall 3.2s cubic-bezier(0.55, 0, 0.35, 1) infinite;
-}
-.col-outdot {
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: col-outdot 2s ease-in infinite;
-}
+/* col-packet and col-outdot replaced with SMIL animateMotion/animate in SVG */
 
 /* Schema — leaves pop in, then connector lines draw */
 @keyframes schema-leaf-in {
@@ -2227,7 +2206,6 @@ html {
   .audio-play, .audio-cap-1, .audio-cap-2,
   .senti-fill, .senti-score,
   .ocr-scan, .ocr-box, .ocr-field,
-  .col-packet, .col-outdot,
   .schema-leaf, .schema-link,
   .qa-packet,
   .qs-dial, .qs-needle, .qs-bar, .qs-score-text,
