@@ -35,13 +35,13 @@ function CollectionAnim() {
   // Packet starts at (s.x+12, 34) → dx/dy relative motion for animateMotion.
   const funnelCX = 110
   const packetStartY = 34  // SVG y where packet originates (below chip)
-  const funnelEntryY = 118 // SVG y inside chute
+  const funnelEntryY = 108 // SVG y inside chute
   return (
     <svg viewBox="0 0 220 180" className="annot-svg" aria-hidden preserveAspectRatio="xMidYMid meet">
       <defs>
         {/* clip funnel interior so packets disappear inside */}
         <clipPath id="funnel-clip">
-          <path d="M32 80 h156 l-52 36 v20 h-52 v-20 z" />
+          <path d="M32 68 h156 l-52 36 v20 h-52 v-20 z" />
         </clipPath>
       </defs>
 
@@ -79,17 +79,17 @@ function CollectionAnim() {
         )
       })}
 
-      {/* funnel body (moved up vs original so chute clears the ticks) */}
-      <path d="M32 80 h156 l-52 36 v20 h-52 v-20 z"
+      {/* funnel body */}
+      <path d="M32 68 h156 l-52 36 v20 h-52 v-20 z"
         fill="rgba(255,143,92,0.06)" stroke="#FF8F5C" strokeWidth="1.4" strokeLinejoin="round" />
       {/* top opening guide dashes */}
-      <path d="M32 80 h156" stroke="rgba(246,235,218,0.25)" strokeWidth="0.8" strokeDasharray="2 3" />
+      <path d="M32 68 h156" stroke="rgba(246,235,218,0.25)" strokeWidth="0.8" strokeDasharray="2 3" />
 
-      {/* output stream — ends well above the ticks */}
-      <line x1="110" y1="136" x2="110" y2="150" stroke="rgba(246,235,218,0.18)" strokeWidth="0.6" />
+      {/* output stream */}
+      <line x1="110" y1="124" x2="110" y2="152" stroke="rgba(246,235,218,0.18)" strokeWidth="0.6" />
       {[0, 1, 2, 3].map((i) => (
-        <circle key={i} cx="110" cy="137" r="2.6" fill="#FF6B35">
-          <animate attributeName="cy" values="137;150;150" keyTimes="0;0.7;1"
+        <circle key={i} cx="110" cy="125" r="2.6" fill="#FF6B35">
+          <animate attributeName="cy" values="125;150;150" keyTimes="0;0.7;1"
             dur="1.8s" begin={`${(i * 0.38).toFixed(2)}s`} repeatCount="indefinite"
             calcMode="spline" keySplines="0.4 0 0.6 1;0 0 0 0" />
           <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.08;0.65;0.8"
