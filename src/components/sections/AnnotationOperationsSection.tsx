@@ -185,8 +185,8 @@ function QualityScoreAnim() {
     <svg viewBox="0 0 220 180" className="annot-svg" aria-hidden preserveAspectRatio="xMidYMid meet">
       {/* dial */}
       <g transform="translate(60 108)">
-        <path d="M-44 0 A44 44 0 0 1 44 0" fill="none" stroke="rgba(246,235,218,0.14)" strokeWidth="7" strokeLinecap="round" />
-        <path d="M-44 0 A44 44 0 0 1 44 0" fill="none" stroke="url(#dial-g)" strokeWidth="7" strokeLinecap="round"
+        <path d="M-44 0 A44 44 0 0 1 44 0" fill="none" stroke="rgba(246,235,218,0.14)" strokeWidth="7" strokeLinecap="butt" />
+        <path d="M-44 0 A44 44 0 0 1 44 0" fill="none" stroke="url(#dial-g)" strokeWidth="7" strokeLinecap="butt"
           strokeDasharray="138" className="qs-dial" />
         <defs>
           <linearGradient id="dial-g" x1="0" x2="1" y1="0" y2="0">
