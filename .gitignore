@@ -89,5 +89,6 @@ skills-lock.json
 /.playwright-mcp/
 /chk-*.png
 /story-*.png
+/ops-*.png
 /*.debug.png
 CHANGES.pdf

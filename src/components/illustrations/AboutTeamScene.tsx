@@ -43,12 +43,20 @@ function hexPoint(i: number, r = RADIUS) {
   }
 }
 
+const INNER_R = 70
 const OUTER_HEX = Array.from({ length: N }, (_, i) => hexPoint(i, RADIUS))
-const INNER_HEX = Array.from({ length: N }, (_, i) => hexPoint(i, 70))
+const INNER_HEX = Array.from({ length: N }, (_, i) => hexPoint(i, INNER_R))
 
 // Hexagon path (outer + inner as attribute strings for <polygon>)
 const outerPoints = OUTER_HEX.map((p) => `${p.x},${p.y}`).join(' ')
 const innerPoints = INNER_HEX.map((p) => `${p.x},${p.y}`).join(' ')
+
+// Same hex, but coords relative to (0,0) — used as a clipPath inside the
+// translated center group so the logo image fills the hexagon exactly.
+const innerHexLocalPoints = Array.from({ length: N }, (_, i) => {
+  const angle = -Math.PI / 2 + (i / N) * Math.PI * 2
+  return `${round3(Math.cos(angle) * INNER_R)},${round3(Math.sin(angle) * INNER_R)}`
+}).join(' ')
 
 export function AboutTeamScene() {
   const [active, setActive] = useState(0)
@@ -74,9 +82,10 @@ export function AboutTeamScene() {
           <stop offset="50%" stopColor="#F4A261" stopOpacity="0.9" />
           <stop offset="100%" stopColor="#FF6B35" stopOpacity="0.7" />
         </linearGradient>
-        {/* Circular clip for the logo — coords relative to group origin (0,0) */}
-        <clipPath id="logo-circle">
-          <circle cx="0" cy="0" r="20" />
+        {/* Hexagonal clip for the logo — matches the inner hex shape,
+            coords relative to the translated center group. */}
+        <clipPath id="logo-hex">
+          <polygon points={innerHexLocalPoints} />
         </clipPath>
       </defs>
 
@@ -124,7 +133,17 @@ export function AboutTeamScene() {
         />
       </g>
 
-      {/* Inner hex frame — counter-rotates */}
+      {/* Static inner hex — sits directly under the logo image and gives
+          it a dark warm backing so the logo reads on any background. */}
+      <polygon
+        points={innerPoints}
+        fill="rgba(20,15,11,0.92)"
+        stroke="rgba(255,143,92,0.55)"
+        strokeWidth="1"
+      />
+
+      {/* Decorative counter-rotating hex ring — slightly enlarged so it
+          orbits the logo hex rather than clipping through it. */}
       <g>
         <animateTransform
           attributeName="transform"
@@ -135,11 +154,15 @@ export function AboutTeamScene() {
           repeatCount="indefinite"
         />
         <polygon
-          points={innerPoints}
-          fill="rgba(20,15,11,0.6)"
-          stroke="rgba(255,143,92,0.4)"
-          strokeWidth="0.7"
-          opacity="0.8"
+          points={Array.from({ length: N }, (_, i) => {
+            const p = hexPoint(i, INNER_R + 8)
+            return `${p.x},${p.y}`
+          }).join(' ')}
+          fill="none"
+          stroke="rgba(255,143,92,0.35)"
+          strokeWidth="0.6"
+          strokeDasharray="3 4"
+          opacity="0.75"
         />
       </g>
 
@@ -218,18 +241,22 @@ export function AboutTeamScene() {
         )
       })}
 
-      {/* Central logo mark — Lakspire logo sealed within the inner hex */}
+      {/* Central logo — clipped to the inner hexagon so it fills the
+          shape edge-to-edge. Image is sized well past the hex extent
+          so the crop is clean at any aspect ratio. */}
       <g transform={`translate(${CENTER.x} ${CENTER.y})`}>
-        <circle r="28" fill="rgba(20,15,11,0.92)" stroke="rgba(255,143,92,0.6)" strokeWidth="1" />
         <image
           href="/lakspire-logo.jpg"
-          x="-20" y="-20" width="40" height="40"
-          clipPath="url(#logo-circle)"
+          x={-INNER_R}
+          y={-INNER_R}
+          width={INNER_R * 2}
+          height={INNER_R * 2}
+          clipPath="url(#logo-hex)"
           preserveAspectRatio="xMidYMid slice"
         />
-        {/* Pulse ring around the logo */}
-        <circle r="22" fill="none" stroke="rgba(255,143,92,0.35)" strokeWidth="0.8">
-          <animate attributeName="r" values="22; 27; 22" dur="3s" repeatCount="indefinite" />
+        {/* Soft ember pulse just outside the hex */}
+        <circle r={INNER_R + 4} fill="none" stroke="rgba(255,143,92,0.35)" strokeWidth="0.8">
+          <animate attributeName="r"       values={`${INNER_R + 4}; ${INNER_R + 10}; ${INNER_R + 4}`} dur="3s" repeatCount="indefinite" />
           <animate attributeName="opacity" values="0.5; 0.15; 0.5" dur="3s" repeatCount="indefinite" />
         </circle>
       </g>

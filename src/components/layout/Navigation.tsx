@@ -74,6 +74,16 @@ export function Navigation() {
 
   return (
     <>
+      {/* Soft fade veil behind the pills — no hard divider line, just a
+          gentle darkening so long headlines and background type don't fight
+          the glass surfaces optically. Sits below the header, above content. */}
+      <div
+        aria-hidden="true"
+        className={cn(
+          'nav-veil pointer-events-none fixed inset-x-0 top-0 z-40 transition-opacity duration-500',
+          scrolled ? 'nav-veil--scrolled' : ''
+        )}
+      />
       {/* Floating header — three pills spaced across the top */}
       <header
         className={cn(

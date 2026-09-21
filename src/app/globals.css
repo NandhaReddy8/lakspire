@@ -549,6 +549,42 @@ html {
   overflow-x: clip;
 }
 
+/* ─── Nav fade veil ────────────────────────────────────────────
+   A soft, edgeless gradient behind the floating pills. No hard
+   dividing line — just enough darkening (or warm-cream on light)
+   that background type ceases to fight the pill glass. Grows a bit
+   after scroll so the top strip feels seated once content is under
+   it. */
+.nav-veil {
+  height: 140px;
+  background: linear-gradient(
+    to bottom,
+    rgba(6, 5, 4, 0.92) 0%,
+    rgba(8, 7, 6, 0.82) 28%,
+    rgba(10, 9, 8, 0.62) 52%,
+    rgba(10, 9, 8, 0.34) 74%,
+    rgba(10, 9, 8, 0.10) 90%,
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(to bottom, #000 72%, transparent 100%);
+          mask-image: linear-gradient(to bottom, #000 72%, transparent 100%);
+  transition: height 400ms var(--ease-out), opacity 400ms var(--ease-out);
+}
+.nav-veil--scrolled {
+  height: 168px;
+}
+[data-theme='light'] .nav-veil {
+  background: linear-gradient(
+    to bottom,
+    rgba(251, 246, 239, 0.96) 0%,
+    rgba(251, 246, 239, 0.85) 28%,
+    rgba(251, 246, 239, 0.62) 52%,
+    rgba(251, 246, 239, 0.32) 74%,
+    rgba(251, 246, 239, 0.10) 90%,
+    transparent 100%
+  );
+}
+
 /* ─── Navigation pill surfaces (theme-aware) ───────────────── */
 .nav-pill {
   background: var(--bg-panel);
@@ -2242,6 +2278,154 @@ html {
     transparent 62%
   );
   mix-blend-mode: multiply;
+}
+
+/* ─── Triangle cursor + click ripple ──────────────────────────
+   Native cursor is hidden only when the follower has actually
+   mounted (`.has-tri-cursor` on <html>). Text inputs keep their
+   caret cursor so typing never feels broken. */
+html.has-tri-cursor,
+html.has-tri-cursor body,
+html.has-tri-cursor a,
+html.has-tri-cursor button,
+html.has-tri-cursor [role='button'],
+html.has-tri-cursor label,
+html.has-tri-cursor summary {
+  cursor: none;
+}
+html.has-tri-cursor input,
+html.has-tri-cursor textarea,
+html.has-tri-cursor [contenteditable='true'] {
+  cursor: text;
+}
+
+.tri-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+  pointer-events: none;
+  width: 22px;
+  height: 22px;
+  /* SVG viewBox 0-24 rendered at 22px → each unit ≈ 0.92px.
+     Tip is at (1,1) in the viewBox, so shift by -0.92px so it lands
+     exactly on the pointer coordinate. */
+  margin-top: -1px;
+  margin-left: -1px;
+  transform: translate3d(-100px, -100px, 0);
+  transition: opacity 180ms var(--ease-out);
+  will-change: transform;
+  filter: drop-shadow(0 4px 10px rgba(255, 107, 53, 0.45));
+}
+.tri-cursor svg {
+  display: block;
+  /* Scale/rotate around the tip so hover-grow doesn't move the point. */
+  transform-origin: 4% 4%;
+  transition: transform 220ms var(--ease-spring), filter 220ms var(--ease-out);
+}
+.tri-cursor[data-state='hover'] svg {
+  transform: scale(1.35) rotate(8deg);
+}
+.tri-cursor[data-press='down'] svg {
+  transform: scale(0.82) rotate(-4deg);
+}
+.tri-cursor[data-state='hover'][data-press='down'] svg {
+  transform: scale(1.05) rotate(4deg);
+}
+@media (prefers-reduced-motion: reduce) {
+  .tri-cursor svg { transition: none; }
+}
+
+.ripple-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  pointer-events: none;
+}
+/* Glossy click-ripple: a bright core + three staggered rings +
+   a specular sheen. Each ring gets its own delay so the effect
+   reads as a cascading pulse, not a single balloon. */
+.click-ripple-group {
+  position: absolute;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+.click-ripple {
+  position: absolute;
+  left: 0;
+  top: 0;
+  border-radius: 9999px;
+  transform: translate(-50%, -50%) scale(0.35);
+  opacity: 0;
+  will-change: transform, opacity;
+}
+/* Bright glossy core — flash-in and fade */
+.click-ripple--core {
+  width: 10px;
+  height: 10px;
+  background: radial-gradient(circle at 35% 30%,
+    rgba(255, 240, 220, 0.95) 0%,
+    rgba(255, 176, 122, 0.75) 40%,
+    rgba(255, 107, 53, 0.35) 70%,
+    rgba(255, 107, 53, 0) 100%);
+  box-shadow: 0 0 12px rgba(255, 176, 122, 0.5),
+              0 0 22px rgba(255, 107, 53, 0.28);
+  animation: click-ripple-core 420ms var(--ease-out) forwards;
+}
+/* Ring 1 — bright, tight, fast */
+.click-ripple--r1 {
+  width: 10px;
+  height: 10px;
+  border: 1.25px solid rgba(255, 200, 150, 0.9);
+  box-shadow: 0 0 8px rgba(255, 176, 122, 0.6),
+              inset 0 0 4px rgba(255, 240, 220, 0.5);
+  animation: click-ripple-ring 480ms var(--ease-out) forwards;
+}
+/* Ring 2 — medium ember */
+.click-ripple--r2 {
+  width: 10px;
+  height: 10px;
+  border: 1px solid rgba(255, 143, 92, 0.7);
+  box-shadow: 0 0 10px rgba(255, 107, 53, 0.32);
+  animation: click-ripple-ring 620ms var(--ease-out) 70ms forwards;
+}
+/* Ring 3 — softest, largest, slowest (drives the dropRipple check) */
+.click-ripple--r3 {
+  width: 10px;
+  height: 10px;
+  border: 0.8px solid rgba(255, 107, 53, 0.45);
+  animation: click-ripple-ring 780ms var(--ease-out) 140ms forwards;
+}
+/* Specular sheen — a bright arc that swipes across for the "glass" feel */
+.click-ripple--sheen {
+  width: 24px;
+  height: 24px;
+  background: conic-gradient(from 210deg,
+    transparent 0deg,
+    rgba(255, 240, 220, 0.5) 30deg,
+    transparent 70deg,
+    transparent 360deg);
+  filter: blur(1.5px);
+  mix-blend-mode: screen;
+  animation: click-ripple-sheen 420ms var(--ease-out) forwards;
+}
+@keyframes click-ripple-core {
+  0%   { transform: translate(-50%, -50%) scale(0.3); opacity: 1; }
+  40%  { opacity: 0.8; }
+  100% { transform: translate(-50%, -50%) scale(1.8); opacity: 0; }
+}
+@keyframes click-ripple-ring {
+  0%   { transform: translate(-50%, -50%) scale(0.3); opacity: 0.95; }
+  60%  { opacity: 0.5; }
+  100% { transform: translate(-50%, -50%) scale(3.2); opacity: 0; }
+}
+@keyframes click-ripple-sheen {
+  0%   { transform: translate(-50%, -50%) scale(0.35) rotate(0deg); opacity: 0.85; }
+  100% { transform: translate(-50%, -50%) scale(1.5) rotate(160deg); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .click-ripple { animation-duration: 240ms !important; animation-delay: 0ms !important; }
 }
 
 /* ─── Lakspire wordmark — theme-aware gold gradient text ──────
