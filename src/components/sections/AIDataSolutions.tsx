@@ -65,28 +65,55 @@ export function AIDataSolutions() {
             <StaggerItem key={cap.label}>
               <Link
                 href="/ai-data-solutions"
-                className="group relative flex h-full flex-col overflow-hidden rounded-xl border p-5 transition-all duration-300 hover:-translate-y-0.5"
+                className="group relative flex h-full flex-col overflow-hidden rounded-xl border p-5"
                 style={{
                   borderColor: 'var(--border-glass)',
                   background: 'var(--card-surface)',
+                  transition: 'transform 380ms cubic-bezier(0.16,1,0.3,1), box-shadow 380ms cubic-bezier(0.16,1,0.3,1)',
+                  willChange: 'transform',
+                }}
+                onMouseEnter={(e) => {
+                  const el = e.currentTarget
+                  el.style.transform = 'translateY(-6px)'
+                  el.style.boxShadow = `0 20px 48px -12px ${cap.accent}40`
+                }}
+                onMouseLeave={(e) => {
+                  const el = e.currentTarget
+                  el.style.transform = ''
+                  el.style.boxShadow = ''
                 }}
               >
-                {/* Left accent strip */}
+                {/* 1 — Top accent sweep: scaleX 0→1 on hover */}
                 <span
                   aria-hidden="true"
-                  className="absolute left-0 top-4 bottom-4 w-[3px] rounded-full"
-                  style={{ background: cap.accent, opacity: 0.7 }}
+                  className="absolute left-0 top-0 right-0 h-[2px] origin-left scale-x-0 transition-transform duration-500 ease-out group-hover:scale-x-100"
+                  style={{ background: `linear-gradient(90deg, ${cap.accent}, ${cap.accent}30)` }}
                 />
 
-                {/* Radial bloom on hover */}
+                {/* 2 — Left strip: brightens on hover */}
+                <span
+                  aria-hidden="true"
+                  className="absolute left-0 top-5 bottom-5 w-[3px] rounded-full opacity-40 transition-opacity duration-300 group-hover:opacity-100"
+                  style={{ background: cap.accent }}
+                />
+
+                {/* 3 — Glow ring overlay: border tints + drop shadow visible on hover */}
+                <span
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-0 rounded-xl opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                  style={{ boxShadow: `inset 0 0 0 1px ${cap.accent}45` }}
+                />
+
+                {/* 4 — Warm bloom fills from top-left corner */}
                 <span
                   aria-hidden="true"
                   className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
                   style={{
-                    background: `radial-gradient(ellipse 90% 80% at 0% 0%, ${cap.accent}1A, transparent 65%)`,
+                    background: `radial-gradient(ellipse 100% 85% at 0% 0%, ${cap.accent}22, transparent 60%)`,
                   }}
                 />
 
+                {/* Content — z-index above all decorations */}
                 <p
                   className="relative text-[14px] font-medium leading-snug"
                   style={{
@@ -107,13 +134,14 @@ export function AIDataSolutions() {
                   {cap.desc}
                 </p>
 
+                {/* Bottom: gradient rule + chevron slides in */}
                 <div className="relative mt-auto flex items-center gap-2 pt-4">
                   <span
                     className="h-px flex-1"
-                    style={{ background: `linear-gradient(90deg, ${cap.accent}50, transparent)` }}
+                    style={{ background: `linear-gradient(90deg, ${cap.accent}45, transparent)` }}
                   />
                   <span
-                    className="text-[11px] opacity-0 transition-opacity duration-200 group-hover:opacity-90"
+                    className="translate-x-2 text-[11px] opacity-0 transition-all duration-250 group-hover:translate-x-0 group-hover:opacity-90"
                     style={{ color: cap.accent }}
                   >
                     →
