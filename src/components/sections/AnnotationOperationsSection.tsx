@@ -70,22 +70,20 @@ function CollectionAnim() {
 }
 
 function SchemaAnim() {
-  // Grid of raw records → tags snap into a labelled schema tree.
   const nodes = [
-    { x: 40, y: 40, label: 'intent' },
-    { x: 40, y: 90, label: 'entity' },
-    { x: 40, y: 140, label: 'topic' },
+    { x: 26, y: 36, label: 'intent' },
+    { x: 26, y: 90, label: 'entity' },
+    { x: 26, y: 144, label: 'topic' },
   ]
   const leaves = [
-    { x: 130, y: 22, label: 'greet' },
-    { x: 130, y: 42, label: 'ask' },
-    { x: 130, y: 72, label: 'PER' },
-    { x: 130, y: 92, label: 'ORG' },
-    { x: 130, y: 112, label: 'LOC' },
-    { x: 130, y: 142, label: 'sports' },
-    { x: 130, y: 162, label: 'ops' },
+    { x: 138, y: 18, label: 'greet' },
+    { x: 138, y: 38, label: 'ask' },
+    { x: 138, y: 68, label: 'PER' },
+    { x: 138, y: 88, label: 'ORG' },
+    { x: 138, y: 108, label: 'LOC' },
+    { x: 138, y: 132, label: 'sports' },
+    { x: 138, y: 155, label: 'ops' },
   ]
-  // Map each leaf → parent (nearest by y).
   const links = leaves.map((l) => {
     let closest = nodes[0]
     let dmin = Infinity
@@ -96,32 +94,32 @@ function SchemaAnim() {
     return { from: closest, to: l }
   })
   return (
-    <svg viewBox="0 0 220 180" className="annot-svg" aria-hidden preserveAspectRatio="xMidYMid meet">
+    <svg viewBox="0 0 230 180" className="annot-svg" aria-hidden preserveAspectRatio="xMidYMid meet">
       {/* backbone */}
-      <line x1="20" y1="20" x2="20" y2="160" stroke="rgba(246,235,218,0.22)" strokeWidth="0.8" strokeDasharray="2 3" />
+      <line x1="14" y1="16" x2="14" y2="162" stroke="rgba(246,235,218,0.22)" strokeWidth="0.8" strokeDasharray="2 3" />
       {/* connectors */}
       {links.map((lk, i) => (
-        <path key={i} d={`M${lk.from.x + 32} ${lk.from.y} C ${lk.from.x + 62} ${lk.from.y}, ${lk.to.x - 22} ${lk.to.y}, ${lk.to.x - 4} ${lk.to.y}`}
+        <path key={i} d={`M${lk.from.x + 44} ${lk.from.y} C ${lk.from.x + 74} ${lk.from.y}, ${lk.to.x - 24} ${lk.to.y}, ${lk.to.x - 4} ${lk.to.y}`}
           fill="none" stroke="rgba(233,196,106,0.55)" strokeWidth="0.9"
           strokeDasharray="80" className="schema-link"
           style={{ animationDelay: `${(0.9 + i * 0.09).toFixed(2)}s` }} />
       ))}
-      {/* parent nodes */}
-      {nodes.map((n, i) => (
+      {/* parent nodes — wider rects so labels like "intent" have room */}
+      {nodes.map((n) => (
         <g key={n.label} transform={`translate(${n.x} ${n.y})`}>
-          <rect x="0" y="-9" width="34" height="18" rx="3" fill="rgba(255,107,53,0.16)"
+          <rect x="0" y="-9" width="44" height="18" rx="3" fill="rgba(255,107,53,0.16)"
             stroke="#FF8F5C" strokeWidth="1.1" />
-          <text x="17" y="3.4" fontSize="7.6" fontFamily="var(--font-mono)"
+          <text x="22" y="3.5" fontSize="8" fontFamily="ui-monospace,monospace"
             fill="#FFB98A" fontWeight="600" textAnchor="middle">{n.label}</text>
-          <circle cx="34" cy="0" r="1.6" fill="#FF8F5C" />
+          <circle cx="44" cy="0" r="1.6" fill="#FF8F5C" />
         </g>
       ))}
       {/* leaf tags — pop in one by one */}
       {leaves.map((l, i) => (
         <g key={l.label} className="schema-leaf" style={{ animationDelay: `${(0.25 + i * 0.14).toFixed(2)}s` }}
           transform={`translate(${l.x} ${l.y})`}>
-          <rect x="0" y="-7" width="34" height="14" rx="3" fill="#E9C46A" />
-          <text x="17" y="2.4" fontSize="6.6" fontFamily="var(--font-mono)"
+          <rect x="0" y="-7" width="40" height="14" rx="3" fill="#E9C46A" />
+          <text x="20" y="2.6" fontSize="7.5" fontFamily="ui-monospace,monospace"
             fill="#0A0805" fontWeight="700" textAnchor="middle">{l.label}</text>
         </g>
       ))}

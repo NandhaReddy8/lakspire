@@ -703,18 +703,6 @@ export function AnnotationTypesSection() {
 
                   {/* Text cell — ≈ 4/7 width */}
                   <div className="annot-body">
-                    <header className="flex items-center justify-end">
-                      <span
-                        className="text-[9.5px] font-medium uppercase"
-                        style={{
-                          fontFamily: 'var(--font-mono)',
-                          letterSpacing: '0.16em',
-                          color: 'var(--text-muted)',
-                        }}
-                      >
-                        Label type
-                      </span>
-                    </header>
                     <h3
                       className="mt-3 text-[18px] font-semibold"
                       style={{

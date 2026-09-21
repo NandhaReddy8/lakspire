@@ -74,6 +74,10 @@ export function AboutTeamScene() {
           <stop offset="50%" stopColor="#F4A261" stopOpacity="0.9" />
           <stop offset="100%" stopColor="#FF6B35" stopOpacity="0.7" />
         </linearGradient>
+        {/* Circular clip for the logo — coords relative to group origin (0,0) */}
+        <clipPath id="logo-circle">
+          <circle cx="0" cy="0" r="20" />
+        </clipPath>
       </defs>
 
       {/* Backing halo */}
@@ -214,21 +218,19 @@ export function AboutTeamScene() {
         )
       })}
 
-      {/* Central signature mark — a compact "L" monogram sealed within
-          the inner hex. Steady, not pulsing — the anchor of the piece. */}
+      {/* Central logo mark — Lakspire logo sealed within the inner hex */}
       <g transform={`translate(${CENTER.x} ${CENTER.y})`}>
-        <circle r="28" fill="rgba(20,15,11,0.85)" stroke="rgba(255,143,92,0.55)" strokeWidth="0.8" />
-        <circle r="20" fill="none" stroke="rgba(255,143,92,0.28)" strokeWidth="0.5" />
-        {/* Stylised "L" mark for Lakspire */}
-        <path
-          d="M -10 -12 L -10 12 L 10 12"
-          stroke="#FF8F5C"
-          strokeWidth="2.4"
-          strokeLinecap="round"
-          fill="none"
+        <circle r="28" fill="rgba(20,15,11,0.92)" stroke="rgba(255,143,92,0.6)" strokeWidth="1" />
+        <image
+          href="/lakspire-logo.jpg"
+          x="-20" y="-20" width="40" height="40"
+          clipPath="url(#logo-circle)"
+          preserveAspectRatio="xMidYMid slice"
         />
-        <circle cx="12" cy="12" r="2.4" fill="#FF6B35">
-          <animate attributeName="opacity" values="1; 0.5; 1" dur="2.8s" repeatCount="indefinite" />
+        {/* Pulse ring around the logo */}
+        <circle r="22" fill="none" stroke="rgba(255,143,92,0.35)" strokeWidth="0.8">
+          <animate attributeName="r" values="22; 27; 22" dur="3s" repeatCount="indefinite" />
+          <animate attributeName="opacity" values="0.5; 0.15; 0.5" dur="3s" repeatCount="indefinite" />
         </circle>
       </g>
     </svg>
