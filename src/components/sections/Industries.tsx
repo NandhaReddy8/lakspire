@@ -35,7 +35,7 @@ export function Industries() {
               every sector.
             </h2>
             <p
-              className="text-[14px] leading-relaxed text-white/40"
+              className="text-[15px] leading-relaxed text-white/50"
               style={{ fontFamily: 'var(--font-body)' }}
             >
               Annotation is never generic. Each sector has its own vocabulary, sensitivity and
@@ -61,7 +61,7 @@ export function Industries() {
                   <span aria-hidden="true" className="lc-bar" />
                   <span aria-hidden="true" className="lc-sweep" />
                   <p
-                    className="text-[13.5px] font-medium text-white/80"
+                    className="text-[14px] font-medium text-white/85"
                     style={{ fontFamily: 'var(--font-display)' }}
                   >
                     {industry.name}

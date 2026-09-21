@@ -39,7 +39,7 @@ export function AIDataSolutions() {
               <br />
               With Better Data.
             </h2>
-            <p className="mb-6 text-[15px] leading-relaxed text-white/45" style={{ fontFamily: 'var(--font-body)' }}>
+            <p className="mb-6 text-[15px] leading-relaxed text-white/50" style={{ fontFamily: 'var(--font-body)' }}>
               The quality of your AI is a direct function of the quality of your labels. Lakspire is a data-annotation partner — we build and maintain the labelled datasets frontier AI teams actually rely on, from initial scoping to production-scale delivery.
             </p>
             <Link
@@ -55,30 +55,73 @@ export function AIDataSolutions() {
             </ClayFrame>
           </FadeIn>
 
-          {/* Right: capability list — each entry links to the AI page */}
-          <StaggerGroup className="space-y-2 lg:self-center">
+          {/* Right: capability cards — 2-column grid.
+              Visually distinct from Industries link-rows: these sit inside
+              individual bordered cards. Same font scale as Industries for
+              consistency across the two home-page sections. */}
+          <StaggerGroup className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:self-center">
             {capabilities.map((cap) => (
               <StaggerItem key={cap.label}>
                 <Link
                   href="/ai-data-solutions"
-                  className="link-card"
-                  style={{ ['--card-accent' as string]: cap.accent }}
+                  className="ai-cap-card group relative flex h-full flex-col overflow-hidden rounded-xl border p-5 transition-all duration-300 hover:-translate-y-0.5"
+                  style={{
+                    borderColor: 'var(--border-glass)',
+                    background: 'var(--card-surface)',
+                    ['--cap-accent' as string]: cap.accent,
+                  }}
                 >
-                  <span aria-hidden="true" className="lc-bar" />
-                  <span aria-hidden="true" className="lc-sweep" />
+                  {/* Accent left strip */}
+                  <span
+                    aria-hidden="true"
+                    className="absolute left-0 top-4 bottom-4 w-[3px] rounded-full transition-all duration-500"
+                    style={{ background: cap.accent, opacity: 0.7 }}
+                  />
+
+                  {/* Radial bloom on hover */}
+                  <span
+                    aria-hidden="true"
+                    className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+                    style={{
+                      background: `radial-gradient(ellipse 90% 90% at 0% 0%, ${cap.accent}1A, transparent 65%)`,
+                    }}
+                  />
+
                   <p
-                    className="text-[13.5px] font-medium text-white/80"
-                    style={{ fontFamily: 'var(--font-display)' }}
+                    className="relative text-[14px] font-medium leading-snug"
+                    style={{
+                      fontFamily: 'var(--font-display)',
+                      color: 'var(--text-strong)',
+                      letterSpacing: '-0.01em',
+                    }}
                   >
                     {cap.label}
                   </p>
                   <p
-                    className="text-[13px] text-white/45"
-                    style={{ fontFamily: 'var(--font-body)' }}
+                    className="relative mt-2 text-[13px] leading-relaxed"
+                    style={{
+                      fontFamily: 'var(--font-body)',
+                      color: 'var(--text-muted)',
+                    }}
                   >
                     {cap.desc}
                   </p>
-                  <span aria-hidden="true" className="lc-chev">→</span>
+
+                  {/* Bottom divider + chevron — chevron appears on hover */}
+                  <div className="relative mt-auto flex items-center gap-2 pt-4">
+                    <span
+                      className="h-px flex-1"
+                      style={{
+                        background: `linear-gradient(90deg, ${cap.accent}50, transparent)`,
+                      }}
+                    />
+                    <span
+                      className="text-[11px] opacity-0 transition-all duration-200 group-hover:opacity-100"
+                      style={{ color: cap.accent }}
+                    >
+                      →
+                    </span>
+                  </div>
                 </Link>
               </StaggerItem>
             ))}
