@@ -1,3 +1,5 @@
+'use client'
+
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
 import { SectionLabel } from '@/components/blocks/SectionLabel'
@@ -22,15 +24,9 @@ export function AIDataSolutions() {
       <WorkflowBackground />
       <div className="relative mx-auto max-w-container container-pad">
 
-        {/* ── Row 1: illustration left · copy right ── */}
-        <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:gap-16">
+        {/* ── Row 1: copy left · illustration right ── */}
+        <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:gap-16">
           <FadeIn>
-            <ClayFrame variant="petal">
-              <AICapabilityRadial />
-            </ClayFrame>
-          </FadeIn>
-
-          <FadeIn delay={0.1}>
             <SectionLabel className="mb-4">AI & Data Solutions</SectionLabel>
             <h2
               className="mb-5 text-white/90"
@@ -56,6 +52,12 @@ export function AIDataSolutions() {
               Explore AI solutions
               <ArrowRight size={14} className="transition-transform duration-200 group-hover:translate-x-0.5" />
             </Link>
+          </FadeIn>
+
+          <FadeIn delay={0.1}>
+            <ClayFrame variant="petal">
+              <AICapabilityRadial />
+            </ClayFrame>
           </FadeIn>
         </div>
 
