@@ -58,12 +58,26 @@ export function CookieConsent() {
 
   useEffect(() => {
     setMounted(true)
-    const stored = read()
-    if (stored?.handled) {
-      setHandled(true)
-      setPrefs(stored.prefs)
-    } else {
-      setHandled(false)
+    const sync = () => {
+      const stored = read()
+      if (stored?.handled) {
+        setHandled(true)
+        setPrefs(stored.prefs)
+      } else {
+        setHandled(false)
+      }
+    }
+    sync()
+    // Same-tab: LeadBot fires this after its in-panel "Accept & send".
+    window.addEventListener('lakspire:cookies-updated', sync)
+    // Cross-tab: native storage events for the same key.
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === STORAGE_KEY) sync()
+    }
+    window.addEventListener('storage', onStorage)
+    return () => {
+      window.removeEventListener('lakspire:cookies-updated', sync)
+      window.removeEventListener('storage', onStorage)
     }
   }, [])
 

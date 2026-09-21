@@ -5,9 +5,9 @@ import { Footer } from '@/components/layout/Footer'
 import { ScrollJump } from '@/components/layout/ScrollJump'
 import { SmoothScroll } from '@/components/motion/SmoothScroll'
 import { CursorSpotlight } from '@/components/motion/CursorSpotlight'
-import { TriangleCursor } from '@/components/motion/TriangleCursor'
 import { ScrollReveal } from '@/components/motion/ScrollReveal'
 import { CookieConsent } from '@/components/layout/CookieConsent'
+import { LeadBot } from '@/components/layout/LeadBot'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -49,7 +49,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body>
         <CursorSpotlight />
-        <TriangleCursor />
         <SmoothScroll>
           <ScrollReveal />
           <Navigation />
@@ -58,6 +57,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <Footer />
         </SmoothScroll>
         <CookieConsent />
+        <LeadBot />
       </body>
     </html>
   )
