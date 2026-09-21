@@ -85,11 +85,11 @@ export function AIDataSolutions() {
                   el.style.boxShadow = ''
                 }}
               >
-                {/* 1 — Top accent sweep: scaleX 0→1 on hover */}
+                {/* 1 — Bottom accent bar: scaleX 0→1 on hover */}
                 <span
                   aria-hidden="true"
-                  className="absolute left-0 top-0 right-0 h-[2px] origin-left scale-x-0 transition-transform duration-500 ease-out group-hover:scale-x-100"
-                  style={{ background: `linear-gradient(90deg, ${cap.accent}, ${cap.accent}30)` }}
+                  className="pointer-events-none absolute bottom-0 left-4 right-4 h-px origin-left scale-x-0 transition-transform duration-500 ease-out group-hover:scale-x-100"
+                  style={{ background: cap.accent }}
                 />
 
                 {/* 2 — Left strip: brightens on hover */}
