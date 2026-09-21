@@ -42,14 +42,6 @@ const services = [
   'Not sure yet — let\'s discuss',
 ]
 
-const timelines = [
-  'ASAP / Urgent',
-  'Within 1 month',
-  '1–3 months',
-  '3–6 months',
-  'Flexible / Exploratory',
-]
-
 // Field-level regex — permissive enough for international names + strict
 // enough that no HTML-adjacent characters get in.
 const patterns = {
@@ -78,7 +70,6 @@ type FormValues = {
   phone: string
   service: string
   description: string
-  timeline: string
   file: File | null
 }
 
@@ -90,7 +81,6 @@ const INITIAL: FormValues = {
   phone: '',
   service: '',
   description: '',
-  timeline: '',
   file: null,
 }
 
@@ -181,7 +171,6 @@ export function ContactForm() {
       phone: true,
       service: true,
       description: true,
-      timeline: true,
       file: true,
     })
     if (Object.keys(errs).length > 0) {
@@ -316,31 +305,6 @@ export function ContactForm() {
             {services.map((s) => (
               <option key={s} value={s} style={{ background: '#14100D', color: 'white' }}>
                 {s}
-              </option>
-            ))}
-          </select>
-        </FieldWrap>
-
-        <FieldWrap
-          label="Expected timeline"
-          hint="Optional"
-          error={touched.timeline ? errors.timeline : undefined}
-          className="sm:col-span-2"
-        >
-          <select
-            className={fieldClass}
-            style={{ borderColor: errBorder(touched.timeline, errors.timeline) }}
-            name="timeline"
-            value={values.timeline}
-            onChange={setField('timeline')}
-            onBlur={onBlur('timeline')}
-          >
-            <option value="" style={{ background: '#14100D', color: 'white' }}>
-              Not sure yet
-            </option>
-            {timelines.map((t) => (
-              <option key={t} value={t} style={{ background: '#14100D', color: 'white' }}>
-                {t}
               </option>
             ))}
           </select>

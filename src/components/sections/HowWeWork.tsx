@@ -50,12 +50,12 @@ export function HowWeWork() {
                   {step.num}
                 </p>
                 <h3
-                  className="mb-2 text-[15px] font-semibold text-white/80"
+                  className="mb-2 text-[16px] font-semibold text-white/85"
                   style={{ fontFamily: 'var(--font-display)', letterSpacing: '-0.01em' }}
                 >
                   {step.title}
                 </h3>
-                <p className="text-[13px] leading-relaxed text-white/40" style={{ fontFamily: 'var(--font-body)' }}>
+                <p className="text-[14px] leading-relaxed text-white/50" style={{ fontFamily: 'var(--font-body)' }}>
                   {step.desc}
                 </p>
               </div>

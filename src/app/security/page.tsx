@@ -126,9 +126,7 @@ export default function SecurityPage() {
         </div>
       </section>
 
-      {/* Practices grid — same hover language as the services + AI
-          Data Solutions cards. Each card carries a P01-P08 mono chip
-          echoing the R01-R09 role-card treatment. */}
+      {/* Practices grid — same hover language as the services + AI Data Solutions cards. */}
       <section className="py-section border-t border-white/[0.05]" data-scroll-anchor="practices">
         <div className="mx-auto max-w-container container-pad">
           <FadeIn>
@@ -158,60 +156,45 @@ export default function SecurityPage() {
             staggerDelay={0.06}
             className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-5"
           >
-            {practices.map((p, i) => {
-              const id = `P${String(i + 1).padStart(2, '0')}`
-              return (
-                <StaggerItem key={p.title}>
-                  <article
-                    className="practice-card link-card link-card--icon"
-                    style={{ ['--card-accent' as string]: p.accent }}
+            {practices.map((p) => (
+              <StaggerItem key={p.title}>
+                <article
+                  className="practice-card link-card link-card--icon"
+                  style={{ ['--card-accent' as string]: p.accent }}
+                >
+                  <span aria-hidden="true" className="lc-bar" />
+                  <span aria-hidden="true" className="lc-sweep" />
+                  <span
+                    className="lc-plate icon-plate inline-flex h-14 w-14 shrink-0 items-center justify-center rounded-xl"
+                    style={{
+                      color: p.accent,
+                      ['--plate-accent' as string]: p.accent,
+                    }}
                   >
-                    <span aria-hidden="true" className="lc-bar" />
-                    <span aria-hidden="true" className="lc-sweep" />
-                    <span
-                      className="lc-plate icon-plate inline-flex h-14 w-14 shrink-0 items-center justify-center rounded-xl"
+                    <p.Glyph size={26} />
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p
+                      className="mb-1.5 text-[15.5px] font-medium"
                       style={{
-                        color: p.accent,
-                        ['--plate-accent' as string]: p.accent,
+                        fontFamily: 'var(--font-display)',
+                        color: 'var(--text-strong)',
+                        letterSpacing: '-0.01em',
+                        lineHeight: 1.25,
                       }}
                     >
-                      <p.Glyph size={26} />
-                    </span>
-                    <div className="min-w-0 flex-1">
-                      <div className="mb-1.5 flex items-baseline justify-between gap-3">
-                        <p
-                          className="text-[15.5px] font-medium"
-                          style={{
-                            fontFamily: 'var(--font-display)',
-                            color: 'var(--text-strong)',
-                            letterSpacing: '-0.01em',
-                            lineHeight: 1.25,
-                          }}
-                        >
-                          {p.title}
-                        </p>
-                        <span
-                          className="shrink-0 text-[10px] font-medium uppercase"
-                          style={{
-                            fontFamily: 'var(--font-mono)',
-                            letterSpacing: '0.16em',
-                            color: 'var(--text-muted)',
-                          }}
-                        >
-                          {id}
-                        </span>
-                      </div>
-                      <p
-                        className="text-[13.5px] leading-relaxed"
-                        style={{ fontFamily: 'var(--font-body)', color: 'var(--text-body)' }}
-                      >
-                        {p.body}
-                      </p>
-                    </div>
-                  </article>
-                </StaggerItem>
-              )
-            })}
+                      {p.title}
+                    </p>
+                    <p
+                      className="text-[13.5px] leading-relaxed"
+                      style={{ fontFamily: 'var(--font-body)', color: 'var(--text-body)' }}
+                    >
+                      {p.body}
+                    </p>
+                  </div>
+                </article>
+              </StaggerItem>
+            ))}
           </StaggerGroup>
         </div>
       </section>

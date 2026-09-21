@@ -7,7 +7,7 @@ import { siteConfig } from '@/data/siteConfig'
 
 const footerLinks = {
   Services: [
-    { label: 'All services', href: '/services' },
+    { label: 'Annotation services', href: '/services' },
   ],
   Company: [
     { label: 'About', href: '/about' },

@@ -73,7 +73,7 @@ export function AIDataSolutions() {
                     {cap.label}
                   </p>
                   <p
-                    className="text-[12px] text-white/40"
+                    className="text-[13px] text-white/45"
                     style={{ fontFamily: 'var(--font-body)' }}
                   >
                     {cap.desc}

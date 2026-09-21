@@ -67,7 +67,7 @@ export function Industries() {
                     {industry.name}
                   </p>
                   <p
-                    className="text-[12px] text-white/40"
+                    className="text-[13px] text-white/45"
                     style={{ fontFamily: 'var(--font-body)' }}
                   >
                     {industry.desc}

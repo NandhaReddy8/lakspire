@@ -12,7 +12,7 @@ import {
 } from '@/components/icons/ServiceGlyphs'
 import { FadeIn } from '@/components/motion/FadeIn'
 import { StaggerGroup, StaggerItem } from '@/components/motion/StaggerGroup'
-import { AiAnnotationRoles } from '@/components/sections/AiAnnotationRoles'
+import { AnnotationTypesSection } from '@/components/sections/AnnotationTypesSection'
 
 export const metadata = {
   title: 'Services — Lakspire',
@@ -148,8 +148,9 @@ export default function ServicesPage() {
         </div>
       </section>
 
-      {/* Section 01 — AI Annotation & Training Datasets (client's PDF focus) */}
-      <AiAnnotationRoles />
+      {/* Section 01 — Annotation Types we ship (nine label formats,
+          each with a living animation that reads the type at a glance). */}
+      <AnnotationTypesSection />
 
       {/* Broader capability groups */}
       <section className="py-section border-t border-white/[0.05]" data-scroll-anchor="groups">

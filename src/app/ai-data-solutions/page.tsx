@@ -1,19 +1,12 @@
 import Link from 'next/link'
-import {
-  ArrowRight,
-  Layers,
-  Tags,
-  Cpu,
-  Users,
-  Database,
-  FileSearch,
-} from 'lucide-react'
+import { ArrowRight, Layers, Database, FileSearch } from 'lucide-react'
 import { PageHero } from '@/components/blocks/PageHero'
 import { SectionLabel } from '@/components/blocks/SectionLabel'
 import { FadeIn } from '@/components/motion/FadeIn'
 import { StaggerGroup, StaggerItem } from '@/components/motion/StaggerGroup'
 import { ClayFrame } from '@/components/blocks/ClayFrame'
 import { AICapabilityRadial } from '@/components/illustrations/AICapabilityRadial'
+import { AnnotationOperationsSection } from '@/components/sections/AnnotationOperationsSection'
 
 export const metadata = {
   title: 'AI & Data Solutions — Lakspire',
@@ -24,32 +17,10 @@ export const metadata = {
 // Capability copy from a data-annotation partner's angle. Every card
 // names a concrete labelling deliverable rather than an abstract "AI
 // capability" — the honest framing for a company whose core service
-// is data annotation.
+// is data annotation. Items that are already deep-treated in the
+// Annotation Types (Services page) or the Operations Bench below have
+// been removed here to avoid duplication.
 const capabilities = [
-  {
-    Icon: Layers,
-    accent: '#FF6B35',
-    title: 'Data Annotation',
-    body: 'Structured labelling across text, image, audio and video — bounding boxes, segmentation, transcription, entity and intent tags — delivered with clear guidelines and calibrated reviewers.',
-  },
-  {
-    Icon: Tags,
-    accent: '#F4A261',
-    title: 'Data Classification',
-    body: 'Multi-label taxonomy application at scale — intent, topic, sentiment, entity — with disciplined guideline enforcement so every sample lands in the right bucket.',
-  },
-  {
-    Icon: Cpu,
-    accent: '#FF8F5C',
-    title: 'Assisted Labelling Pipelines',
-    body: 'Model-assisted pre-labels reviewed by humans, tuned pipeline by pipeline — throughput without giving up the accuracy that matters at review time.',
-  },
-  {
-    Icon: Users,
-    accent: '#E9C46A',
-    title: 'Human-in-the-Loop Review',
-    body: 'Reviewers correcting live model predictions in the loop — the safety net that turns a promising model into a production-ready one, and produces correction sets for retraining.',
-  },
   {
     Icon: Database,
     accent: '#FABD6C',
@@ -61,6 +32,12 @@ const capabilities = [
     accent: '#FF6B35',
     title: 'Document Annotation',
     body: 'Field, clause and entity annotation on documents — invoices, forms, contracts, records — where accuracy under variation is the only useful measure.',
+  },
+  {
+    Icon: Layers,
+    accent: '#F4A261',
+    title: 'Domain-adapted datasets',
+    body: 'Datasets shaped to your domain vocabulary and edge cases — retail, healthcare, mobility, finance — so models learn from the specifics of your world, not a generic pool.',
   },
 ]
 
@@ -113,7 +90,7 @@ export default function AIPage() {
                   color: 'var(--text-strong)',
                 }}
               >
-                Six annotation capabilities that meet real ML teams where they are.
+                Three annotation deliverables that plug straight into modern ML pipelines.
               </h2>
               <p
                 className="text-[15px] leading-relaxed"
@@ -174,6 +151,10 @@ export default function AIPage() {
           </div>
         </div>
       </section>
+
+      {/* Operations bench — migrated from the retired role catalogue,
+          rebuilt as landscape cards with a bespoke animation per op. */}
+      <AnnotationOperationsSection />
 
       {/* CTA */}
       <section className="py-section border-t border-white/[0.05]" data-scroll-anchor="cta">

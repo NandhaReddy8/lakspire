@@ -29,7 +29,7 @@ export function TechHumanExpertise() {
               <br />
               <span className="text-white/40">is sufficient.</span>
             </h2>
-            <p className="text-[15px] leading-relaxed text-white/45" style={{ fontFamily: 'var(--font-body)' }}>
+            <p className="text-[15.5px] leading-relaxed text-white/50" style={{ fontFamily: 'var(--font-body)' }}>
               Automation handles volume. Expert humans handle judgement. The Lakspire model combines proprietary processing technology with specialist teams — so you benefit from scale without sacrificing quality.
             </p>
 
@@ -42,7 +42,7 @@ export function TechHumanExpertise() {
               ].map((point) => (
                 <div key={point} className="flex items-start gap-3">
                   <div className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-[#E9C46A] opacity-70" />
-                  <p className="text-[13.5px] text-white/55" style={{ fontFamily: 'var(--font-body)' }}>{point}</p>
+                  <p className="text-[14.5px] text-white/60" style={{ fontFamily: 'var(--font-body)' }}>{point}</p>
                 </div>
               ))}
             </div>
@@ -61,7 +61,7 @@ export function TechHumanExpertise() {
                   >
                     {stat.value}
                   </p>
-                  <p className="text-[12px] leading-snug text-white/35" style={{ fontFamily: 'var(--font-body)' }}>
+                  <p className="text-[13px] leading-snug text-white/50" style={{ fontFamily: 'var(--font-body)' }}>
                     {stat.label}
                   </p>
                 </div>

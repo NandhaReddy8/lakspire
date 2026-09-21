@@ -1,5 +1,5 @@
 import { HeroSection } from '@/components/sections/HeroSection'
-import { WhatWeDoStory } from '@/components/sections/WhatWeDoStory'
+import { HowWeOperate } from '@/components/sections/HowWeOperate'
 import { WhyLakspire } from '@/components/sections/WhyLakspire'
 import { AIDataSolutions } from '@/components/sections/AIDataSolutions'
 import { Industries } from '@/components/sections/Industries'
@@ -11,7 +11,7 @@ export default function HomePage() {
   return (
     <>
       <HeroSection />
-      <WhatWeDoStory />
+      <HowWeOperate />
       <div className="optimize-paint">
         <WhyLakspire />
       </div>
