@@ -21,9 +21,16 @@ export function AIDataSolutions() {
     <section className="relative py-section border-t border-white/[0.05]" data-reveal data-scroll-anchor="ai-data">
       <WorkflowBackground />
       <div className="relative mx-auto max-w-container container-pad">
-        <div className="grid grid-cols-1 items-start gap-16 lg:grid-cols-2">
-          {/* Left */}
+
+        {/* ── Row 1: illustration left · copy right ── */}
+        <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:gap-16">
           <FadeIn>
+            <ClayFrame variant="petal">
+              <AICapabilityRadial />
+            </ClayFrame>
+          </FadeIn>
+
+          <FadeIn delay={0.1}>
             <SectionLabel className="mb-4">AI & Data Solutions</SectionLabel>
             <h2
               className="mb-5 text-white/90"
@@ -49,84 +56,74 @@ export function AIDataSolutions() {
               Explore AI solutions
               <ArrowRight size={14} className="transition-transform duration-200 group-hover:translate-x-0.5" />
             </Link>
-
-            <ClayFrame className="mt-10" variant="petal">
-              <AICapabilityRadial />
-            </ClayFrame>
           </FadeIn>
+        </div>
 
-          {/* Right: capability cards — 2-column grid.
-              Visually distinct from Industries link-rows: these sit inside
-              individual bordered cards. Same font scale as Industries for
-              consistency across the two home-page sections. */}
-          <StaggerGroup className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:self-center">
-            {capabilities.map((cap) => (
-              <StaggerItem key={cap.label}>
-                <Link
-                  href="/ai-data-solutions"
-                  className="ai-cap-card group relative flex h-full flex-col overflow-hidden rounded-xl border p-5 transition-all duration-300 hover:-translate-y-0.5"
+        {/* ── Row 2: full-width capability cards ── */}
+        <StaggerGroup className="mt-14 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:mt-16 lg:grid-cols-3">
+          {capabilities.map((cap) => (
+            <StaggerItem key={cap.label}>
+              <Link
+                href="/ai-data-solutions"
+                className="group relative flex h-full flex-col overflow-hidden rounded-xl border p-5 transition-all duration-300 hover:-translate-y-0.5"
+                style={{
+                  borderColor: 'var(--border-glass)',
+                  background: 'var(--card-surface)',
+                }}
+              >
+                {/* Left accent strip */}
+                <span
+                  aria-hidden="true"
+                  className="absolute left-0 top-4 bottom-4 w-[3px] rounded-full"
+                  style={{ background: cap.accent, opacity: 0.7 }}
+                />
+
+                {/* Radial bloom on hover */}
+                <span
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
                   style={{
-                    borderColor: 'var(--border-glass)',
-                    background: 'var(--card-surface)',
-                    ['--cap-accent' as string]: cap.accent,
+                    background: `radial-gradient(ellipse 90% 80% at 0% 0%, ${cap.accent}1A, transparent 65%)`,
+                  }}
+                />
+
+                <p
+                  className="relative text-[14px] font-medium leading-snug"
+                  style={{
+                    fontFamily: 'var(--font-display)',
+                    color: 'var(--text-strong)',
+                    letterSpacing: '-0.01em',
                   }}
                 >
-                  {/* Accent left strip */}
+                  {cap.label}
+                </p>
+                <p
+                  className="relative mt-2 text-[13px] leading-relaxed"
+                  style={{
+                    fontFamily: 'var(--font-body)',
+                    color: 'var(--text-muted)',
+                  }}
+                >
+                  {cap.desc}
+                </p>
+
+                <div className="relative mt-auto flex items-center gap-2 pt-4">
                   <span
-                    aria-hidden="true"
-                    className="absolute left-0 top-4 bottom-4 w-[3px] rounded-full transition-all duration-500"
-                    style={{ background: cap.accent, opacity: 0.7 }}
+                    className="h-px flex-1"
+                    style={{ background: `linear-gradient(90deg, ${cap.accent}50, transparent)` }}
                   />
-
-                  {/* Radial bloom on hover */}
                   <span
-                    aria-hidden="true"
-                    className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
-                    style={{
-                      background: `radial-gradient(ellipse 90% 90% at 0% 0%, ${cap.accent}1A, transparent 65%)`,
-                    }}
-                  />
-
-                  <p
-                    className="relative text-[14px] font-medium leading-snug"
-                    style={{
-                      fontFamily: 'var(--font-display)',
-                      color: 'var(--text-strong)',
-                      letterSpacing: '-0.01em',
-                    }}
+                    className="text-[11px] opacity-0 transition-opacity duration-200 group-hover:opacity-90"
+                    style={{ color: cap.accent }}
                   >
-                    {cap.label}
-                  </p>
-                  <p
-                    className="relative mt-2 text-[13px] leading-relaxed"
-                    style={{
-                      fontFamily: 'var(--font-body)',
-                      color: 'var(--text-muted)',
-                    }}
-                  >
-                    {cap.desc}
-                  </p>
+                    →
+                  </span>
+                </div>
+              </Link>
+            </StaggerItem>
+          ))}
+        </StaggerGroup>
 
-                  {/* Bottom divider + chevron — chevron appears on hover */}
-                  <div className="relative mt-auto flex items-center gap-2 pt-4">
-                    <span
-                      className="h-px flex-1"
-                      style={{
-                        background: `linear-gradient(90deg, ${cap.accent}50, transparent)`,
-                      }}
-                    />
-                    <span
-                      className="text-[11px] opacity-0 transition-all duration-200 group-hover:opacity-100"
-                      style={{ color: cap.accent }}
-                    >
-                      →
-                    </span>
-                  </div>
-                </Link>
-              </StaggerItem>
-            ))}
-          </StaggerGroup>
-        </div>
       </div>
     </section>
   )
