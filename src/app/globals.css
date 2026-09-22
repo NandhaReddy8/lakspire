@@ -1279,17 +1279,17 @@ html {
 }
 .op-step-num {
   font-family: var(--font-mono);
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  color: #FFB98A;
+  font-size: 13.5px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  color: #FF8F3C;
   display: inline-flex;
   gap: 6px;
   align-items: baseline;
 }
 .op-step-num > span:first-child { color: #FF6B35; }
-.op-step-sep { opacity: 0.5; color: var(--text-body); font-weight: 400; }
-.op-step-num > span:last-child { color: var(--text-body); }
+.op-step-sep { opacity: 0.6; color: var(--text-body); font-weight: 500; }
+.op-step-num > span:last-child { color: var(--text-strong); }
 .op-step-dots {
   display: inline-flex;
   gap: 6px;
@@ -1881,12 +1881,24 @@ html {
   flex-direction: column;
 }
 .ops-mobile-slide .ops-slide-anim {
-  min-height: 220px;
+  height: 240px;
+  min-height: 240px;
+  flex: 0 0 240px;
   border-radius: 0;
   border: 0;
   border-bottom: 1px solid var(--border-glass);
 }
-.ops-mobile-copy { padding: 18px 20px 22px; }
+.ops-mobile-copy {
+  padding: 20px 20px 24px;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+.ops-mobile-copy h3 {
+  margin-top: 8px;
+}
+.ops-mobile-copy p {
+  margin-top: 8px;
+}
 .ops-mobile-hint {
   text-align: center;
   font-family: var(--font-mono);
@@ -3177,13 +3189,13 @@ h2, h3 { scroll-margin-top: 96px; }
 /* Hero eyebrow — theme-aware ember gradient. Reads clearly on both
    the dark ink background and the cream light theme. */
 .hero-eyebrow {
-  background: linear-gradient(90deg, #E9C46A, #F4A261);
+  background: linear-gradient(90deg, #FFB86A, #FF6B35);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 [data-theme='light'] .hero-eyebrow {
-  background: linear-gradient(90deg, #C24A1C, #7A3510);
+  background: linear-gradient(90deg, #A83812, #5C260A);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;

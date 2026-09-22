@@ -57,11 +57,11 @@ export default function ContactPage() {
             <div>
               <FadeIn>
                 <p
-                  className="mb-4 text-[11px] font-semibold uppercase"
+                  className="mb-4 text-[13px] font-bold uppercase"
                   style={{
                     letterSpacing: '0.14em',
                     fontFamily: 'var(--font-body)',
-                    color: 'var(--text-muted)',
+                    color: '#FF6B35',
                   }}
                 >
                   What to expect
@@ -113,11 +113,11 @@ export default function ContactPage() {
                     both the shadow visibly merged into the card border. */}
                 <div className="contact-direct-card relative z-10 mt-[7.5rem] rounded-2xl p-6">
                   <p
-                    className="mb-2 text-[11px] font-semibold uppercase"
+                    className="mb-2 text-[13px] font-bold uppercase"
                     style={{
                       letterSpacing: '0.14em',
                       fontFamily: 'var(--font-body)',
-                      color: 'var(--text-faint)',
+                      color: '#FF6B35',
                     }}
                   >
                     Prefer a direct line?

@@ -142,7 +142,7 @@ export function Navigation() {
               <Link
                 key={item.href}
                 href={item.href}
-                className="nav-link rounded-full px-3 py-1.5 text-[13px] font-medium transition-colors duration-200"
+                className="nav-link rounded-full px-3.5 py-2 text-[16px] font-semibold transition-colors duration-200"
               >
                 {item.label}
               </Link>
@@ -174,7 +174,7 @@ export function Navigation() {
           {/* Desktop CTA */}
           <Link
             href="/contact"
-            className="group relative hidden overflow-hidden rounded-full px-4 py-1.5 text-[13px] font-medium text-white shadow-[0_2px_10px_rgba(255,107,53,0.35),inset_0_1px_0_0_rgba(255,240,220,0.25)] transition-all duration-200 hover:shadow-[0_4px_16px_rgba(255,107,53,0.5),inset_0_1px_0_0_rgba(255,240,220,0.35)] lg:block"
+            className="group relative hidden overflow-hidden rounded-full px-5 py-2 text-[16px] font-semibold text-white shadow-[0_2px_10px_rgba(255,107,53,0.35),inset_0_1px_0_0_rgba(255,240,220,0.25)] transition-all duration-200 hover:shadow-[0_4px_16px_rgba(255,107,53,0.5),inset_0_1px_0_0_rgba(255,240,220,0.35)] lg:block"
             style={{ background: 'linear-gradient(135deg, #FF6B35 0%, #FF8F5C 100%)' }}
           >
             <span className="relative z-10">Contact Us</span>

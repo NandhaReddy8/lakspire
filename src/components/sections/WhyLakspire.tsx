@@ -314,15 +314,6 @@ export function WhyLakspire() {
                     >
                       {r.eyebrow} / 0{N}
                     </span>
-                    <span
-                      className="text-[10px] uppercase tracking-[0.18em]"
-                      style={{
-                        fontFamily: 'var(--font-mono)',
-                        color: 'var(--text-faint)',
-                      }}
-                    >
-                      Principle
-                    </span>
                   </div>
 
                   {/* Icon plate — warm-dark backing in both themes so

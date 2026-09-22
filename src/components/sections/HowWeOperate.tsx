@@ -746,10 +746,10 @@ export function HowWeOperate() {
                         }}
                       >
                         <p
-                          className="mb-3 inline-block text-[11px] font-medium uppercase tracking-[0.14em]"
+                          className="mb-3 inline-block text-[12.5px] font-bold uppercase tracking-[0.15em]"
                           style={{
                             fontFamily: 'var(--font-mono)',
-                            background: 'linear-gradient(90deg, #FF6B35, #F4A261)',
+                            background: 'linear-gradient(90deg, #FF6B35, #FF8F3C)',
                             WebkitBackgroundClip: 'text',
                             WebkitTextFillColor: 'transparent',
                             backgroundClip: 'text',

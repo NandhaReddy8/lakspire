@@ -183,7 +183,7 @@ export default function AboutPage() {
                         {card.icon}
                       </span>
                       <p
-                        className="text-[11px] font-semibold uppercase"
+                        className="text-[13px] font-bold uppercase"
                         style={{
                           letterSpacing: '0.16em',
                           fontFamily: 'var(--font-body)',

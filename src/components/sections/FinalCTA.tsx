@@ -54,11 +54,11 @@ export function FinalCTA() {
           <div className="relative z-10 mx-auto flex max-w-3xl flex-col items-center text-center">
             <motion.p
               {...fadeUp(0.02)}
-              className="mb-4 text-[11px] font-semibold uppercase"
+              className="mb-4 text-[13px] font-bold uppercase"
               style={{
-                letterSpacing: '0.14em',
+                letterSpacing: '0.16em',
                 fontFamily: 'var(--font-body)',
-                background: 'linear-gradient(90deg, #E9C46A, #F4A261)',
+                background: 'linear-gradient(90deg, #FFB86A, #FF6B35)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
                 backgroundClip: 'text',

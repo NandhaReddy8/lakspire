@@ -80,7 +80,7 @@ const groups = [
   {
     Glyph: BusinessSupportGlyph,
     slug: 'business-support',
-    accent: '#E9C46A',
+    accent: '#FF8F3C',
     label: 'Group 05',
     title: 'Programme Support',
     lede: 'The programme layer around an annotation engagement — guidelines, taxonomy management, reviewer onboarding, documentation and delivery co-ordination. The quiet work that keeps a labelling operation honest.',
@@ -210,7 +210,7 @@ export default function ServicesPage() {
                         </span>
                       </span>
                       <p
-                        className="text-[12px] font-semibold uppercase"
+                        className="text-[13.5px] font-bold uppercase"
                         style={{
                           letterSpacing: '0.16em',
                           fontFamily: 'var(--font-mono)',

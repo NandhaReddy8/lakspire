@@ -696,8 +696,8 @@ export function AnnotationOperationsSection() {
 
   const active = roles[activeIdx] ?? roles[0]
   const goldActive = activeIdx % 2 === 0
-  const accent = goldActive ? '#E9C46A' : '#FF8F5C'
-  const accentSoft = goldActive ? 'rgba(233,196,106,0.14)' : 'rgba(255,143,92,0.14)'
+  const accent = goldActive ? '#FF8F3C' : '#FF6B35'
+  const accentSoft = goldActive ? 'rgba(255,143,60,0.16)' : 'rgba(255,107,53,0.16)'
 
   return (
     <section
@@ -804,7 +804,7 @@ export function AnnotationOperationsSection() {
                         style={{
                           fontFamily: 'var(--font-mono)',
                           letterSpacing: '0.22em',
-                          color: i % 2 === 0 ? '#E9C46A' : '#FF8F5C',
+                          color: i % 2 === 0 ? '#FF8F3C' : '#FF6B35',
                         }}
                       >
                         Operation {String(i + 1).padStart(2, '0')}
@@ -913,7 +913,7 @@ export function AnnotationOperationsSection() {
               key={role.id}
               className="ops-mobile-slide"
               style={{
-                ['--annot-accent' as string]: i % 2 === 0 ? '#E9C46A' : '#FF8F5C',
+                ['--annot-accent' as string]: i % 2 === 0 ? '#FF8F3C' : '#FF6B35',
               }}
             >
               <div className="ops-slide-anim annot-anim">
@@ -925,7 +925,7 @@ export function AnnotationOperationsSection() {
                   style={{
                     fontFamily: 'var(--font-mono)',
                     letterSpacing: '0.2em',
-                    color: i % 2 === 0 ? '#E9C46A' : '#FF8F5C',
+                    color: i % 2 === 0 ? '#FF8F3C' : '#FF6B35',
                   }}
                 >
                   {String(i + 1).padStart(2, '0')} / {String(total).padStart(2, '0')}
@@ -965,8 +965,8 @@ export function AnnotationOperationsSection() {
             {roles.map((role, i) => {
               const flip = i % 2 === 1
               const gold = i % 2 === 0
-              const accent = gold ? '#E9C46A' : '#FF8F5C'
-              const accentSoft = gold ? 'rgba(233,196,106,0.14)' : 'rgba(255,143,92,0.14)'
+              const accent = gold ? '#FF8F3C' : '#FF6B35'
+              const accentSoft = gold ? 'rgba(255,143,60,0.16)' : 'rgba(255,107,53,0.16)'
               const num = String(i + 1).padStart(2, '0')
               return (
                 <FadeIn key={role.id} delay={i * 0.04}>

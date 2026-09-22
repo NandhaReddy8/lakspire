@@ -14,7 +14,7 @@ export function TechHumanExpertise() {
       <div className="mx-auto max-w-container container-pad">
         <div className="grid grid-cols-1 gap-16 lg:grid-cols-2">
           <FadeIn>
-            <SectionLabel className="mb-4" color="teal">Technology + Human Expertise</SectionLabel>
+            <SectionLabel className="mb-4">Technology + Human Expertise</SectionLabel>
             <h2
               className="mb-5 text-white/90"
               style={{

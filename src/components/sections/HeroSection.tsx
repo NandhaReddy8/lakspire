@@ -66,9 +66,9 @@ export function HeroSection() {
           <div className="flex flex-col">
             <motion.p
               {...fadeUp(0.05)}
-              className="hero-eyebrow mb-4 text-[12px] font-semibold uppercase"
+              className="hero-eyebrow mb-4 text-[14.5px] font-extrabold uppercase"
               style={{
-                letterSpacing: '0.14em',
+                letterSpacing: '0.16em',
                 fontFamily: 'var(--font-body)',
               }}
             >

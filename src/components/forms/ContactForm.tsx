@@ -635,11 +635,11 @@ function SuccessState({ reduced }: { reduced: boolean }) {
         initial={reduced ? false : { opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.55, delay: 0.35, ease: [0.16, 1, 0.3, 1] }}
-        className="relative z-10 mb-2 text-[11px] font-semibold uppercase"
+        className="relative z-10 mb-2 text-[13px] font-bold uppercase"
         style={{
           letterSpacing: '0.16em',
           fontFamily: 'var(--font-body)',
-          background: 'linear-gradient(90deg, #E9C46A, #F4A261)',
+          background: 'linear-gradient(90deg, #F4A261, #E8A82C)',
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
           backgroundClip: 'text',

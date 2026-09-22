@@ -43,7 +43,7 @@ export function Industries() {
             </p>
             <Link
               href="/industries"
-              className="group mt-6 inline-flex items-center gap-1.5 text-[13px] font-medium text-[#F4A261] transition-colors hover:text-[#FFB07A]"
+              className="group mt-6 inline-flex items-center gap-1.5 text-[14px] font-semibold text-[#FF6B35] transition-colors hover:text-[#FF8F5C]"
             >
               See all sectors
               <ArrowRight size={14} className="transition-transform duration-200 group-hover:translate-x-0.5" />
