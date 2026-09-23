@@ -12,7 +12,7 @@ import './globals.css'
 
 export const metadata: Metadata = {
   metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL ?? 'https://lakspire.com',
+    process.env.NEXT_PUBLIC_SITE_URL ?? 'https://lakspireai.com',
   ),
   title: 'Lakspire — Turning Data Into Insight',
   description:
