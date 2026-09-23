@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { X, Send, MessageCircle, PhoneCall } from 'lucide-react'
 import { LeadBotAvatar } from './LeadBotAvatar'
+import { Turnstile } from '@/components/blocks/Turnstile'
 
 /**
  * LeadBot — a small robo-assistant that fades in from the bottom-right
@@ -16,8 +17,9 @@ import { LeadBotAvatar } from './LeadBotAvatar'
  * Persistence: localStorage. Dismissed → gone. Submitted → the FAB
  * stays pinned as a compact link to Contact Us.
  *
- * Static for now — logs the captured lead behind a clear TODO. Payload
- * shape is what we'll POST when the backend lands.
+ * On submit, POSTs to /api/notify which delivers the lead to
+ * hello@lakspire.com via Resend. Only after a successful send does the
+ * bot transition to the "done" state; failure surfaces an inline retry.
  */
 
 const COOKIE_KEY = 'lakspire.cookie-consent'
@@ -26,14 +28,6 @@ const DWELL_MS = 8_000  // let the visitor see the page first, then say hi
 const TEASER_MS = 4_000 // teaser bubble shows N ms after avatar appears
 
 type Step = 'name' | 'kind' | 'scale' | 'email' | 'done'
-
-type Lead = {
-  name: string
-  kind: string
-  scale: string
-  email: string
-  submittedAt: string
-}
 
 type Stored = { status: 'dismissed' | 'submitted'; at: string }
 
@@ -147,6 +141,8 @@ export function LeadBot() {
   const [error, setError] = useState<string | null>(null)
   const [justSubmitted, setJustSubmitted] = useState(false)
   const [needsConsent, setNeedsConsent] = useState(false)
+  const [sending, setSending] = useState(false)
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null)
   const dwellTimerRef = useRef<number | null>(null)
   const teaserTimerRef = useRef<number | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -251,22 +247,46 @@ export function LeadBot() {
     finish()
   }
 
-  const finish = () => {
-    const lead: Lead = {
-      name: name.trim(),
-      kind,
-      scale,
-      email: email.trim(),
-      submittedAt: new Date().toISOString(),
+  const finish = async () => {
+    if (sending) return
+    if (!captchaToken) {
+      setError('Complete the captcha check to send.')
+      return
     }
-    // TODO: replace with POST /api/leads once backend is in place.
-    if (typeof window !== 'undefined') {
-      // eslint-disable-next-line no-console
-      console.info('[lead-bot] captured lead (static mode):', lead)
+    const kindLabel = DATA_KINDS.find((k) => k.key === kind)?.label ?? kind
+    const scaleLabel = SCALES.find((s) => s.key === scale)?.label ?? scale
+    const submittedAt = new Date().toISOString()
+    setSending(true)
+    setError(null)
+    try {
+      const res = await fetch('/api/notify', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          type: 'lead',
+          name: name.trim(),
+          kind: kindLabel,
+          scale: scaleLabel,
+          email: email.trim(),
+          turnstileToken: captchaToken,
+        }),
+      })
+      const data = (await res.json().catch(() => ({}))) as { ok?: boolean; error?: string }
+      if (!res.ok || !data.ok) {
+        setError(data.error ?? 'We couldn’t send that. Try again in a moment.')
+        setSending(false)
+        setCaptchaToken(null)
+        return
+      }
+      writeBotStored({ status: 'submitted', at: submittedAt })
+      setJustSubmitted(true)
+      setStep('done')
+      setSending(false)
+    } catch {
+      setError('Network hiccup. Try again in a moment.')
+      setSending(false)
+      setCaptchaToken(null)
     }
-    writeBotStored({ status: 'submitted', at: lead.submittedAt })
-    setJustSubmitted(true)
-    setStep('done')
   }
 
   if (!visible) return null
@@ -392,6 +412,11 @@ export function LeadBot() {
                 }}
                 onEmailChange={setEmail}
                 onSubmit={submitStep}
+                onCaptcha={(t) => {
+                  setCaptchaToken(t)
+                  if (error === 'Complete the captcha check to send.') setError(null)
+                }}
+                onCaptchaClear={() => setCaptchaToken(null)}
               />
             )}
           </div>
@@ -402,10 +427,11 @@ export function LeadBot() {
               <button
                 type="button"
                 onClick={submitStep}
+                disabled={sending}
                 className="lead-bot__send"
                 aria-label="Continue"
               >
-                {step === 'email' ? 'Submit' : 'Continue'}
+                {sending ? 'Sending…' : step === 'email' ? 'Submit' : 'Continue'}
                 <Send size={13} strokeWidth={2} />
               </button>
             </footer>
@@ -445,11 +471,14 @@ type QVProps = {
   onScalePick: (v: string) => void
   onEmailChange: (v: string) => void
   onSubmit: () => void
+  onCaptcha: (t: string) => void
+  onCaptchaClear: () => void
 }
 
 function QuestionView({
   step, name, kind, scale, email, error, inputRef,
   onNameChange, onKindPick, onScalePick, onEmailChange, onSubmit,
+  onCaptcha, onCaptchaClear,
 }: QVProps) {
   const prompt = useMemo(() => {
     if (step === 'name') return 'Hi! I’m Lex. What should I call you?'
@@ -518,17 +547,27 @@ function QuestionView({
       )}
 
       {step === 'email' && (
-        <input
-          ref={inputRef}
-          type="email"
-          className="lead-bot__input"
-          placeholder="you@company.com"
-          value={email}
-          onChange={(e) => onEmailChange(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && onSubmit()}
-          autoComplete="email"
-          inputMode="email"
-        />
+        <>
+          <input
+            ref={inputRef}
+            type="email"
+            className="lead-bot__input"
+            placeholder="you@company.com"
+            value={email}
+            onChange={(e) => onEmailChange(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && onSubmit()}
+            autoComplete="email"
+            inputMode="email"
+          />
+          <div className="lead-bot__captcha">
+            <Turnstile
+              size="compact"
+              onVerify={onCaptcha}
+              onExpire={onCaptchaClear}
+              onError={onCaptchaClear}
+            />
+          </div>
+        </>
       )}
 
       {error && <p className="lead-bot__error" role="alert">{error}</p>}

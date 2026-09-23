@@ -2605,6 +2605,12 @@ html {
 }
 [data-theme='light'] .lead-bot__error { color: #C4441A; }
 
+.lead-bot__captcha {
+  margin-top: 12px;
+  display: flex;
+  justify-content: center;
+}
+
 .lead-bot__foot {
   display: flex;
   align-items: center;

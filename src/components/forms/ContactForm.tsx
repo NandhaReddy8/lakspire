@@ -3,15 +3,17 @@
 import { useState, useRef, FormEvent, ChangeEvent } from 'react'
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { ArrowRight, Check, Send } from 'lucide-react'
+import { Turnstile } from '@/components/blocks/Turnstile'
 
 /**
  * ContactForm
  * ───────────
- * Static-site enquiry form. There is NO backend — on submit, the form
- * pauses briefly, then swaps to a themed success state. The submission
- * is not sent anywhere.
+ * Enquiry form wired to POST /api/notify. The route delivers an internal
+ * notification to hello@lakspire.com and an auto-confirmation to the
+ * submitter via Resend. On success the form swaps to a themed success
+ * state; on failure a soft ember alert appears and the button stays live.
  *
- * Security posture (even for a static frontend):
+ * Security posture:
  *   • All values pass through React's default text-escaping — script
  *     injection into fields cannot execute.
  *   • Each field enforces a maxLength and a regex where relevant, so
@@ -133,6 +135,8 @@ export function ContactForm() {
   const [touched, setTouched] = useState<Partial<Record<keyof FormValues, boolean>>>({})
   const [submitting, setSubmitting] = useState(false)
   const [done, setDone] = useState(false)
+  const [sendError, setSendError] = useState<string | null>(null)
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null)
   const firstErrorRef = useRef<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement | null>(null)
 
   const setField =
@@ -177,13 +181,42 @@ export function ContactForm() {
       firstErrorRef.current?.focus()
       return
     }
+    if (!captchaToken) {
+      setSendError('Please complete the captcha check below.')
+      return
+    }
     setSubmitting(true)
-    // Faux "on-its-way" delay so the interaction reads as real.
-    // NO network request — the values live only in local state and
-    // are discarded when the component unmounts.
-    await new Promise((r) => setTimeout(r, 1100))
-    setSubmitting(false)
-    setDone(true)
+    setSendError(null)
+    try {
+      const res = await fetch('/api/notify', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          type: 'contact',
+          name: values.name.trim(),
+          company: values.company.trim(),
+          email: values.email.trim(),
+          country: values.country.trim(),
+          phone: values.phone.trim(),
+          service: values.service,
+          description: values.description.trim(),
+          turnstileToken: captchaToken,
+        }),
+      })
+      const data = (await res.json().catch(() => ({}))) as { ok?: boolean; error?: string }
+      if (!res.ok || !data.ok) {
+        setSendError(data.error ?? 'Could not send. Please try again in a moment.')
+        setSubmitting(false)
+        setCaptchaToken(null)
+        return
+      }
+      setSubmitting(false)
+      setDone(true)
+    } catch {
+      setSendError('Network hiccup. Please try again.')
+      setSubmitting(false)
+      setCaptchaToken(null)
+    }
   }
 
   // contact-field carries the theme-aware background, text and
@@ -354,6 +387,31 @@ export function ContactForm() {
           </p>
         </FieldWrap>
       </div>
+
+      <div className="mt-6">
+        <Turnstile
+          onVerify={(t) => {
+            setCaptchaToken(t)
+            if (sendError === 'Please complete the captcha check below.') setSendError(null)
+          }}
+          onExpire={() => setCaptchaToken(null)}
+          onError={() => setCaptchaToken(null)}
+        />
+      </div>
+
+      {sendError && (
+        <div
+          role="alert"
+          className="mt-4 rounded-lg border px-4 py-3 text-[13.5px]"
+          style={{
+            borderColor: 'rgba(255,107,53,0.35)',
+            background: 'rgba(255,107,53,0.08)',
+            color: 'var(--text-body)',
+          }}
+        >
+          {sendError}
+        </div>
+      )}
 
       {/* Submit row — stacks on mobile so the CTA gets full width and
           the "Submit enquiry" label never wraps to two lines. On sm+
