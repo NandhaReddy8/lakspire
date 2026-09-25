@@ -1,0 +1,16 @@
+node_modules
+.next
+.git
+.gitignore
+npm-debug.log*
+.env
+.env*.local
+.DS_Store
+*.pem
+coverage
+drizzle
+docker
+Dockerfile
+docker-compose*.yml
+.dockerignore
+README.md

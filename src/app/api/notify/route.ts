@@ -1,5 +1,8 @@
-import { NextResponse } from 'next/server'
+import { NextResponse, after } from 'next/server'
 import { Resend } from 'resend'
+import { and, eq, gt } from 'drizzle-orm'
+import { db } from '@/db/client'
+import { contactSubmissions, leadSubmissions } from '@/db/schema'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -155,13 +158,119 @@ async function verifyTurnstile(
   }
 }
 
-export async function POST(req: Request) {
+// A submitter who fires the same request twice in quick succession (double
+// click, retry-happy client) shouldn't create two rows. This is deliberately
+// a simple app-level check against the row we already store — no extra
+// moving parts (no Redis, no separate rate-limit store) for a form that
+// gets a handful of submissions a day.
+const RESUBMIT_WINDOW_MS = 30_000
+
+async function recentlySubmitted(
+  table: typeof contactSubmissions | typeof leadSubmissions,
+  email: string,
+): Promise<boolean> {
+  const since = new Date(Date.now() - RESUBMIT_WINDOW_MS)
+  const rows = await db
+    .select({ id: table.id })
+    .from(table)
+    .where(and(eq(table.email, email), gt(table.createdAt, since)))
+    .limit(1)
+  return rows.length > 0
+}
+
+const truncateError = (err: unknown) => String(err instanceof Error ? err.message : err).slice(0, 500)
+
+// Both send functions run via `after()` — strictly after the response
+// carrying {ok:true} has already been flushed to the client. The row was
+// already committed before that response went out, so the visitor's
+// "success" state never depends on Resend being up. Delivery outcome is
+// written back onto the same row for ops visibility (and future retry
+// tooling) rather than being silently dropped.
+
+async function sendContactEmails(id: number, p: ContactPayload) {
   const key = process.env.RESEND_API_KEY
   if (!key) {
-    console.error('[notify] RESEND_API_KEY is not set')
-    return NextResponse.json({ ok: false, error: 'Server misconfigured.' }, { status: 500 })
+    console.error('[notify] RESEND_API_KEY not set — email skipped for contact submission', id)
+    await db
+      .update(contactSubmissions)
+      .set({ emailStatus: 'failed', emailError: 'RESEND_API_KEY not configured' })
+      .where(eq(contactSubmissions.id, id))
+    return
   }
+  const resend = new Resend(key)
+  try {
+    const internalRes = await resend.emails.send({
+      from: FROM,
+      to: [TO],
+      replyTo: p.email,
+      subject: `New contact enquiry — ${p.name} (${p.company})`,
+      html: contactInternalHtml(p),
+    })
+    if (internalRes.error) throw new Error(internalRes.error.message ?? 'internal send failed')
 
+    try {
+      await resend.emails.send({
+        from: FROM,
+        to: [p.email],
+        replyTo: TO,
+        subject: 'Thanks for reaching out — Lakspire',
+        html: submitterConfirmationHtml(p),
+      })
+    } catch (err) {
+      // The internal notification (the one that matters operationally)
+      // already succeeded — a failed courtesy confirmation shouldn't
+      // flip the row to "failed".
+      console.error('[notify] confirmation send failed (non-fatal) for submission', id, err)
+    }
+
+    await db
+      .update(contactSubmissions)
+      .set({ emailStatus: 'sent', emailSentAt: new Date() })
+      .where(eq(contactSubmissions.id, id))
+  } catch (err) {
+    console.error('[notify] contact email send failed for submission', id, err)
+    await db
+      .update(contactSubmissions)
+      .set({ emailStatus: 'failed', emailError: truncateError(err) })
+      .where(eq(contactSubmissions.id, id))
+  }
+}
+
+async function sendLeadEmail(id: number, p: LeadPayload) {
+  const key = process.env.RESEND_API_KEY
+  if (!key) {
+    console.error('[notify] RESEND_API_KEY not set — email skipped for lead submission', id)
+    await db
+      .update(leadSubmissions)
+      .set({ emailStatus: 'failed', emailError: 'RESEND_API_KEY not configured' })
+      .where(eq(leadSubmissions.id, id))
+    return
+  }
+  const resend = new Resend(key)
+  try {
+    const internalRes = await resend.emails.send({
+      from: FROM,
+      to: [TO],
+      replyTo: p.email,
+      subject: `New LeadBot capture — ${p.name}`,
+      html: leadInternalHtml(p),
+    })
+    if (internalRes.error) throw new Error(internalRes.error.message ?? 'internal send failed')
+
+    await db
+      .update(leadSubmissions)
+      .set({ emailStatus: 'sent', emailSentAt: new Date() })
+      .where(eq(leadSubmissions.id, id))
+  } catch (err) {
+    console.error('[notify] lead email send failed for submission', id, err)
+    await db
+      .update(leadSubmissions)
+      .set({ emailStatus: 'failed', emailError: truncateError(err) })
+      .where(eq(leadSubmissions.id, id))
+  }
+}
+
+export async function POST(req: Request) {
   let body: unknown
   try {
     body = await req.json()
@@ -172,6 +281,7 @@ export async function POST(req: Request) {
   const raw = (body ?? {}) as Record<string, unknown>
   const token = typeof raw.turnstileToken === 'string' ? raw.turnstileToken : undefined
   const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? null
+  const userAgent = req.headers.get('user-agent')?.slice(0, 255) ?? null
 
   const turn = await verifyTurnstile(token, ip)
   if (!turn.ok) {
@@ -182,49 +292,62 @@ export async function POST(req: Request) {
   if (!parsed.ok) return NextResponse.json({ ok: false, error: parsed.error }, { status: 400 })
   const p = parsed.payload
 
-  const resend = new Resend(key)
-
-  const internal =
-    p.type === 'contact'
-      ? {
-          subject: `New contact enquiry — ${p.name} (${p.company})`,
-          html: contactInternalHtml(p),
-        }
-      : {
-          subject: `New LeadBot capture — ${p.name}`,
-          html: leadInternalHtml(p),
-        }
-
-  try {
-    const internalRes = await resend.emails.send({
-      from: FROM,
-      to: [TO],
-      replyTo: p.email,
-      subject: internal.subject,
-      html: internal.html,
-    })
-    if (internalRes.error) {
-      console.error('[notify] internal send failed:', internalRes.error)
-      return NextResponse.json({ ok: false, error: 'Delivery failed.' }, { status: 502 })
-    }
-  } catch (err) {
-    console.error('[notify] internal send threw:', err)
-    return NextResponse.json({ ok: false, error: 'Delivery failed.' }, { status: 502 })
-  }
-
   if (p.type === 'contact') {
-    try {
-      await resend.emails.send({
-        from: FROM,
-        to: [p.email],
-        replyTo: TO,
-        subject: 'Thanks for reaching out — Lakspire',
-        html: submitterConfirmationHtml(p),
-      })
-    } catch (err) {
-      console.error('[notify] confirmation send failed (non-fatal):', err)
+    if (await recentlySubmitted(contactSubmissions, p.email)) {
+      return NextResponse.json(
+        { ok: false, error: 'Already received — please wait a moment before submitting again.' },
+        { status: 429 },
+      )
     }
+
+    let insertId: number
+    try {
+      const [result] = await db.insert(contactSubmissions).values({
+        name: p.name,
+        company: p.company,
+        email: p.email,
+        country: p.country,
+        phone: p.phone || null,
+        service: p.service,
+        description: p.description,
+        ip,
+        userAgent,
+      })
+      insertId = result.insertId
+    } catch (err) {
+      console.error('[notify] DB insert failed for contact submission:', err)
+      return NextResponse.json({ ok: false, error: 'Could not save your enquiry. Please try again.' }, { status: 500 })
+    }
+
+    // The row is committed. Everything below this line is best-effort
+    // notification and cannot affect the response already decided above.
+    after(() => sendContactEmails(insertId, p))
+    return NextResponse.json({ ok: true })
   }
 
+  if (await recentlySubmitted(leadSubmissions, p.email)) {
+    return NextResponse.json(
+      { ok: false, error: 'Already received — please wait a moment before submitting again.' },
+      { status: 429 },
+    )
+  }
+
+  let insertId: number
+  try {
+    const [result] = await db.insert(leadSubmissions).values({
+      name: p.name,
+      kind: p.kind,
+      scale: p.scale,
+      email: p.email,
+      ip,
+      userAgent,
+    })
+    insertId = result.insertId
+  } catch (err) {
+    console.error('[notify] DB insert failed for lead submission:', err)
+    return NextResponse.json({ ok: false, error: 'Could not save. Please try again.' }, { status: 500 })
+  }
+
+  after(() => sendLeadEmail(insertId, p))
   return NextResponse.json({ ok: true })
 }
