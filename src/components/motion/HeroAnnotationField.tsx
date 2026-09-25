@@ -14,6 +14,16 @@ import { useReducedMotion } from 'framer-motion'
  * All the "annotation" grammar (bounding boxes, node network, progress
  * ring) has moved into HeroWorkspaceScene so the hero has a real focal
  * subject. This file is deliberately quiet.
+ *
+ * Performance notes:
+ *   • The reticle's rAF loop and the SVG's own SMIL timeline pause via
+ *     IntersectionObserver whenever this field scrolls out of view.
+ *   • The window-level pointermove handler used to call
+ *     getBoundingClientRect() (a layout-forcing read) on every single
+ *     mouse movement across the whole page. The rect is now cached and
+ *     only refreshed on resize/scroll.
+ *   • The halo/reticle/pointermove listener are skipped entirely on
+ *     devices with no real hover (touch) — there's no cursor to chase.
  */
 
 const COLORS = ['#FF6B35', '#FF8F5C', '#F4A261', '#E9C46A']
@@ -35,8 +45,11 @@ const SCAN_ROWS = [14, 52, 88].map((y, i) => ({
   size: 2.4,
 }))
 
+// Step widened 64 → 88 (roughly halves the dot count, ~300 → ~160) —
+// these are static (no per-frame cost) but still add DOM/paint weight
+// under the mask, and the field reads just as "sparse" either way.
 const LATTICE = (() => {
-  const step = 64
+  const step = 88
   const pts: Array<{ x: number; y: number; hot: boolean }> = []
   for (let y = step; y < VIEW.h; y += step) {
     for (let x = step; x < VIEW.w; x += step) {
@@ -47,6 +60,10 @@ const LATTICE = (() => {
   return pts
 })()
 
+// CSS mask replicating the old SVG <mask>+radialGradient vignette.
+const FIELD_FADE_MASK =
+  'radial-gradient(ellipse at 50% 50%, rgba(255,255,255,1) 0%, rgba(255,255,255,0.75) 70%, rgba(255,255,255,0) 100%)'
+
 export function HeroAnnotationField() {
   const svgRef = useRef<SVGSVGElement>(null)
   const reticleRef = useRef<SVGGElement | null>(null)
@@ -54,24 +71,79 @@ export function HeroAnnotationField() {
   const [visible, setVisible] = useState(false)
   const shouldReduce = useReducedMotion()
 
+  // Defaults to true for SSR/first paint, corrected after mount — see
+  // the matching pattern in HeroWorkspaceScene.
+  const [pointerFine, setPointerFine] = useState(true)
+  useEffect(() => {
+    const mq = window.matchMedia('(hover: hover) and (pointer: fine)')
+    setPointerFine(mq.matches)
+    const onChange = () => setPointerFine(mq.matches)
+    mq.addEventListener('change', onChange)
+    return () => mq.removeEventListener('change', onChange)
+  }, [])
+
+  // See the matching comment in HeroWorkspaceScene: useReducedMotion()
+  // resolves synchronously from the real OS setting on the client's
+  // first render, which would hydrate-mismatch against the server
+  // (always shouldReduce=false) for JSX that renders elements
+  // conditionally rather than just varying an animation value.
+  // Deferring to after mount keeps the first render identical.
+  const [reducedMotionApplied, setReducedMotionApplied] = useState(false)
+  useEffect(() => {
+    setReducedMotionApplied(!!shouldReduce)
+  }, [shouldReduce])
+
   const cursor = useRef<{ x: number; y: number; active: boolean }>({
     x: VIEW.w * 0.5,
     y: VIEW.h * 0.5,
     active: false,
   })
+  const rectRef = useRef<DOMRect | null>(null)
+  const inViewRef = useRef(true)
 
   useEffect(() => {
     const t = requestAnimationFrame(() => setVisible(true))
     return () => cancelAnimationFrame(t)
   }, [])
 
+  // Pause the reticle rAF loop and the SVG's SMIL timeline whenever
+  // this field scrolls out of view.
   useEffect(() => {
-    if (shouldReduce) return
+    const svg = svgRef.current
+    if (!svg) return
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        inViewRef.current = entry.isIntersecting
+        if (shouldReduce) return
+        if (entry.isIntersecting) {
+          if ('unpauseAnimations' in svg) svg.unpauseAnimations()
+        } else {
+          if ('pauseAnimations' in svg) svg.pauseAnimations()
+          if (haloRef.current) haloRef.current.style.opacity = '0'
+        }
+      },
+      { rootMargin: '150px 0px' },
+    )
+    io.observe(svg)
+    return () => io.disconnect()
+  }, [shouldReduce])
+
+  useEffect(() => {
+    if (shouldReduce || !pointerFine) return
     const svg = svgRef.current
     if (!svg) return
 
+    const refreshRect = () => {
+      rectRef.current = svg.getBoundingClientRect()
+    }
+    refreshRect()
+    window.addEventListener('resize', refreshRect, { passive: true })
+    window.addEventListener('scroll', refreshRect, { passive: true })
+
     const onMove = (e: PointerEvent) => {
-      const rect = svg.getBoundingClientRect()
+      if (!inViewRef.current) return
+      const rect = rectRef.current
+      if (!rect) return
       const inside =
         e.clientX >= rect.left &&
         e.clientX <= rect.right &&
@@ -101,15 +173,17 @@ export function HeroAnnotationField() {
     return () => {
       window.removeEventListener('pointermove', onMove)
       window.removeEventListener('pointerleave', onLeave)
+      window.removeEventListener('resize', refreshRect)
+      window.removeEventListener('scroll', refreshRect)
     }
-  }, [shouldReduce])
+  }, [shouldReduce, pointerFine])
 
-  // Reticle position — updated on rAF
+  // Reticle position — updated on rAF, paused while off-screen.
   useEffect(() => {
-    if (shouldReduce) return
+    if (shouldReduce || !pointerFine) return
     let raf = 0
     const tick = () => {
-      if (reticleRef.current) {
+      if (inViewRef.current && reticleRef.current) {
         if (cursor.current.active) {
           reticleRef.current.setAttribute(
             'transform',
@@ -124,7 +198,7 @@ export function HeroAnnotationField() {
     }
     raf = requestAnimationFrame(tick)
     return () => cancelAnimationFrame(raf)
-  }, [shouldReduce])
+  }, [shouldReduce, pointerFine])
 
   return (
     <div
@@ -135,24 +209,16 @@ export function HeroAnnotationField() {
         transition: 'opacity 900ms cubic-bezier(0.16, 1, 0.3, 1)',
       }}
     >
-      <div ref={haloRef} className="hero-cursor-halo" style={{ opacity: 0 }} />
+      {pointerFine && <div ref={haloRef} className="hero-cursor-halo" style={{ opacity: 0 }} />}
 
       <svg
         ref={svgRef}
         viewBox={`0 0 ${VIEW.w} ${VIEW.h}`}
         preserveAspectRatio="xMidYMid slice"
         className="absolute inset-0 h-full w-full"
+        style={{ maskImage: FIELD_FADE_MASK, WebkitMaskImage: FIELD_FADE_MASK }}
       >
         <defs>
-          <radialGradient id="fld-fade" cx="50%" cy="50%" r="70%">
-            <stop offset="0%" stopColor="white" stopOpacity="1" />
-            <stop offset="70%" stopColor="white" stopOpacity="0.75" />
-            <stop offset="100%" stopColor="white" stopOpacity="0" />
-          </radialGradient>
-          <mask id="fld-mask">
-            <rect width={VIEW.w} height={VIEW.h} fill="url(#fld-fade)" />
-          </mask>
-
           {COLORS.map((c, i) => (
             <linearGradient key={`sg-${i}`} id={`scan-grad-${i}`} x1="0%" y1="0%" x2="100%" y2="0%">
               <stop offset="0%" stopColor={c} stopOpacity="0" />
@@ -162,7 +228,7 @@ export function HeroAnnotationField() {
           ))}
         </defs>
 
-        <g mask="url(#fld-mask)" opacity={0.55}>
+        <g opacity={0.55}>
           {/* Sparse dot lattice */}
           {LATTICE.map((p, i) => (
             <circle
@@ -175,10 +241,10 @@ export function HeroAnnotationField() {
             />
           ))}
 
-          {/* Horizontal scan rows — quiet, only three, edges only.
-              Circle stays at (0,0); the position lives in the motion
-              path. Group is visibility-hidden until motion attaches so
-              nothing flashes at the left corner. */}
+          {/* Horizontal scan rows — quiet, only three, edges only. The
+              static line always renders; the moving packet (raw SMIL,
+              untouched by the CSS reduced-motion rule) is skipped under
+              shouldReduce. */}
           {SCAN_ROWS.map((row, i) => {
             const y = (row.y / 100) * VIEW.h
             return (
@@ -192,93 +258,92 @@ export function HeroAnnotationField() {
                   strokeWidth={0.5}
                   opacity={0.15}
                 />
-                <g visibility="hidden">
-                  <set
-                    attributeName="visibility"
-                    to="visible"
-                    begin="0.08s"
-                    fill="freeze"
-                  />
-                  <animateMotion
-                    dur={`${row.duration}s`}
-                    repeatCount="indefinite"
-                    begin={`-${row.offset}s`}
-                    path={`M -30 ${y} L ${VIEW.w + 30} ${y}`}
-                  />
-                  {/* Trailing halo around each scan packet */}
-                  <circle cx={0} cy={0} r={row.size + 3} fill={row.color} opacity={0}>
-                    <animate
-                      attributeName="r"
-                      values={`${row.size + 2};${row.size + 9};${row.size + 2}`}
-                      dur="1.6s"
-                      repeatCount="indefinite"
-                    />
-                    <animate
-                      attributeName="opacity"
-                      values="0; 0.22; 0.22; 0"
-                      keyTimes="0; 0.15; 0.85; 1"
+                {!reducedMotionApplied && (
+                  <g visibility="hidden">
+                    <set attributeName="visibility" to="visible" begin="0.08s" fill="freeze" />
+                    <animateMotion
                       dur={`${row.duration}s`}
-                      begin={`-${row.offset}s`}
                       repeatCount="indefinite"
-                    />
-                  </circle>
-                  <circle cx={0} cy={0} r={row.size} fill={row.color} opacity={0}>
-                    <animate
-                      attributeName="opacity"
-                      values="0; 0.65; 0.65; 0"
-                      keyTimes="0; 0.15; 0.85; 1"
-                      dur={`${row.duration}s`}
                       begin={`-${row.offset}s`}
-                      repeatCount="indefinite"
+                      path={`M -30 ${y} L ${VIEW.w + 30} ${y}`}
                     />
-                  </circle>
-                </g>
+                    <circle cx={0} cy={0} r={row.size + 3} fill={row.color} opacity={0}>
+                      <animate
+                        attributeName="r"
+                        values={`${row.size + 2};${row.size + 9};${row.size + 2}`}
+                        dur="1.6s"
+                        repeatCount="indefinite"
+                      />
+                      <animate
+                        attributeName="opacity"
+                        values="0; 0.22; 0.22; 0"
+                        keyTimes="0; 0.15; 0.85; 1"
+                        dur={`${row.duration}s`}
+                        begin={`-${row.offset}s`}
+                        repeatCount="indefinite"
+                      />
+                    </circle>
+                    <circle cx={0} cy={0} r={row.size} fill={row.color} opacity={0}>
+                      <animate
+                        attributeName="opacity"
+                        values="0; 0.65; 0.65; 0"
+                        keyTimes="0; 0.15; 0.85; 1"
+                        dur={`${row.duration}s`}
+                        begin={`-${row.offset}s`}
+                        repeatCount="indefinite"
+                      />
+                    </circle>
+                  </g>
+                )}
               </g>
             )
           })}
 
-          {/* Cursor reticle — center-relative crosshair. Class hook
-              lets CSS punch up ring/fill brightness in light mode where
-              ember-on-cream reads dimmer than ember-on-dark. */}
-          <g ref={reticleRef} className="hero-reticle" style={{ transition: 'opacity 300ms ease', opacity: 0 }}>
-            <g transform={`translate(${VIEW.w / 2} ${VIEW.h / 2})`}>
-              <circle
-                r={26}
-                fill="none"
-                stroke="#FF6B35"
-                strokeWidth={0.7}
-                opacity={0.45}
-                strokeDasharray="3 4"
-              >
-                <animateTransform
-                  attributeName="transform"
-                  type="rotate"
-                  from="0"
-                  to="360"
-                  dur="14s"
-                  repeatCount="indefinite"
-                />
-              </circle>
-              <circle
-                r={18}
-                fill="none"
-                stroke="#FF8F5C"
-                strokeWidth={0.7}
-                opacity={0.4}
-                strokeDasharray="2 3"
-              >
-                <animateTransform
-                  attributeName="transform"
-                  type="rotate"
-                  from="360"
-                  to="0"
-                  dur="10s"
-                  repeatCount="indefinite"
-                />
-              </circle>
-              <circle r={2} fill="#FF6B35" />
+          {/* Cursor reticle — a motion-chasing element by nature, so it
+              (and the rotation animating it) is skipped outright under
+              reduced motion or on touch, not just left permanently
+              invisible. */}
+          {!reducedMotionApplied && pointerFine && (
+            <g ref={reticleRef} className="hero-reticle" style={{ transition: 'opacity 300ms ease', opacity: 0 }}>
+              <g transform={`translate(${VIEW.w / 2} ${VIEW.h / 2})`}>
+                <circle
+                  r={26}
+                  fill="none"
+                  stroke="#FF6B35"
+                  strokeWidth={0.7}
+                  opacity={0.45}
+                  strokeDasharray="3 4"
+                >
+                  <animateTransform
+                    attributeName="transform"
+                    type="rotate"
+                    from="0"
+                    to="360"
+                    dur="14s"
+                    repeatCount="indefinite"
+                  />
+                </circle>
+                <circle
+                  r={18}
+                  fill="none"
+                  stroke="#FF8F5C"
+                  strokeWidth={0.7}
+                  opacity={0.4}
+                  strokeDasharray="2 3"
+                >
+                  <animateTransform
+                    attributeName="transform"
+                    type="rotate"
+                    from="360"
+                    to="0"
+                    dur="10s"
+                    repeatCount="indefinite"
+                  />
+                </circle>
+                <circle r={2} fill="#FF6B35" />
+              </g>
             </g>
-          </g>
+          )}
         </g>
       </svg>
     </div>

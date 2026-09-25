@@ -13,7 +13,7 @@ import { useReducedMotion } from 'framer-motion'
  *
  * Composition:
  *   • A neural-processing scene: three layers of colored nodes, curved
- *     connections between them, and two highlighted paths carrying
+ *     connections between them, and highlighted paths carrying
  *     streaming data packets. This is the "content" being annotated.
  *   • Ember corner brackets frame the working area (no rectangular card).
  *   • A rotating three-box annotation loop overlays the network:
@@ -32,6 +32,23 @@ import { useReducedMotion } from 'framer-motion'
  * The scene is UNFRAMED — no illust-frame, no card. Soft radial fades
  * blend it into the hero atmosphere so it feels sculpted-in rather than
  * walled-off. Copy sits to its left in the hero grid.
+ *
+ * Performance notes (read before "optimizing" further):
+ *   • The rAF loop pauses itself — and the SVG's own SMIL timeline —
+ *     via IntersectionObserver whenever the scene scrolls out of view.
+ *   • The 98-edge cursor-distance pass only runs while the pointer is
+ *     actually over the scene; at rest edges sit at a constant opacity
+ *     and are written once on the transition back to resting, not
+ *     every frame.
+ *   • Only the currently-active annotation box is touched per frame;
+ *     the other two are static (opacity 0) and get one write on the
+ *     frame they become inactive, not 60/sec forever.
+ *   • Drift orbs and highlight "packets" are pure decoration driven by
+ *     raw SVG SMIL (<animate>/<animateMotion>), which prefers-reduced-
+ *     motion's CSS media query cannot touch — they're explicitly
+ *     skipped when the OS setting is on. Orbs are additionally skipped
+ *     on devices with no real hover (touch), since the swell/brighten
+ *     interactivity they accent is unreachable there anyway.
  */
 
 const VIEW = { w: 1000, h: 560 }
@@ -115,6 +132,34 @@ const ANNO_SLOT = 4.2 // seconds per annotation
 const ANNO_DRAW = 0.6
 const ANNO_FADE = 0.6
 
+// Progress ring geometry + a pure function so the arc can be computed
+// once for the static/paused state instead of only ever existing as a
+// side effect of the per-frame tick loop.
+const ARC_CX = VIEW.w - 82
+const ARC_CY = 62
+const ARC_R = 24
+
+function arcPath(fraction: number, cx: number, cy: number, r: number) {
+  const stopAngle = 2 * Math.PI * fraction
+  const startAng = -Math.PI / 2
+  const endAng = startAng + stopAngle
+  const sx = cx + r * Math.cos(startAng)
+  const sy = cy + r * Math.sin(startAng)
+  const ex = cx + r * Math.cos(endAng)
+  const ey = cy + r * Math.sin(endAng)
+  const large = stopAngle > Math.PI ? 1 : 0
+  return `M ${sx} ${sy} A ${r} ${r} 0 ${large} 1 ${ex} ${ey}`
+}
+
+const STATIC_ARC_D = arcPath(0.87, ARC_CX, ARC_CY, ARC_R)
+
+// CSS mask replicating the old SVG <mask>+radialGradient vignette —
+// same visual fade, but composited by the browser's mask pipeline
+// instead of forcing an SVG mask render pass over ~200 animated
+// children every frame.
+const WS_FADE_MASK =
+  'radial-gradient(ellipse at 50% 50%, rgba(255,255,255,1) 0%, rgba(255,255,255,0.94) 70%, rgba(255,255,255,0.35) 100%)'
+
 // ─── Component ────────────────────────────────────────────────
 export function HeroWorkspaceScene() {
   const shouldReduce = useReducedMotion()
@@ -132,32 +177,28 @@ export function HeroWorkspaceScene() {
     return list
   }, [nodes])
 
-  // Highlighted paths — spread across all four layer transitions so
-  // the streaming packets keep every part of the pipeline alive.
+  // Highlighted paths — two per layer transition (was three-to-four).
+  // Still spans the whole pipeline so every stage stays visibly alive;
+  // just less dense. Each packet drives one <animateMotion> plus two
+  // pulsing circles, so this trim alone removes ~20 concurrently
+  // looping SMIL animations.
   const highlights = useMemo(
     () => [
-      // Ingest → Encode
       { a: nodes[0][0], b: nodes[1][2], color: LAYER_COLORS[1], delay: 0 },
       { a: nodes[0][1], b: nodes[1][4], color: LAYER_COLORS[0], delay: 2.2 },
-      { a: nodes[0][3], b: nodes[1][1], color: LAYER_COLORS[1], delay: 3.6 },
-      // Encode → Reason
       { a: nodes[1][2], b: nodes[2][0], color: LAYER_COLORS[2], delay: 1.6 },
       { a: nodes[1][6], b: nodes[2][3], color: LAYER_COLORS[2], delay: 0.8 },
-      { a: nodes[1][0], b: nodes[2][5], color: LAYER_COLORS[1], delay: 2.9 },
-      { a: nodes[1][3], b: nodes[2][6], color: LAYER_COLORS[2], delay: 4.2 },
-      // Reason → Insight
       { a: nodes[2][1], b: nodes[3][0], color: LAYER_COLORS[3], delay: 1.2 },
       { a: nodes[2][3], b: nodes[3][1], color: LAYER_COLORS[3], delay: 2.6 },
-      { a: nodes[2][5], b: nodes[3][2], color: LAYER_COLORS[3], delay: 3.8 },
     ],
     [nodes],
   )
 
   // Drift orbs — soft ambient particles that actually drift instead of
-  // pulsing in place. Each orb gets its own looping bezier "orbit" so the
-  // ambient layer reads as flow, not a field of static dots. cx/cy stay
-  // at 0 (see the highlighted-packet fix for why) and the base position
-  // lives in the animateMotion path's M-coordinate.
+  // pulsing in place. Trimmed from 14 to 8: each orb drives three SMIL
+  // animations (opacity, radius, motion path), so this halves that
+  // count on its own. Only rendered on hover-capable devices — see
+  // `pointerFine` below.
   const DRIFT_ORBS = useMemo(() => {
     const orbs: Array<{
       cx: number
@@ -170,11 +211,7 @@ export function HeroWorkspaceScene() {
       pulseDelay: number
       driftDelay: number
     }> = []
-    for (let i = 0; i < 14; i++) {
-      // Base positions kept well inside the frame so the wandering
-      // ellipse can never carry an orb into a corner. Previously
-      // cx=80 + rx=90 let orbs cross x=-10, showing them briefly
-      // clustered at the left edge — the glitch the user kept flagging.
+    for (let i = 0; i < 8; i++) {
       const cx = 170 + hashRand(i * 17) * (VIEW.w - 340)
       const cy = 150 + hashRand(i * 29) * (VIEW.h - 280)
       const rx = 30 + hashRand(i * 83) * 50
@@ -198,13 +235,41 @@ export function HeroWorkspaceScene() {
     return orbs
   }, [])
 
+  // Defaults to true (full richness) for SSR and the very first paint
+  // — matching the existing `visible` fade-in pattern below — then
+  // corrects after mount. Gates both the pointermove listener and the
+  // drift orbs: the interactivity they accent doesn't exist on touch.
+  const [pointerFine, setPointerFine] = useState(true)
+  useEffect(() => {
+    const mq = window.matchMedia('(hover: hover) and (pointer: fine)')
+    setPointerFine(mq.matches)
+    const onChange = () => setPointerFine(mq.matches)
+    mq.addEventListener('change', onChange)
+    return () => mq.removeEventListener('change', onChange)
+  }, [])
+
+  // useReducedMotion() resolves synchronously from the real OS setting
+  // on the client's very first render — fine for framer-motion's own
+  // `initial={...}` values (same element, different animation target),
+  // but our JSX below uses it to decide whether an element renders AT
+  // ALL. Doing that with the raw hook value would hydrate mismatched
+  // against the server (which always renders with shouldReduce=false).
+  // Deferring the "reduced" branch to after mount keeps the first
+  // render — server and client alike — identical, same as `pointerFine`.
+  const [reducedMotionApplied, setReducedMotionApplied] = useState(false)
+  useEffect(() => {
+    setReducedMotionApplied(!!shouldReduce)
+  }, [shouldReduce])
+
   const svgRef = useRef<SVGSVGElement>(null)
   const nodeRefs = useRef<(SVGCircleElement | null)[][]>([])
   const edgeRefs = useRef<(SVGPathElement | null)[]>([])
   const annoRefs = useRef<(SVGGElement | null)[]>([])
+  const annoBorderRefs = useRef<(SVGRectElement | null)[]>([])
+  const chipRefs = useRef<(SVGGElement | null)[]>([])
+  const chipDetailRefs = useRef<(SVGGElement | null)[]>([])
   const progressArcRef = useRef<SVGPathElement | null>(null)
   const progressLabelRef = useRef<SVGTextElement | null>(null)
-  const chipRefs = useRef<(SVGGElement | null)[]>([])
   const [visible, setVisible] = useState(false)
 
   const cursor = useRef<{ x: number; y: number; active: boolean }>({
@@ -212,18 +277,32 @@ export function HeroWorkspaceScene() {
     y: VIEW.h * 0.5,
     active: false,
   })
+  const rectRef = useRef<DOMRect | null>(null)
 
   useEffect(() => {
     const t = requestAnimationFrame(() => setVisible(true))
     return () => cancelAnimationFrame(t)
   }, [])
 
+  // Pointer tracking — the bounding rect is cached and refreshed only
+  // on resize/scroll instead of on every pointermove (which was
+  // forcing a synchronous layout read on every mouse movement). Skips
+  // entirely on touch devices, where the effect it drives never shows.
   useEffect(() => {
-    if (shouldReduce) return
+    if (shouldReduce || !pointerFine) return
     const svg = svgRef.current
     if (!svg) return
+
+    const refreshRect = () => {
+      rectRef.current = svg.getBoundingClientRect()
+    }
+    refreshRect()
+    window.addEventListener('resize', refreshRect, { passive: true })
+    window.addEventListener('scroll', refreshRect, { passive: true })
+
     const onMove = (e: PointerEvent) => {
-      const rect = svg.getBoundingClientRect()
+      const rect = rectRef.current
+      if (!rect) return
       const inside =
         e.clientX >= rect.left &&
         e.clientX <= rect.right &&
@@ -245,24 +324,31 @@ export function HeroWorkspaceScene() {
     return () => {
       svg.removeEventListener('pointermove', onMove)
       svg.removeEventListener('pointerleave', onLeave)
+      window.removeEventListener('resize', refreshRect)
+      window.removeEventListener('scroll', refreshRect)
     }
-  }, [shouldReduce])
+  }, [shouldReduce, pointerFine])
 
   // ─── Animation loop ─────────────────────────────────────────
+  // Paused (both the JS loop and the SVG's own SMIL timeline) whenever
+  // the scene scrolls out of view, via IntersectionObserver.
   useEffect(() => {
     if (shouldReduce) return
-    let raf = 0
-    const start = performance.now()
+    const svg = svgRef.current
+    if (!svg) return
 
-    const arcTarget = 2 * Math.PI * 0.87 // 87% around the ring
-    const arcR = 24
-    const arcCx = VIEW.w - 82
-    const arcCy = 62
+    let raf = 0
+    let running = false
+    const start = performance.now()
+    let edgesWereActive = false
+    let prevActiveAnno = -1
 
     const tick = (now: number) => {
       const t = (now - start) / 1000
 
-      // Nodes — pulse + cursor-swell
+      // Nodes — idle pulse always runs (it's the "alive" breathing
+      // effect); the cursor-swell distance check only fires when the
+      // pointer is actually over the scene.
       for (let li = 0; li < nodes.length; li++) {
         const row = nodes[li]
         for (let i = 0; i < row.length; i++) {
@@ -284,68 +370,83 @@ export function HeroWorkspaceScene() {
         }
       }
 
-      // Edges — strengthen near cursor
-      for (let i = 0; i < edges.length; i++) {
-        const el = edgeRefs.current[i]
-        if (!el) continue
-        const e = edges[i]
-        let strength = 0.18
-        if (cursor.current.active) {
+      // Edges — the ~98-edge distance check only runs while the cursor
+      // is actually over the scene. At rest they sit at a constant
+      // opacity, written once on the transition back to resting rather
+      // than recomputed unconditionally on every frame.
+      if (cursor.current.active) {
+        for (let i = 0; i < edges.length; i++) {
+          const el = edgeRefs.current[i]
+          if (!el) continue
+          const e = edges[i]
           const da = Math.hypot(cursor.current.x - e.a.x, cursor.current.y - e.a.y)
           const db = Math.hypot(cursor.current.x - e.b.x, cursor.current.y - e.b.y)
           const closer = Math.min(da, db)
           const pull = Math.max(0, 1 - closer / 200)
-          strength = 0.18 + pull * 0.5
+          el.style.opacity = String(0.18 + pull * 0.5)
         }
-        el.style.opacity = String(strength)
+        edgesWereActive = true
+      } else if (edgesWereActive) {
+        for (let i = 0; i < edges.length; i++) {
+          const el = edgeRefs.current[i]
+          if (el) el.style.opacity = '0.18'
+        }
+        edgesWereActive = false
       }
 
-      // Annotation loop — figure out which bbox is currently on-stage
+      // Annotation loop — only the currently-active bbox is touched
+      // per frame. The other two sit fully transparent and get a
+      // single write on the frame they become inactive, not 60/sec.
       const cycle = ANNOTATIONS.length * ANNO_SLOT
       const localT = t % cycle
       const activeIdx = Math.floor(localT / ANNO_SLOT)
       const withinSlot = localT - activeIdx * ANNO_SLOT
 
-      for (let i = 0; i < ANNOTATIONS.length; i++) {
-        const el = annoRefs.current[i]
-        const chip = chipRefs.current[i]
-        if (!el) continue
+      if (activeIdx !== prevActiveAnno && prevActiveAnno !== -1) {
+        const prevEl = annoRefs.current[prevActiveAnno]
+        const prevChip = chipRefs.current[prevActiveAnno]
+        const prevDetail = chipDetailRefs.current[prevActiveAnno]
+        if (prevEl) prevEl.style.opacity = '0'
+        if (prevChip) prevChip.style.transform = 'translate(0px, 0px)'
+        if (prevDetail) prevDetail.style.opacity = '0'
+      }
+      prevActiveAnno = activeIdx
+
+      const activeEl = annoRefs.current[activeIdx]
+      if (activeEl) {
         let alpha = 0
         let dash = 0
         let scale = 1
-        if (i === activeIdx) {
-          if (withinSlot < ANNO_DRAW) {
-            const p = withinSlot / ANNO_DRAW
-            alpha = p
-            dash = 200 * (1 - p) // dashOffset for draw-in effect
-            scale = 0.985 + p * 0.015
-          } else if (withinSlot < ANNO_SLOT - ANNO_FADE) {
-            alpha = 1
-            dash = 0
-            scale = 1
-          } else {
-            const p = (withinSlot - (ANNO_SLOT - ANNO_FADE)) / ANNO_FADE
-            alpha = 1 - p
-            dash = 0
-            scale = 1 - p * 0.02
-          }
+        if (withinSlot < ANNO_DRAW) {
+          const p = withinSlot / ANNO_DRAW
+          alpha = p
+          dash = 200 * (1 - p)
+          scale = 0.985 + p * 0.015
+        } else if (withinSlot < ANNO_SLOT - ANNO_FADE) {
+          alpha = 1
+          dash = 0
+          scale = 1
+        } else {
+          const p = (withinSlot - (ANNO_SLOT - ANNO_FADE)) / ANNO_FADE
+          alpha = 1 - p
+          dash = 0
+          scale = 1 - p * 0.02
         }
-        el.style.opacity = String(alpha)
-        const a = ANNOTATIONS[i]
+        activeEl.style.opacity = String(alpha)
+        const a = ANNOTATIONS[activeIdx]
         const cx = a.x + a.w / 2
         const cy = a.y + a.h / 2
-        el.setAttribute(
+        activeEl.setAttribute(
           'transform',
           `translate(${cx - cx * scale} ${cy - cy * scale}) scale(${scale})`,
         )
-        // The dashed rect uses this for its stroke-dashoffset
-        const rect = el.querySelector('rect[data-anim="border"]') as SVGRectElement | null
-        if (rect) rect.style.strokeDashoffset = String(dash)
+        const border = annoBorderRefs.current[activeIdx]
+        if (border) border.style.strokeDashoffset = String(dash)
 
-        // Chip expands when cursor is inside the bbox
+        const chip = chipRefs.current[activeIdx]
         if (chip) {
           let expand = 0
-          if (i === activeIdx && cursor.current.active) {
+          if (cursor.current.active) {
             const inside =
               cursor.current.x >= a.x &&
               cursor.current.x <= a.x + a.w &&
@@ -354,39 +455,50 @@ export function HeroWorkspaceScene() {
             expand = inside ? 1 : 0
           }
           chip.style.transform = `translate(0px, ${expand * -3}px)`
-          const detail = chip.querySelector('[data-detail]') as SVGGElement | null
+          const detail = chipDetailRefs.current[activeIdx]
           if (detail) detail.style.opacity = String(expand)
         }
       }
 
-      // Progress ring — subtle bob, otherwise fixed
-      if (progressArcRef.current) {
-        const bob = 0.87 + Math.sin(t * 1.1) * 0.008
-        const stopAngle = 2 * Math.PI * bob
-        // Redraw the arc path
-        const startAng = -Math.PI / 2
-        const endAng = startAng + stopAngle
-        const sx = arcCx + arcR * Math.cos(startAng)
-        const sy = arcCy + arcR * Math.sin(startAng)
-        const ex = arcCx + arcR * Math.cos(endAng)
-        const ey = arcCy + arcR * Math.sin(endAng)
-        const large = stopAngle > Math.PI ? 1 : 0
-        progressArcRef.current.setAttribute(
-          'd',
-          `M ${sx} ${sy} A ${arcR} ${arcR} 0 ${large} 1 ${ex} ${ey}`,
-        )
-        if (progressLabelRef.current) {
-          progressLabelRef.current.textContent = `${Math.round(bob * 100)}%`
+      // Progress ring — updated at ~15fps instead of every frame. The
+      // "bob" it draws shifts by fractions of a percent; redrawing the
+      // arc geometry 60x/sec bought nothing visible.
+      if (Math.floor(t * 15) !== Math.floor((t - 1 / 60) * 15)) {
+        if (progressArcRef.current) {
+          const bob = 0.87 + Math.sin(t * 1.1) * 0.008
+          progressArcRef.current.setAttribute('d', arcPath(bob, ARC_CX, ARC_CY, ARC_R))
+          if (progressLabelRef.current) {
+            progressLabelRef.current.textContent = `${Math.round(bob * 100)}%`
+          }
         }
       }
 
-      raf = requestAnimationFrame(tick)
+      if (running) raf = requestAnimationFrame(tick)
     }
-    raf = requestAnimationFrame(tick)
-    // silence unused
-    void arcTarget
-    return () => cancelAnimationFrame(raf)
-  }, [shouldReduce, nodes, edges, highlights])
+
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          if (!running) {
+            running = true
+            if ('unpauseAnimations' in svg) svg.unpauseAnimations()
+            raf = requestAnimationFrame(tick)
+          }
+        } else if (running) {
+          running = false
+          if ('pauseAnimations' in svg) svg.pauseAnimations()
+          cancelAnimationFrame(raf)
+        }
+      },
+      { rootMargin: '150px 0px' },
+    )
+    io.observe(svg)
+
+    return () => {
+      io.disconnect()
+      cancelAnimationFrame(raf)
+    }
+  }, [shouldReduce, nodes, edges])
 
   return (
     <div
@@ -430,20 +542,14 @@ export function HeroWorkspaceScene() {
         ref={svgRef}
         viewBox={`0 0 ${VIEW.w} ${VIEW.h}`}
         className="h-auto w-full"
-        style={{ pointerEvents: 'auto', display: 'block' }}
+        style={{
+          pointerEvents: 'auto',
+          display: 'block',
+          maskImage: WS_FADE_MASK,
+          WebkitMaskImage: WS_FADE_MASK,
+        }}
       >
         <defs>
-          {/* Softly fade the outer edges so the scene doesn't hit a
-              hard rectangle — it dissolves into the hero atmosphere */}
-          <radialGradient id="ws-fade" cx="50%" cy="50%" r="60%">
-            <stop offset="0%" stopColor="white" stopOpacity="1" />
-            <stop offset="70%" stopColor="white" stopOpacity="0.94" />
-            <stop offset="100%" stopColor="white" stopOpacity="0.35" />
-          </radialGradient>
-          <mask id="ws-mask">
-            <rect width={VIEW.w} height={VIEW.h} fill="url(#ws-fade)" />
-          </mask>
-
           <linearGradient id="conn-grad" x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%" stopColor="#E9C46A" stopOpacity="0.7" />
             <stop offset="50%" stopColor="#F4A261" stopOpacity="0.95" />
@@ -461,50 +567,47 @@ export function HeroWorkspaceScene() {
           </pattern>
         </defs>
 
-        <g mask="url(#ws-mask)">
+        <g>
           {/* Grid backdrop */}
           <rect width={VIEW.w} height={VIEW.h} fill="url(#ws-grid)" />
 
-          {/* Drift orbs — each orbits its own base position along a soft
-              looping bezier while pulsing on an independent phase. Wrapped
-              in a hidden <g> that flips visible once motion attaches, so
-              no orb flashes at (0,0). */}
-          {DRIFT_ORBS.map((o, i) => (
-            <g key={`orb-${i}`} visibility="hidden">
-              <set
-                attributeName="visibility"
-                to="visible"
-                begin="0.08s"
-                fill="freeze"
-              />
-              <animateMotion
-                dur={`${o.driftDur}s`}
-                repeatCount="indefinite"
-                begin={`${o.driftDelay}s`}
-                path={o.driftPath}
-                calcMode="linear"
-              />
-              <circle cx={0} cy={0} r={o.r} fill={o.color} opacity={0.5}>
-                <animate
-                  attributeName="opacity"
-                  values="0.15;0.7;0.15"
-                  dur={`${o.pulseDur}s`}
-                  repeatCount="indefinite"
-                  begin={`${o.pulseDelay}s`}
-                />
-                <animate
-                  attributeName="r"
-                  values={`${o.r * 0.7};${o.r * 1.4};${o.r * 0.7}`}
-                  dur={`${o.pulseDur}s`}
-                  repeatCount="indefinite"
-                  begin={`${o.pulseDelay}s`}
-                />
-              </circle>
-            </g>
-          ))}
+          {/* Drift orbs — ambient only, skipped on touch devices (no
+              hover to accent) and rendered static under reduced motion. */}
+          {pointerFine &&
+            DRIFT_ORBS.map((o, i) =>
+              reducedMotionApplied ? (
+                <circle key={`orb-${i}`} cx={o.cx} cy={o.cy} r={o.r} fill={o.color} opacity={0.35} />
+              ) : (
+                <g key={`orb-${i}`} visibility="hidden">
+                  <set attributeName="visibility" to="visible" begin="0.08s" fill="freeze" />
+                  <animateMotion
+                    dur={`${o.driftDur}s`}
+                    repeatCount="indefinite"
+                    begin={`${o.driftDelay}s`}
+                    path={o.driftPath}
+                    calcMode="linear"
+                  />
+                  <circle cx={0} cy={0} r={o.r} fill={o.color} opacity={0.5}>
+                    <animate
+                      attributeName="opacity"
+                      values="0.15;0.7;0.15"
+                      dur={`${o.pulseDur}s`}
+                      repeatCount="indefinite"
+                      begin={`${o.pulseDelay}s`}
+                    />
+                    <animate
+                      attributeName="r"
+                      values={`${o.r * 0.7};${o.r * 1.4};${o.r * 0.7}`}
+                      dur={`${o.pulseDur}s`}
+                      repeatCount="indefinite"
+                      begin={`${o.pulseDelay}s`}
+                    />
+                  </circle>
+                </g>
+              ),
+            )}
 
-          {/* Layer eyebrow labels — bumped 9 → 11.5 so INGEST / ENCODE /
-              REASON / INSIGHT read cleanly at hero display sizes. */}
+          {/* Layer eyebrow labels */}
           {LAYERS.map((layer, li) => (
             <text
               key={`ll-${li}`}
@@ -536,15 +639,11 @@ export function HeroWorkspaceScene() {
             />
           ))}
 
-          {/* Highlighted paths + streaming packets.
-
-              animateMotion adds a translate transform on top of a circle's
-              cx/cy — so if cx/cy are non-zero, the packet ends up at
-              (cx + motion_x, cy + motion_y), off the path. Circle stays
-              at (0,0); wrapping <g> starts hidden and flips visible after
-              a tick so the (0,0) frame before motion attaches never
-              paints. Together this kills the corner glitch AND keeps the
-              packet on the flow line. */}
+          {/* Highlighted paths + streaming packets. The dashed line
+              itself is a CSS animation (.flowing-line) already gated by
+              the site-wide prefers-reduced-motion rule; only the raw
+              SMIL packet/halo circles need an explicit shouldReduce
+              check here. */}
           {highlights.map((h, i) => (
             <g key={`hl-${i}`}>
               <path
@@ -558,51 +657,38 @@ export function HeroWorkspaceScene() {
                 className="flowing-line"
                 style={{ animationDuration: '5s', animationDelay: `${h.delay}s` }}
               />
-              <g visibility="hidden">
-                <set
-                  attributeName="visibility"
-                  to="visible"
-                  begin="0.08s"
-                  fill="freeze"
-                />
-                <animateMotion
-                  dur="4.2s"
-                  repeatCount="indefinite"
-                  begin={`-${h.delay}s`}
-                  path={curvePath(h.a, h.b)}
-                />
-                {/* Trailing aura — soft filled disc breathing 4→13px
-                    around the packet on a 1.4s loop while the outer
-                    opacity envelope keeps it in sync with packet
-                    visibility. Gives every dot a warm comet halo. */}
-                <circle cx={0} cy={0} r={5} fill={h.color} opacity={0}>
-                  <animate
-                    attributeName="r"
-                    values="4;13;4"
-                    dur="1.4s"
-                    repeatCount="indefinite"
-                  />
-                  <animate
-                    attributeName="opacity"
-                    values="0; 0.28; 0.28; 0"
-                    keyTimes="0; 0.15; 0.85; 1"
+              {!reducedMotionApplied && (
+                <g visibility="hidden">
+                  <set attributeName="visibility" to="visible" begin="0.08s" fill="freeze" />
+                  <animateMotion
                     dur="4.2s"
-                    begin={`-${h.delay}s`}
                     repeatCount="indefinite"
-                  />
-                </circle>
-                {/* Bright core dot */}
-                <circle cx={0} cy={0} r={3} fill={h.color} opacity={0}>
-                  <animate
-                    attributeName="opacity"
-                    values="0; 0.95; 0.95; 0"
-                    keyTimes="0; 0.15; 0.85; 1"
-                    dur="4.2s"
                     begin={`-${h.delay}s`}
-                    repeatCount="indefinite"
+                    path={curvePath(h.a, h.b)}
                   />
-                </circle>
-              </g>
+                  <circle cx={0} cy={0} r={5} fill={h.color} opacity={0}>
+                    <animate attributeName="r" values="4;13;4" dur="1.4s" repeatCount="indefinite" />
+                    <animate
+                      attributeName="opacity"
+                      values="0; 0.28; 0.28; 0"
+                      keyTimes="0; 0.15; 0.85; 1"
+                      dur="4.2s"
+                      begin={`-${h.delay}s`}
+                      repeatCount="indefinite"
+                    />
+                  </circle>
+                  <circle cx={0} cy={0} r={3} fill={h.color} opacity={0}>
+                    <animate
+                      attributeName="opacity"
+                      values="0; 0.95; 0.95; 0"
+                      keyTimes="0; 0.15; 0.85; 1"
+                      dur="4.2s"
+                      begin={`-${h.delay}s`}
+                      repeatCount="indefinite"
+                    />
+                  </circle>
+                </g>
+              )}
             </g>
           ))}
 
@@ -613,16 +699,6 @@ export function HeroWorkspaceScene() {
                 nodeRefs.current[li] = nodeRefs.current[li] || []
                 return (
                   <g key={`n-${li}-${i}`}>
-                    {/* radar ping.
-                        DO NOT set an inline transform-origin in px here.
-                        `.pulse-dot-ring` uses `transform-box: fill-box`
-                        + `transform-origin: center`, which scales the
-                        circle around its own centre. Adding
-                        `transform-origin: <n.x>px <n.y>px` overrode the
-                        keyword with an absolute pixel value that lives
-                        OUTSIDE the fill-box, so every ping scaled toward
-                        the SVG origin — reading as "circles drifting to
-                        the corner." Kept animationDelay only. */}
                     <circle
                       cx={n.x}
                       cy={n.y}
@@ -634,7 +710,6 @@ export function HeroWorkspaceScene() {
                       style={{ animationDelay: `${(li * 3 + i) * 0.2}s` }}
                       opacity={0.35}
                     />
-                    {/* core */}
                     <circle
                       ref={(el) => {
                         nodeRefs.current[li][i] = el
@@ -686,7 +761,9 @@ export function HeroWorkspaceScene() {
               })()}
               {/* Dashed border that draws in via stroke-dashoffset */}
               <rect
-                data-anim="border"
+                ref={(el) => {
+                  annoBorderRefs.current[i] = el
+                }}
                 x={a.x}
                 y={a.y}
                 width={a.w}
@@ -754,7 +831,13 @@ export function HeroWorkspaceScene() {
                   {a.conf.toFixed(2)}
                 </text>
                 {/* Detail chip revealed when cursor is inside the bbox */}
-                <g data-detail opacity={0} style={{ transition: 'opacity 240ms ease' }}>
+                <g
+                  ref={(el) => {
+                    chipDetailRefs.current[i] = el
+                  }}
+                  opacity={0}
+                  style={{ transition: 'opacity 240ms ease' }}
+                >
                   <rect
                     x={a.x}
                     y={a.y + a.h + 8}
@@ -781,8 +864,7 @@ export function HeroWorkspaceScene() {
             </g>
           ))}
 
-          {/* Top-left metadata chip — widened + text bumped 9.5 → 11 so
-              the "annotation.pipeline / live" label is readable. */}
+          {/* Top-left metadata chip */}
           <g>
             <rect
               x={28}
@@ -809,7 +891,10 @@ export function HeroWorkspaceScene() {
             </text>
           </g>
 
-          {/* Top-right progress ring — "annotation N%" */}
+          {/* Top-right progress ring — "annotation N%". Seeded with
+              the static arc so it renders correctly even before the
+              tick loop's first pass (or permanently, under reduced
+              motion, when the loop never runs at all). */}
           <g>
             <circle
               cx={VIEW.w - 82}
@@ -821,7 +906,7 @@ export function HeroWorkspaceScene() {
             />
             <path
               ref={progressArcRef}
-              d=""
+              d={STATIC_ARC_D}
               fill="none"
               stroke="#FF6B35"
               strokeWidth={2}
