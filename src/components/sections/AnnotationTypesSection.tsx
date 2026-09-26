@@ -467,18 +467,26 @@ function OcrAnim() {
       {/* arrow */}
       <path d="M116 90 h24 m-6 -4 l6 4 l-6 4" stroke="#FF8F5C" strokeWidth="1.2"
         fill="none" strokeLinecap="round" strokeLinejoin="round" />
-      {/* extracted key-value chips */}
+      {/* extracted key-value chips.
+          Row position lives on this OUTER g's transform attribute; the
+          slide-in animation lives on the INNER g's CSS transform. SVG
+          lets a CSS transform (from the .ocr-field animation) replace
+          the transform ATTRIBUTE entirely rather than compose with it —
+          keeping them on the same element collapsed every row to
+          translate(0,0), stacking all three fields on top of each
+          other instead of one below the next. */}
       <g transform="translate(150 42)">
         {fields.map((f, i) => (
-          <g key={f.label} className="ocr-field"
-            style={{ animationDelay: `${(1.5 + i * 0.5).toFixed(2)}s` }}
-            transform={`translate(0 ${i * 34})`}>
-            <rect x="0" y="0" width="96" height="26" rx="4"
-              fill="rgba(255,107,53,0.10)" stroke="#FF8F5C" strokeWidth="0.9" />
-            <text x="8" y="10" fontSize="6.4" fontFamily="var(--font-mono)"
-              fill="rgba(246,235,218,0.6)" letterSpacing="1.2">{f.label}</text>
-            <text x="8" y="21" fontSize="8.4" fontFamily="var(--font-mono)"
-              fill="#FFB98A" fontWeight="700">{f.value}</text>
+          <g key={f.label} transform={`translate(0 ${i * 34})`}>
+            <g className="ocr-field"
+              style={{ animationDelay: `${(1.5 + i * 0.5).toFixed(2)}s` }}>
+              <rect x="0" y="0" width="96" height="26" rx="4"
+                fill="rgba(255,107,53,0.10)" stroke="#FF8F5C" strokeWidth="0.9" />
+              <text x="8" y="10" fontSize="6.4" fontFamily="var(--font-mono)"
+                fill="rgba(246,235,218,0.6)" letterSpacing="1.2">{f.label}</text>
+              <text x="8" y="21" fontSize="8.4" fontFamily="var(--font-mono)"
+                fill="#FFB98A" fontWeight="700">{f.value}</text>
+            </g>
           </g>
         ))}
       </g>
