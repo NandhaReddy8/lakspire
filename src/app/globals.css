@@ -2834,6 +2834,40 @@ html {
   .lead-bot__fab-badge { animation: none !important; }
 }
 
+/* LeadBot — mobile scale-down. On phones the desktop sizing (76px FAB,
+   a 360px-wide panel) reads as taking over the corner of the screen.
+   Placed after every base .lead-bot* rule above so these overrides win
+   the cascade at equal specificity, not just by relying on source
+   order within a single earlier block. */
+@media (max-width: 640px) {
+  .lead-bot__fab--large { width: 58px; height: 58px; }
+  .lead-bot__fab--small { width: 44px; height: 44px; }
+  .lead-bot__fab-badge { width: 16px; height: 16px; }
+  .lead-bot__fab-badge--soft { width: 13px; height: 13px; }
+
+  .lead-bot__teaser {
+    max-width: 210px;
+    padding: 7px 9px 7px 12px;
+    font-size: 11.5px;
+  }
+
+  .lead-bot__panel { width: min(300px, calc(100vw - 32px)); border-radius: 16px; }
+  .lead-bot__head { padding: 10px 10px 10px 12px; gap: 8px; }
+  .lead-bot__head-avatar { width: 36px; height: 36px; }
+  .lead-bot__head-name { font-size: 13px; }
+  .lead-bot__head-sub { font-size: 10.5px; }
+  .lead-bot__close { width: 24px; height: 24px; }
+
+  .lead-bot__body { padding: 12px 12px 10px; min-height: 105px; gap: 10px; }
+  .lead-bot__msg { font-size: 12.5px; }
+  .lead-bot__msg--done { font-size: 14px; }
+
+  .lead-bot__input { padding: 9px 10px; font-size: 12.5px; }
+  .lead-bot__chip { padding: 6px 9px; font-size: 11.5px; }
+
+  .lead-bot__foot { padding: 8px 12px 12px; }
+}
+
 /* ─── Lakspire wordmark — theme-aware gold gradient text ──────
    Serif LAKSPIRE letters get a gold-metallic gradient fill next
    to the client-supplied logo image. Deep amber gradient on light
