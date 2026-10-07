@@ -12,22 +12,22 @@ export default function HomePage() {
     <>
       <HeroSection />
       <HowWeOperate />
-      <div className="optimize-paint">
+      <div className="optimize-paint op-size-why">
         <WhyLakspire />
       </div>
-      <div className="optimize-paint">
+      <div className="optimize-paint op-size-ai">
         <AIDataSolutions />
       </div>
-      <div className="optimize-paint">
+      <div className="optimize-paint op-size-industries">
         <Industries />
       </div>
-      <div className="optimize-paint">
+      <div className="optimize-paint op-size-how">
         <HowWeWork />
       </div>
-      <div className="optimize-paint">
+      <div className="optimize-paint op-size-tech">
         <TechHumanExpertise />
       </div>
-      <div className="optimize-paint">
+      <div className="optimize-paint op-size-cta">
         <FinalCTA />
       </div>
     </>

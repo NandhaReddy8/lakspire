@@ -643,10 +643,49 @@ html {
 /* Paint-skipping utility — lets the browser skip layout + paint for
    sections that are offscreen. `contain-intrinsic-size` gives it a
    size hint so scroll position stays stable while offscreen sections
-   are collapsed. Apply to non-critical, below-fold sections. */
+   are collapsed. Apply to non-critical, below-fold sections.
+   `auto` means the browser remembers each element's real rendered
+   size after its first paint and reuses that going forward — fixes
+   the shift on every encounter after the first.
+   The flat 900px fallback here was measured off by 50-860px per
+   section (up to ~2x on some below 1024px, where content reflows
+   much taller) — the moment a section expanded from that placeholder
+   to its real height, content below it on the page would visibly
+   shift, which read as the scroll "jumping" right as that section
+   came into view. The op-size-* modifiers below give each section an
+   accurate starting guess instead of one shared number for six very
+   differently sized sections. */
 .optimize-paint {
   content-visibility: auto;
-  contain-intrinsic-size: 0 900px;
+  contain-intrinsic-size: auto 0 auto 900px;
+}
+/* Desktop (>=1024px) measured heights */
+.op-size-why { contain-intrinsic-size: auto 0 auto 1030px; }
+.op-size-ai { contain-intrinsic-size: auto 0 auto 1025px; }
+.op-size-industries { contain-intrinsic-size: auto 0 auto 955px; }
+.op-size-how { contain-intrinsic-size: auto 0 auto 760px; }
+.op-size-tech { contain-intrinsic-size: auto 0 auto 740px; }
+.op-size-cta { contain-intrinsic-size: auto 0 auto 895px; }
+/* Tablet (768-1023px) measured heights — a single "below 1024px"
+   bucket undershot/overshot badly here (e.g. HowWeWork: tablet 770px
+   vs mobile 1043px — a 273px spread), so tablet gets its own tier
+   rather than sharing mobile's numbers. */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .op-size-why { contain-intrinsic-size: auto 0 auto 905px; }
+  .op-size-ai { contain-intrinsic-size: auto 0 auto 1560px; }
+  .op-size-industries { contain-intrinsic-size: auto 0 auto 1130px; }
+  .op-size-how { contain-intrinsic-size: auto 0 auto 775px; }
+  .op-size-tech { contain-intrinsic-size: auto 0 auto 935px; }
+  .op-size-cta { contain-intrinsic-size: auto 0 auto 790px; }
+}
+/* Mobile (<768px) measured heights */
+@media (max-width: 767px) {
+  .op-size-why { contain-intrinsic-size: auto 0 auto 900px; }
+  .op-size-ai { contain-intrinsic-size: auto 0 auto 1770px; }
+  .op-size-industries { contain-intrinsic-size: auto 0 auto 1235px; }
+  .op-size-how { contain-intrinsic-size: auto 0 auto 1050px; }
+  .op-size-tech { contain-intrinsic-size: auto 0 auto 1015px; }
+  .op-size-cta { contain-intrinsic-size: auto 0 auto 790px; }
 }
 
 /* Footer surface — dark warm in dark theme, subtle deeper-cream in
