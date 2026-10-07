@@ -16,14 +16,19 @@ export function ensureLenis(): Promise<Lenis> {
     loading = import('lenis').then((mod) => {
       const LenisCtor = mod.default
       instance = new LenisCtor({
-        // Snappier scroll — previous 1.5s felt like "forever" per
-        // wheel tick. 0.85s + cubic ease keeps the buttery feel
-        // without the long tail.
-        duration: 0.85,
+        // Measured: a single wheel tick at the old 0.85s/1.15x tuning
+        // kept visibly animating for ~600-850ms after input stopped,
+        // landing ~15% further than the input itself — felt like the
+        // page "jumped forward on its own" the moment you stopped to
+        // read something, even though continuous scrolling tracked
+        // fine. 0.5s + no amplification keeps the glide (vs raw native
+        // scroll) while cutting that lingering momentum tail and
+        // making the stop land where you actually released.
+        duration: 0.5,
         easing: (t) => 1 - Math.pow(1 - t, 3),
         smoothWheel: true,
-        touchMultiplier: 2,
-        wheelMultiplier: 1.15,
+        touchMultiplier: 1.2,
+        wheelMultiplier: 1,
       })
       return instance
     })
