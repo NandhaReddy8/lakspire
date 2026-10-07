@@ -501,8 +501,10 @@ export function HowWeOperate() {
   const cardRefs = useRef<(HTMLDivElement | null)[]>([])
   const copyRefs = useRef<(HTMLDivElement | null)[]>([])
   const illustRefs = useRef<(HTMLDivElement | null)[]>([])
+  const opIllustRefs = useRef<(HTMLDivElement | null)[]>([])
   const railFillRefs = useRef<(HTMLDivElement | null)[]>([])
   const railTipRefs = useRef<(HTMLDivElement | null)[]>([])
+  const railTrackRef = useRef<HTMLDivElement | null>(null)
   const stepDotRefs = useRef<(HTMLSpanElement | null)[]>([])
   const stepCurrentRef = useRef<HTMLSpanElement | null>(null)
 
@@ -514,13 +516,37 @@ export function HowWeOperate() {
 
     let raf = 0
     let lastActive = -1
+    let inView = true
+
+    // Cached once at mount and on resize — NOT re-read on every scroll
+    // frame. getBoundingClientRect()/offsetHeight both force a
+    // synchronous layout flush, and this loop also WRITES layout-
+    // affecting styles (it used to set .height/.top on the rail) —
+    // reading and writing layout on every scroll tick, through a
+    // 420vh-tall pinned section, was the main source of dropped frames
+    // scrolling past the hero into this section.
+    let total = 0
+    let trackHeight = 0
+
+    const measure = () => {
+      total = container.offsetHeight - window.innerHeight
+      trackHeight = railTrackRef.current?.offsetHeight ?? 0
+    }
+
+    // Five of the six illustrations sit at opacity 0 at any given
+    // moment, but every op-* keyframe in them is CSS `infinite` — a
+    // browser doesn't reliably stop ticking those just because an
+    // ancestor is invisible. Pausing them outright (and the active
+    // one too, once the whole section is off-screen) stops that
+    // ongoing work instead of letting it run for steps nobody can see.
+    const setPaused = (i: number, paused: boolean) => {
+      const el = opIllustRefs.current[i]
+      if (el) el.dataset.paused = String(paused)
+    }
 
     const compute = () => {
-      const rect = container.getBoundingClientRect()
-      const vh = window.innerHeight
-      const total = container.offsetHeight - vh
       if (total <= 0) return
-
+      const rect = container.getBoundingClientRect()
       const isMobile = window.innerWidth < 1024
       const progress = clamp(-rect.top / total)
       const p = progress * N
@@ -538,11 +564,13 @@ export function HowWeOperate() {
         const isLast = i === N - 1
         const flip = i >= 3
         const localP = p - i
+        const wasCurrent = i === lastActive
 
-        if (isCurrent !== (i === lastActive)) {
+        if (isCurrent !== wasCurrent) {
           card.style.opacity = isCurrent ? '1' : '0'
           card.style.pointerEvents = isCurrent ? 'auto' : 'none'
           card.setAttribute('aria-hidden', isCurrent ? 'false' : 'true')
+          setPaused(i, !isCurrent)
         }
 
         if (copy) {
@@ -562,7 +590,7 @@ export function HowWeOperate() {
           }
         }
 
-        if (illust && isCurrent !== (i === lastActive)) {
+        if (illust && isCurrent !== wasCurrent) {
           illust.style.transform = isCurrent
             ? 'translate3d(0,0,0) scale(1)'
             : `translate3d(${flip ? '-' : ''}18px,10px,0) scale(0.97)`
@@ -570,9 +598,12 @@ export function HowWeOperate() {
 
         if (railFill && railTip && isCurrent) {
           const fill = isLast ? 1 : clamp(localP)
-          const pct = `${(fill * 100).toFixed(2)}%`
-          railFill.style.height = pct
-          railTip.style.top = pct
+          // scaleY/translate3d instead of height/top — those force a
+          // layout recalculation on every write; transform is
+          // compositor-only, which is what this loop needs since it
+          // runs on every scroll frame through the active step.
+          railFill.style.transform = `scaleY(${fill.toFixed(4)})`
+          railTip.style.transform = `translate3d(-50%, ${(fill * trackHeight - 1).toFixed(2)}px, 0)`
         }
       }
 
@@ -591,16 +622,47 @@ export function HowWeOperate() {
     }
 
     const onScroll = () => {
+      // Skip entirely once scrolled well past this section in either
+      // direction — no point reading layout for a 'scroll' event that
+      // fires for the whole page, every time, regardless of whether
+      // this 420vh section is anywhere near the viewport.
+      if (!inView) return
       if (raf) cancelAnimationFrame(raf)
       raf = requestAnimationFrame(compute)
     }
+    const onResize = () => {
+      measure()
+      compute()
+    }
+
+    measure()
     lastActive = -1
     compute()
+
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        inView = entry.isIntersecting
+        if (inView) {
+          compute()
+          // Re-sync every illustration's pause state against the
+          // current active step — compute() above only touches ones
+          // whose active-ness just changed, but every illustration was
+          // force-paused on the way out, including the active one.
+          for (let i = 0; i < N; i++) setPaused(i, i !== lastActive)
+        } else {
+          for (let i = 0; i < N; i++) setPaused(i, true)
+        }
+      },
+      { rootMargin: '200px 0px' },
+    )
+    io.observe(container)
+
     window.addEventListener('scroll', onScroll, { passive: true })
-    window.addEventListener('resize', compute)
+    window.addEventListener('resize', onResize)
     return () => {
       window.removeEventListener('scroll', onScroll)
-      window.removeEventListener('resize', compute)
+      window.removeEventListener('resize', onResize)
+      io.disconnect()
       if (raf) cancelAnimationFrame(raf)
     }
   }, [N])
@@ -694,8 +756,18 @@ export function HowWeOperate() {
                         flip ? 'lg:order-2 lg:pr-8' : 'lg:order-1 lg:pl-8'
                       }`}
                     >
-                      {/* Vertical rail */}
+                      {/* Vertical rail.
+                          Fill/tip position is driven by `transform`
+                          (scaleY / translate3d) from the scroll effect
+                          above, not height/top — both of those force a
+                          layout recalculation on every write, and this
+                          updates every scroll frame through the active
+                          step. Only the first track is measured (ref
+                          below); all N are geometrically identical. */}
                       <div
+                        ref={(el) => {
+                          if (i === 0) railTrackRef.current = el
+                        }}
                         aria-hidden="true"
                         className="pointer-events-none absolute hidden lg:block"
                         style={{
@@ -716,7 +788,9 @@ export function HowWeOperate() {
                           }}
                           className="absolute left-0 right-0 top-0"
                           style={{
-                            height: '0%',
+                            height: '100%',
+                            transform: 'scaleY(0)',
+                            transformOrigin: 'top',
                             background:
                               'linear-gradient(180deg, rgba(255,107,53,0.35) 0%, #FF6B35 60%, #FABD6C 100%)',
                           }}
@@ -727,10 +801,10 @@ export function HowWeOperate() {
                           }}
                           className="themed-rail-tip absolute left-1/2"
                           style={{
-                            top: '0%',
+                            top: 0,
                             width: '10px',
                             height: '2px',
-                            transform: 'translate(-50%, -50%)',
+                            transform: 'translate3d(-50%, -1px, 0)',
                           }}
                         />
                       </div>
@@ -809,7 +883,13 @@ export function HowWeOperate() {
                           }}
                         />
                         <ClayFrame variant={move.variant}>
-                          <div className="op-illust">
+                          <div
+                            ref={(el) => {
+                              opIllustRefs.current[i] = el
+                            }}
+                            className="op-illust"
+                            data-paused={String(!initiallyActive)}
+                          >
                             <move.Icon />
                           </div>
                         </ClayFrame>

@@ -1500,6 +1500,18 @@ html {
 }
 .op-spark { animation: op-spark 5s cubic-bezier(0.65,0,0.35,1) infinite; }
 
+/* Every op-* animation above is `infinite` — five of the six step
+   illustrations in HowWeOperate sit at opacity 0 at any moment, but a
+   browser doesn't reliably stop ticking a descendant's CSS animation
+   just because an ancestor is invisible. The scroll effect toggles
+   this attribute on whichever illustration isn't the active step (and
+   on all of them once the section itself is off-screen) — a wildcard
+   descendant selector covers every current and future op-* class
+   without needing to list them here too. */
+.op-illust[data-paused='true'] * {
+  animation-play-state: paused !important;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .op-backdrop,
   .op-fade-in, .op-bubble-in, .op-pulse, .op-sweep,
