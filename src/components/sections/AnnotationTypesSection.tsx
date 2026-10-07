@@ -1,5 +1,6 @@
 'use client'
 import type { ComponentType } from 'react'
+import { useEffect, useRef } from 'react'
 import { FadeIn } from '@/components/motion/FadeIn'
 import { StaggerGroup, StaggerItem } from '@/components/motion/StaggerGroup'
 import { SectionLabel } from '@/components/blocks/SectionLabel'
@@ -13,6 +14,13 @@ import { SectionLabel } from '@/components/blocks/SectionLabel'
  * Animations are pure SVG + CSS keyframes (no motion library) and
  * loop continuously — they must convey the label operation, not just
  * decorate. Palette stays inside the site's ember/gold system.
+ *
+ * All ten cards used to animate unconditionally from mount — 10
+ * illustrations x several `infinite` CSS animations each, running the
+ * entire time this page is open regardless of scroll position. A
+ * shared IntersectionObserver (below) now pauses each card's
+ * animations independently while it's off-screen — most of the time,
+ * most of these ten aren't in view at all.
  */
 
 // ─────────────────────────────────────────────────────────────
@@ -639,6 +647,24 @@ const types: AnnotationType[] = [
 // ─────────────────────────────────────────────────────────────
 
 export function AnnotationTypesSection() {
+  const animRefs = useRef<(HTMLDivElement | null)[]>([])
+
+  useEffect(() => {
+    const els = animRefs.current.filter((el): el is HTMLDivElement => el !== null)
+    if (els.length === 0) return
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          const el = entry.target as HTMLDivElement
+          el.dataset.paused = String(!entry.isIntersecting)
+        }
+      },
+      { rootMargin: '150px 0px' },
+    )
+    for (const el of els) io.observe(el)
+    return () => io.disconnect()
+  }, [])
+
   return (
     <section
       id="annotation-types"
@@ -713,7 +739,13 @@ export function AnnotationTypesSection() {
                   />
 
                   {/* Animation cell — ≈ 3/7 width */}
-                  <div className="annot-anim">
+                  <div
+                    ref={(el) => {
+                      animRefs.current[i] = el
+                    }}
+                    className="annot-anim"
+                    data-paused="false"
+                  >
                     <Anim />
                   </div>
 

@@ -1201,6 +1201,15 @@ html {
   color: rgba(255,240,220,0.9);
 }
 .annot-svg { width: 100%; height: 100%; max-height: 220px; display: block; color: rgba(255,240,220,0.75); }
+/* All ten annotation-type illustrations use `infinite` CSS animations
+   that otherwise run from mount regardless of scroll position — a
+   constant background cost for the entire time this page is open,
+   since a browser doesn't reliably stop ticking a descendant's
+   animation just because it's off-screen. A shared IntersectionObserver
+   (AnnotationTypesSection) toggles this per card. */
+.annot-anim[data-paused='true'] * {
+  animation-play-state: paused !important;
+}
 .annot-body {
   flex: 1 1 auto;
   min-width: 0;

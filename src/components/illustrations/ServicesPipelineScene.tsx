@@ -1,5 +1,7 @@
 'use client'
 
+import { useEffect, useRef } from 'react'
+
 /**
  * ServicesPipelineScene
  * ─────────────────────
@@ -8,6 +10,12 @@
  * working in sequence), and exits as clean structured record cards on
  * the right. Packets stream continuously along the belt with a small
  * spark burst as each one passes a gear.
+ *
+ * All motion here is raw SVG SMIL (<animate>/<animateMotion>,
+ * repeatCount="indefinite") — it runs from mount regardless of
+ * visibility unless paused. The SVG's own animation timeline is
+ * paused/resumed via IntersectionObserver so it doesn't keep ticking
+ * while scrolled out of view.
  */
 
 const VIEW = { w: 560, h: 360 }
@@ -48,8 +56,27 @@ function bytes(seed: number, width: number) {
 }
 
 export function ServicesPipelineScene() {
+  const svgRef = useRef<SVGSVGElement>(null)
+
+  useEffect(() => {
+    const svg = svgRef.current
+    if (!svg) return
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          if ('unpauseAnimations' in svg) svg.unpauseAnimations()
+        } else if ('pauseAnimations' in svg) {
+          svg.pauseAnimations()
+        }
+      },
+      { rootMargin: '150px 0px' },
+    )
+    io.observe(svg)
+    return () => io.disconnect()
+  }, [])
+
   return (
-    <svg viewBox={`0 0 ${VIEW.w} ${VIEW.h}`} className="h-auto w-full" aria-hidden="true">
+    <svg ref={svgRef} viewBox={`0 0 ${VIEW.w} ${VIEW.h}`} className="h-auto w-full" aria-hidden="true">
       <defs>
         <linearGradient id="belt-grad" x1="0%" y1="0%" x2="100%" y2="0%">
           <stop offset="0%" stopColor="#E9C46A" stopOpacity="0" />
