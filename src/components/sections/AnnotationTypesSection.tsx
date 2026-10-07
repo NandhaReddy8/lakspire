@@ -226,12 +226,20 @@ function LidarAnim() {
           fill="none" stroke="rgba(246,235,218,0.16)" strokeWidth="0.6"
           strokeDasharray="2 3" />
       ))}
-      {/* points */}
+      {/* points.
+          DO NOT set an inline transform-origin in absolute px here.
+          `.lidar-pt` uses `transform-box: fill-box` + `transform-origin:
+          center`, which scales each circle around its own centre. An
+          absolute `${x}px ${y}px` origin is resolved WITHIN that
+          circle's own (tiny) fill-box, not against the SVG viewport —
+          so every point's pulse scaled toward a wildly offset point,
+          dragging the whole cluster into a stretched comet-tail shape
+          instead of pulsing in place. Only animationDelay is needed. */}
       {points.map(([x, y, d], i) => (
         <circle key={i} cx={x} cy={y} r={round(0.9 + d * 1.3)}
           fill={d > 0.7 ? '#FF8F5C' : d > 0.45 ? '#E9C46A' : 'rgba(246,235,218,0.55)'}
           className="lidar-pt"
-          style={{ animationDelay: `${((i % 20) * 0.09).toFixed(2)}s`, transformOrigin: `${x}px ${y}px` }} />
+          style={{ animationDelay: `${((i % 20) * 0.09).toFixed(2)}s` }} />
       ))}
       {/* sweep beam */}
       <g className="lidar-sweep" style={{ transformOrigin: '90px 96px' }}>
